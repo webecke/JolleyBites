@@ -1,0 +1,14 @@
+name = "jolleybites"
+main = "src/backend/api.ts"
+compatibility_date = "2024-09-27"
+
+[site]
+bucket = "./dist"
+
+[build]
+command = "npm run build"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "jolleybites"
+database_id = "905ffdda-c644-4cf8-b6a2-315c729eeb14"
