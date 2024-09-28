@@ -1,11 +1,13 @@
 <script setup lang="ts">
 
-
 </script>
 
 <template>
-  <main>
+<div id="ingredientsView">
 
-
-  </main>
+</div>
 </template>
+
+<style scoped>
+
+</style>

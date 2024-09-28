@@ -1,6 +1,14 @@
 # JolleyBites
 A simple web app to calculate the costs for baking or cooking businesses
 
+## Technologies Used
+
+- Typescript
+- Cloudflare Pages & Workers
+- Cloudflare D1 Database
+- Vue
+- 
+
 ## The Plan
 
 ### Milestone 0: Framework

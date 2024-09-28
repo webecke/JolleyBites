@@ -1,0 +1,58 @@
+@import "base.css";
+
+main {
+    max-width: 1080px;
+    margin: 0 auto;
+}
+
+a {
+    text-decoration: none;
+    color: var(--jb--lilac);
+    transition: 0.4s;
+}
+
+h1 {
+    color: var(--jb--lilac-dark);
+}
+
+.tagline {
+    color: var(--jb--lilac-dark);
+}
+
+header {
+    background-color: var(--jb--french-gray);
+    width: 100vw;
+    padding: 5px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    place-items: flex-start;
+}
+
+footer {
+    width: 100vw;
+    padding: 5px 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+hr {
+    color: var(--jb--french-gray);
+    width: 80%;
+    margin: 10px 0;
+}
+
+button {
+    box-sizing: border-box; /* Ensure padding and borders are included in the element's total width/height */
+    display: inline-block; /* Ensure it behaves like a block-level element */
+    cursor: pointer;
+    outline: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+
+    background-color: var(--jb--lilac-dark);
+    color: white;
+    padding: 8px 10px;
+}
