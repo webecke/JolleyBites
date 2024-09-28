@@ -17,7 +17,10 @@ const login = () => {
       </div>
     </RouterLink>
     <div id="login">
-      <button @click="login">Login</button>
+      <v-btn variant="outlined" @click="login">
+        Login
+        <font-awesome-icon :icon="['fas', 'right-to-bracket']" />
+      </v-btn>
     </div>
   </header>
 

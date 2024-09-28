@@ -20,6 +20,7 @@ h1 {
 }
 
 header {
+    color: var(--jb--eerie-black);
     background-color: var(--jb--french-gray);
     width: 100vw;
     padding: 5px 15px;
