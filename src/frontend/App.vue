@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 const login = () => {
   alert('Login coming soon. Sheesh, be patient.')
@@ -11,7 +12,8 @@ const login = () => {
     <RouterLink to="/">
       <div id="branding">
         <h1>JolleyBites</h1>
-        <p class="tagline">Recipe Cost Calculator</p>
+        <p class="tagline">Recipe Cost Calculator </p>
+        <font-awesome-icon :icon="['fas', 'utensils']" />
       </div>
     </RouterLink>
     <div id="login">

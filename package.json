@@ -17,9 +17,16 @@
   },
   "dependencies": {
     "@cloudflare/kv-asset-handler": "^0.3.4",
+    "@fortawesome/fontawesome-free": "^6.6.0",
+    "@fortawesome/fontawesome-svg-core": "^6.6.0",
+    "@fortawesome/free-brands-svg-icons": "^6.6.0",
+    "@fortawesome/free-regular-svg-icons": "^6.6.0",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/vue-fontawesome": "^3.0.8",
     "pinia": "^2.1.7",
     "vue": "^3.4.29",
-    "vue-router": "^4.3.3"
+    "vue-router": "^4.3.3",
+    "vuetify": "^3.7.2"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240925.0",

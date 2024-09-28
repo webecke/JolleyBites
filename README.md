@@ -7,7 +7,8 @@ A simple web app to calculate the costs for baking or cooking businesses
 - Cloudflare Pages & Workers
 - Cloudflare D1 Database
 - Vue
-- 
+- Vuetify Component Framework
+- FONTAWESOME
 
 ## The Plan
 
