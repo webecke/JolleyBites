@@ -8,6 +8,11 @@ export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext):
     Promise<Response> {
     try {
+      //Preflight:
+      if (request.method === 'OPTIONS') {
+        return handleCors(request)
+      }
+
       const url = new URL(request.url);
       const path: String = url.pathname; // Extract the path from the URL
 
@@ -16,9 +21,9 @@ export default {
 
       switch (apiToken) {
         case "auth":
-          return new Response("Hey, we haven't made the auth stuff yet, but here you go!", { status: 200 })
+          return addCorsHeaders( (new Response("Hey, we haven't made the auth stuff yet, but here you go!", { status: 200 })), request.headers.get('Origin') )
         case "api":
-          return await handleApiRoutes(apiPath, request, env)
+          return addCorsHeaders( await handleApiRoutes(apiPath, request, env), request.headers.get('Origin') )
       }
 
       switch (path) {
@@ -72,6 +77,10 @@ export class HttpError extends Error {
     return new HttpError(message, 404, "Not Found");
   }
 
+  static methodNotAllowed(message: string): HttpError {
+    return new HttpError(message, 405, "Method Not Allowed");
+  }
+
   static teapot(message: string): HttpError {
     return new HttpError(message, 418, "I'm a Teapot");
   }
@@ -83,4 +92,36 @@ export class HttpError extends Error {
   static serviceUnavailable(message: string): HttpError {
     return new HttpError(message, 503, "Service Unavailable");
   }
+}
+
+
+function addCorsHeaders(response: Response, origin: string | null): Response {
+  if (origin === null) {
+    // If origin is null, we'll allow any origin but won't send credentials
+    response.headers.set('Access-Control-Allow-Origin', '*');
+  } else {
+    response.headers.set('Access-Control-Allow-Origin', origin);
+    response.headers.set('Access-Control-Allow-Credentials', 'true');
+  }
+  response.headers.set('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  return response;
+}
+
+function handleCors(request: Request): Response {
+  const origin = request.headers.get('Origin') || '';
+
+  // Create a new response for the preflight request
+  const response = new Response(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': origin || '*',
+      'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Allow-Credentials': 'true',
+      'Access-Control-Max-Age': '86400',
+    }
+  });
+
+  return response;
 }

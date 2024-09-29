@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Ingredient } from '../../../shared/types'
 import { computed, nextTick, ref } from 'vue'
+import { doTestPut } from '@/services/ingredientService'
 
 let ingredients: Ingredient[] = [
   {id: "idForFlour",
@@ -96,6 +97,7 @@ const editField = ref<HTMLInputElement | null>(null);
         </div>
     </template>
   </v-data-table>
+  <v-btn @click="doTestPut()">TEST ME</v-btn>
 </div>
 </template>
 
