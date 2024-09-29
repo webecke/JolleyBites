@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import GlobalSnackbar from '@/components/GlobalSnackbar.vue'
 
 const login = () => {
   alert('Login coming soon. Sheesh, be patient.')
@@ -8,6 +9,8 @@ const login = () => {
 </script>
 
 <template>
+  <GlobalSnackbar ref="snackbarRef"/> <!-- this allows anywhere in the app to trigger the snackbar popups -->
+
   <header>
     <RouterLink to="/">
       <div id="branding">
