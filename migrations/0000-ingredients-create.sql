@@ -6,5 +6,5 @@ CREATE TABLE ingredients (
      unit TEXT NOT NULL,
      purchase_price_cents INTEGER NOT NULL,
      price_per_unit_cents REAL NOT NULL,
-    notes TEXT NOT NULL
+     notes TEXT NOT NULL
 );

@@ -7,6 +7,11 @@ export interface Env {
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext):
     Promise<Response> {
+    console.log("HEY")
+    console.log(request.method)
+    console.log(request.url)
+    console.log(await request.headers)
+    console.log(await request.headers)
     try {
       //Preflight:
       if (request.method === 'OPTIONS') {
