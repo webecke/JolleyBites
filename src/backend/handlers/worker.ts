@@ -4,9 +4,7 @@ export interface Env {
   DB: D1Database;
 }
 
-export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext):
-    Promise<Response> {
+export async function handleRequest(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     console.log("HEY")
     console.log(request.method)
     console.log(request.url)
@@ -50,7 +48,6 @@ export default {
         return new Response("Internal Server Error", { status: 500 });
       }
     }
-  },
 }
 
 export class HttpError extends Error {
@@ -104,7 +101,7 @@ export class HttpError extends Error {
 }
 
 
-function addCorsHeaders(response: Response, origin: string | null): Response {
+export function addCorsHeaders(response: Response, origin: string | null): Response {
   if (origin === null) {
     // If origin is null, we'll allow any origin but won't send credentials
     response.headers.set('Access-Control-Allow-Origin', '*');
