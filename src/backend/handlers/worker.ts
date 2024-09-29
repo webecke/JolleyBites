@@ -4,7 +4,9 @@ export interface Env {
   DB: D1Database;
 }
 
-export async function handleRequest(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+export default {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext):
+    Promise<Response> {
     console.log("HEY")
     console.log(request.method)
     console.log(request.url)
@@ -48,6 +50,7 @@ export async function handleRequest(request: Request, env: Env, ctx: ExecutionCo
         return new Response("Internal Server Error", { status: 500 });
       }
     }
+  },
 }
 
 export class HttpError extends Error {
