@@ -16,12 +16,8 @@
   ],
   "routes": [
     {
-      "src": "/auth/.*",
-      "dest": "/src/backend/handlers/worker.ts"
-    },
-    {
-      "src": "/api/.*",
-      "dest": "/src/backend/handlers/worker.ts"
+      "src": "/(auth|api)/.*",
+      "dest": "/worker"
     }
   ]
 }
