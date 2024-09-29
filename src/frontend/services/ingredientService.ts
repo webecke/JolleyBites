@@ -1,6 +1,6 @@
 export const doTestPut = async () => {
   const response = await fetch(generateBaseUrl() + "/api/ingredients", {
-    method: 'PUT',
+    method: 'POST',
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',

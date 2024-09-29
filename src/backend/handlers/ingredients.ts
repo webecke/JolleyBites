@@ -12,7 +12,7 @@ export async function handleIngredientsRequest(path: String, request: Request, e
     case "GET":
       return new Response(JSON.stringify(await ingredientsDataAccess.getIngredientsForUser("GENERIC")), { status: 200 });
 
-    case "PUT":
+    case "POST":
       const reqBody: any = await request.json()
       if (!('ingredient' in reqBody)) {
         throw HttpError.badRequest(`Missing ingredient`);
