@@ -21,6 +21,10 @@ export default {
       const url = new URL(request.url);
       const path: String = url.pathname; // Extract the path from the URL
 
+      if (path == "/nathan") {
+        return new Response("YOU DID IT", {status: 200})
+      }
+
       const apiToken = path.split("/")[1]
       const apiPath = path.substring(apiToken.length + 2);
 
