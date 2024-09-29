@@ -22,7 +22,7 @@ export default {
       const path: String = url.pathname; // Extract the path from the URL
 
       if (path == "/nathan") {
-        return new Response("YOU DID IT", {status: 200})
+        return addCorsHeaders( new Response("YOU DID IT", {status: 200}), request.headers.get('Origin'))
       }
 
       const apiToken = path.split("/")[1]

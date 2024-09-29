@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Ingredient } from '../../../shared/types'
 import { computed, nextTick, ref } from 'vue'
-import { doTestPut } from '@/services/ingredientService'
+import { doNathanGet, doTestPut } from '@/services/ingredientService'
 
 let ingredients: Ingredient[] = [
   {id: "idForFlour",
@@ -60,6 +60,13 @@ const finishEditing = (item: Ingredient) => {
   console.log('Edited item:', item);
 };
 
+const test1 = async () => {
+  await doTestPut()
+}
+const test2 = async () => {
+  await doNathanGet()
+}
+
 const editingId = ref<string | null>(null);
 const editingField = ref<keyof Ingredient | null>(null);
 const editingValue = ref<string | number | null>(null);
@@ -97,7 +104,8 @@ const editField = ref<HTMLInputElement | null>(null);
         </div>
     </template>
   </v-data-table>
-  <v-btn @click="doTestPut()">TEST ME</v-btn>
+  <v-btn @click="test1">TEST ME</v-btn>
+  <v-btn @click="test2">WHY IS THIS BROKEN 200</v-btn>
 </div>
 </template>
 
