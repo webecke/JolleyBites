@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "include": ["/*"],
+  "exclude": [
+    "/_assets/*",
+    "/build/*",
+    "/static/*",
+    "/*.ico",
+    "/*.jpg",
+    "/*.jpeg",
+    "/*.png",
+    "/*.gif",
+    "/*.svg",
+    "/*.css",
+    "/*.js"
+  ],
+  "routes": [
+    {
+      "src": "/auth/.*",
+      "dest": "/src/backend/handlers/worker.ts"
+    },
+    {
+      "src": "/api/.*",
+      "dest": "/src/backend/handlers/worker.ts"
+    }
+  ]
+}
