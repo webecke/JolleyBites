@@ -4,7 +4,7 @@ export type Ingredient = {
   name: string,
   quantity: number,
   unit: string,
-  purchasePrice: number,
-  pricePerUnit: number,
+  purchase_price: number,
+  price_per_unit: number,
   notes: string
 }

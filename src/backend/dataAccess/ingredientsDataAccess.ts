@@ -20,26 +20,41 @@ export class IngredientsDataAccess {
     }
   }
 
-  public async insertIngredient(ingredient: Omit<Ingredient, 'id'>) {
+  public async getIngredientById(id: Number) {
+    try {
+      const { results } = await this.DB.prepare(
+        "SELECT * FROM ingredients WHERE id = ?"
+      ).bind(id).all();
+
+      return results[0] as Ingredient;
+    } catch (error) {
+      console.error("Database error:", error);
+      throw HttpError.internalServerError("Failed to fetch ingredient");
+    }
+  }
+
+  public async insertIngredient(ingredient: Omit<Ingredient, 'id'>): Promise<number> {
     try {
       const statement = await this.DB.prepare(`
-      INSERT INTO ingredients (user_id, name, quantity, unit, purchase_price_cents, price_per_unit_cents, notes)
+      INSERT INTO ingredients (user_id, name, quantity, unit, purchase_price, price_per_unit, notes)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `).bind(
         ingredient.user_id,
         ingredient.name,
         ingredient.quantity,
         ingredient.unit,
-        ingredient.purchasePrice,
-        ingredient.pricePerUnit,
+        ingredient.purchase_price,
+        ingredient.price_per_unit,
         ingredient.notes
       );
 
-      const result = await statement.first();
-      //
-      // if (!result || !('id' in result)) {
-      //   throw new Error('Failed to insert ingredient' + JSON.stringify(result));
-      // }
+      const result = await statement.run();
+
+      if (result && typeof result.meta?.last_row_id === 'number') {
+        return result.meta.last_row_id;
+      } else {
+        throw new Error('Failed to retrieve the inserted ID');
+      }
     } catch (error) {
       console.error("Database error:", error);
       throw HttpError.internalServerError("Failed to insert ingredient");

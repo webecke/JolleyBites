@@ -16,7 +16,14 @@ export async function handleIngredientsRequest (path: String, request: CfRequest
   switch (requestType) {
 
     case "GET":
-      return new Response(JSON.stringify(await ingredientsDataAccess.getIngredientsForUser("GENERIC")), { status: 200 });
+      if (apiToken == "") {
+        return new Response(JSON.stringify(await ingredientsDataAccess.getIngredientsForUser("GENERIC")), { status: 200 });
+      }
+      const response = await ingredientsDataAccess.getIngredientById(Number(apiToken))
+      if (response == null) {
+        throw HttpError.notFound("Ingredient not found with id [" + apiToken + "]")
+      }
+      return new Response(JSON.stringify(response), { status: 200 })
 
     case "POST":
       const reqBody: any = await request.json()
@@ -25,12 +32,14 @@ export async function handleIngredientsRequest (path: String, request: CfRequest
       }
       const ingredient = validateIngredient(reqBody.ingredient)
 
+      let newIngredientId: number
       try {
-        await ingredientsDataAccess.insertIngredient(ingredient)
+        newIngredientId = await ingredientsDataAccess.insertIngredient(ingredient)
+        console.log(newIngredientId)
       } catch(error) {
-        throw HttpError.internalServerError("Something went wrong inserting ingredient into database: " + ingredient)
+        throw HttpError.internalServerError("Something went wrong inserting ingredient into database")
       }
-      return new Response("Successfully added ingredient to database", { status: 201 })
+      return new Response(JSON.stringify({ingredientId: newIngredientId}), { status: 201 })
     default:
       console.error(requestType)
       throw HttpError.methodNotAllowed("")
@@ -38,8 +47,9 @@ export async function handleIngredientsRequest (path: String, request: CfRequest
 }
 
 function validateIngredient(data: any): Omit<Ingredient, 'id'> {
+  console.log(data)
   const requiredFields: (keyof Omit<Ingredient, 'id'>)[] = [
-    'user_id', 'name', 'quantity', 'unit', 'purchasePrice', 'pricePerUnit', 'notes'
+    'user_id', 'name', 'quantity', 'unit', 'purchase_price', 'price_per_unit', 'notes'
   ];
 
   for (const field of requiredFields) {
@@ -53,10 +63,12 @@ function validateIngredient(data: any): Omit<Ingredient, 'id'> {
     name: String(data.name),
     quantity: Number(data.quantity),
     unit: String(data.unit),
-    purchasePrice: Number(data.purchasePrice),
-    pricePerUnit: Number(data.pricePerUnit),
+    purchase_price: Number(data.purchase_price),
+    price_per_unit: Number(data.price_per_unit),
     notes: data.notes ? String(data.notes) : ''
   };
+
+  console.log("validated", validatedIngredient)
 
   return validatedIngredient;
 }

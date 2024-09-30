@@ -19,6 +19,7 @@ export const onRequest = async (
   try {
     // where most requests go
     const response = await processRequest(context);
+    //response.headers.set('Content-Type', 'application/json')
     return addCorsHeaders(response, context.request.headers.get('Origin'));
 
   } catch (error) {
