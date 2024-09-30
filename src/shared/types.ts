@@ -1,5 +1,5 @@
 export type Ingredient = {
-  id: string,
+  id: number,
   user_id: string,
   name: string,
   quantity: number,

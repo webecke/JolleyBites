@@ -87,7 +87,7 @@ const handleEnterKey = (event: KeyboardEvent) => {
   }
 }
 
-const editingId = ref<string | null>(null);
+const editingId = ref<number | null>(null);
 const editingField = ref<keyof Ingredient | null>(null);
 const editingValue = ref<string | number | null>(null);
 const editField = ref<HTMLInputElement | null>(null);

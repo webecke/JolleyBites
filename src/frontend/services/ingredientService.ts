@@ -40,7 +40,7 @@ const newIngredientPost = async (ingredient: Omit<Ingredient, "id">) => {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 
-  return await response.json();
+  return await response.json() as {id: number};
 };
 
 export const addIngredient = async (ingredient: Omit<Ingredient, 'id' | 'price_per_unit' | 'user_id'> | null)=> {
@@ -63,8 +63,8 @@ export const addIngredient = async (ingredient: Omit<Ingredient, 'id' | 'price_p
 
   const response = await newIngredientPost(submittableIngredient);
 
-  submittableIngredient.id = response.id;
-  useDataStore().addIngredient(submittableIngredient)
+  const newIngredient: Ingredient = { ...submittableIngredient, ...response }
+  useDataStore().addIngredient(newIngredient)
 }
 
 export const doTestPut = async () => {
