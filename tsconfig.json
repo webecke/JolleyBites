@@ -23,6 +23,7 @@
     "isolatedModules": true,
     "esModuleInterop": true,
     "lib": ["esnext", "dom"],
+    "types": ["@cloudflare/workers-types", "vite/client"],
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
