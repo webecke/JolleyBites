@@ -5,10 +5,9 @@
   "type": "module",
   "scripts": {
     "dev:frontend": "vite",
-    "dev:backend": "wrangler dev",
+    "dev:backend": "npx wrangler pages dev --local",
     "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
-    "build": "vue-tsc --noEmit -p tsconfig.app.json && vite build && npm run build:worker",
-    "build:worker": "esbuild src/backend/handlers/worker.ts --bundle --outfile=functions/worker.js --format=esm --platform=node",
+    "build": "vue-tsc --noEmit -p tsconfig.app.json && vite build && echo 'Hey look at that, you ran the build command'",
     "preview": "vite preview",
     "test:unit": "vitest",
     "build-only": "vite build",
