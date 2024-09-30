@@ -1,6 +1,5 @@
 import { useDataStore } from '@/stores/dataStore'
 import type { Ingredient } from '../../shared/types'
-import { snackbarStore } from '@/stores/snackbarStore'
 
 export const getAllIngredients = async (): Promise<Ingredient []> => {
   const response = await fetch(generateBaseUrl() + "/api/ingredients", {
@@ -67,23 +66,15 @@ export const addIngredient = async (ingredient: Omit<Ingredient, 'id' | 'price_p
   useDataStore().addIngredient(newIngredient)
 }
 
-export const doTestPut = async () => {
+export const updateIngredient = async (ingredient: Ingredient)=> {
   const response = await fetch(generateBaseUrl() + "/api/ingredients", {
-    method: 'POST',
+    method: 'PATCH',
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      ingredient: {
-        user_id: "GENERIC",
-        name: "Sugar",
-        quantity: 32,
-        unit: "cups",
-        purchasePrice: 3200,
-        pricePerUnit: 1,
-        notes: "maybe this works"
-      }
+      ingredient: ingredient
     })
   });
 
@@ -94,35 +85,8 @@ export const doTestPut = async () => {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 
-  console.log(await response.text())
-  console.log(await response.headers)
-  console.log(await response.body)
-  console.log(response)
-  return "success";
-};
-
-export const doNathanGet = async () => {
-  const response = await fetch(generateBaseUrl() + "/api/nathan", {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    console.error('Error:', response.status, response.statusText);
-    const errorText = await response.text();
-    console.error('Error details:', errorText);
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  console.log(await response.text())
-  console.log(await response.headers)
-  console.log(await response.body)
-  console.log(response)
-  return "success";
-};
+  return true;
+}
 
 function generateBaseUrl() {
   let baseUrl = window.location.origin

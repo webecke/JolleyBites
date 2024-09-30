@@ -2,7 +2,7 @@
 import type { Ingredient } from '../../../shared/types'
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { useDataStore } from '@/stores/dataStore'
-import { addIngredient } from '@/services/ingredientService'
+import { addIngredient, updateIngredient } from '@/services/ingredientService'
 import { snackbarStore } from '@/stores/snackbarStore'
 
 onMounted(async () => {
@@ -18,9 +18,9 @@ onUnmounted( () => {
 
 const headers = [
   { title: 'Ingredient', value: 'name', sortable: true, width: '20%', editable: true },
-  { title: 'Quantity', value: 'quantity', sortable: true, type: typeof 0, editable: true},
+  { title: 'Quantity', value: 'quantity', sortable: true, type: typeof Number, prefix: "$", editable: true},
   { title: 'Unit', value: 'unit', sortable: true, editable: true },
-  { title: 'Cost', value: 'purchase_price', sortable: true, type: typeof 0, editable: true},
+  { title: 'Cost', value: 'purchase_price', sortable: true, type: typeof Number, prefix: "$", editable: true},
   { title: 'Price/Unit', value: 'price_per_unit', sortable: true, editable: false },
   { title: 'Notes', value: 'notes', width: '20% ', editable: true}
 ]
@@ -52,6 +52,7 @@ const finishEditing = (item: Ingredient) => {
   editingField.value = null;
   editingValue.value = "";
 
+  updateIngredient(item)
   console.log('Edited item:', item);
 };
 
@@ -123,12 +124,15 @@ const ingredientToAdd = ref<Omit<Ingredient, "id" | "price_per_unit" | "user_id"
       label="Ingredient Name"/>
     <v-text-field
       v-model="ingredientToAdd.quantity"
+      type="number"
       label="Quantity Purchased"/>
     <v-text-field
       v-model="ingredientToAdd.unit"
       label="Units"/>
     <v-text-field
       v-model="ingredientToAdd.purchase_price"
+      prefix="$"
+      type="number"
       label="Purchase Price"/>
     <v-text-field
       v-model="ingredientToAdd.notes"
@@ -143,6 +147,7 @@ const ingredientToAdd = ref<Omit<Ingredient, "id" | "price_per_unit" | "user_id"
     :items-per-page="-1"
     fixed-header
     hide-default-footer
+    show-select
   >
     <template v-for="header in editableHeaders" :key="header.value" #[`item.${header.value}`]="{ item }">
 

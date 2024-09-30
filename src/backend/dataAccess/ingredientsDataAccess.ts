@@ -60,4 +60,34 @@ export class IngredientsDataAccess {
       throw HttpError.internalServerError("Failed to insert ingredient");
     }
   }
+
+  public async updateIngredient(ingredient: Ingredient): Promise<boolean> {
+    try {
+      const statement = await this.DB.prepare(`
+      UPDATE ingredients
+      SET user_id = ?, name = ?, quantity = ?, unit = ?, purchase_price = ?, price_per_unit = ?, notes = ?
+      WHERE id = ?
+    `).bind(
+        ingredient.user_id,
+        ingredient.name,
+        ingredient.quantity,
+        ingredient.unit,
+        ingredient.purchase_price,
+        ingredient.price_per_unit,
+        ingredient.notes,
+        ingredient.id
+      );
+
+      const result = await statement.run();
+
+      if (result && result.success) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.error("Database error:", error);
+      throw HttpError.internalServerError("Failed to update ingredient");
+    }
+  }
 }

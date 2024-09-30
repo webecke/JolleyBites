@@ -1,5 +1,5 @@
 import type { Env } from '../defaultWorker'
-import { Request as CfRequest } from '@cloudflare/workers-types';
+import { Request as CfRequest } from '@cloudflare/workers-types'
 import { parseNextApiToken } from '../../../functions/requestTools'
 import { IngredientsDataAccess } from '../dataAccess/ingredientsDataAccess'
 import type { Ingredient } from '../../shared/types'
@@ -8,7 +8,6 @@ import { HttpError } from '../errors/HttpError'
 
 export async function handleIngredientsRequest (path: String, request: CfRequest, env: Env): Promise<Response> {
   const {apiToken, apiPath} = parseNextApiToken(path)
-
 
   const requestType = request.method
   const ingredientsDataAccess = new IngredientsDataAccess(env.DB)
@@ -26,11 +25,11 @@ export async function handleIngredientsRequest (path: String, request: CfRequest
       return new Response(JSON.stringify(response), { status: 200 })
 
     case "POST":
-      const reqBody: any = await request.json()
-      if (!('ingredient' in reqBody)) {
+      const postReqBody: any = await request.json()
+      if (!('ingredient' in postReqBody)) {
         throw HttpError.badRequest(`Missing ingredient`);
       }
-      const ingredient = validateIngredient(reqBody.ingredient)
+      const ingredient = validateNewIngredient(postReqBody.ingredient)
 
       let newIngredientId: number
       try {
@@ -40,14 +39,29 @@ export async function handleIngredientsRequest (path: String, request: CfRequest
         throw HttpError.internalServerError("Something went wrong inserting ingredient into database")
       }
       return new Response(JSON.stringify({ingredientId: newIngredientId}), { status: 201 })
+
+    case "PATCH":
+      const patchReqBody: any = await request.json()
+      if (!('ingredient' in patchReqBody)) {
+        throw HttpError.badRequest(`Missing ingredient`);
+      }
+
+      const patchIngredient: Ingredient = validateFullIngredient(patchReqBody.ingredient)
+      const success = await ingredientsDataAccess.updateIngredient(patchIngredient)
+
+      if (success) {
+        return new Response("Update was successful")
+      } else {
+        return new Response("Update failed", { status: 500 })
+      }
+
     default:
       console.error(requestType)
-      throw HttpError.methodNotAllowed("")
+      throw HttpError.methodNotAllowed("None of those work")
   }
 }
 
-function validateIngredient(data: any): Omit<Ingredient, 'id'> {
-  console.log(data)
+function validateNewIngredient(data: any): Omit<Ingredient, 'id'> {
   const requiredFields: (keyof Omit<Ingredient, 'id'>)[] = [
     'user_id', 'name', 'quantity', 'unit', 'purchase_price', 'price_per_unit', 'notes'
   ];
@@ -58,7 +72,7 @@ function validateIngredient(data: any): Omit<Ingredient, 'id'> {
     }
   }
 
-  const validatedIngredient: Omit<Ingredient, 'id'> = {
+  return {
     user_id: String(data.user_id),
     name: String(data.name),
     quantity: Number(data.quantity),
@@ -67,8 +81,18 @@ function validateIngredient(data: any): Omit<Ingredient, 'id'> {
     price_per_unit: Number(data.price_per_unit),
     notes: data.notes ? String(data.notes) : ''
   };
+}
 
-  console.log("validated", validatedIngredient)
+function validateFullIngredient(data: any): Ingredient {
+  const requiredFields: (keyof Ingredient)[] = [
+    'id', 'user_id', 'name', 'quantity', 'unit', 'purchase_price', 'price_per_unit', 'notes'
+  ];
 
-  return validatedIngredient;
+  for (const field of requiredFields) {
+    if (!(field in data)) {
+      throw HttpError.badRequest(`Missing required field: ${field}`);
+    }
+  }
+
+  return data as Ingredient;
 }

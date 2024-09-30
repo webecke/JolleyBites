@@ -2,6 +2,7 @@
 import { RouterView } from 'vue-router'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import GlobalSnackbar from '@/components/GlobalSnackbar.vue'
+import '@mdi/font/css/materialdesignicons.css'
 
 const login = () => {
   alert('Login coming soon. Sheesh, be patient.')

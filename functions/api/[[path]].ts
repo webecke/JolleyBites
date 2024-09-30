@@ -75,7 +75,7 @@ function addCorsHeaders(response: Response, origin: string | null): Response {
     response.headers.set('Access-Control-Allow-Origin', '*');
   }
 
-  response.headers.set('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
+  response.headers.set('Access-Control-Allow-Methods', 'GET, PUT, PATCH, POST, DELETE, OPTIONS');
   response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   return response;
 }
@@ -88,7 +88,7 @@ function handleCors(request: CfRequest): Response {
     status: 204,
     headers: {
       'Access-Control-Allow-Origin': origin || '*',
-      'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE, OPTIONS',
+      'Access-Control-Allow-Methods': 'GET, PUT, PATCH, POST, DELETE, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
       'Access-Control-Allow-Credentials': 'true',
       'Access-Control-Max-Age': '86400',
