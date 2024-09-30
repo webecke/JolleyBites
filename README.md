@@ -4,7 +4,7 @@ A simple web app to calculate the costs for baking or cooking businesses
 ## Technologies Used
 
 - Typescript
-- Cloudflare Pages & Workers
+- Cloudflare Pages & Functions
 - Cloudflare D1 Database
 - Vue
 - Vuetify Component Framework
