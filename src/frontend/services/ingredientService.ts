@@ -8,12 +8,12 @@ export const doTestPut = async () => {
     body: JSON.stringify({
       ingredient: {
         user_id: "GENERIC",
-        name: "Flour2",
-        quantity: 10420,
-        unit: "cupsssssss",
-        purchasePrice: 5,
-        pricePerUnit: 5444,
-        notes: "fake another"
+        name: "Sugar",
+        quantity: 32,
+        unit: "cups",
+        purchasePrice: 3200,
+        pricePerUnit: 1,
+        notes: "maybe this works"
       }
     })
   });
@@ -33,7 +33,7 @@ export const doTestPut = async () => {
 };
 
 export const doNathanGet = async () => {
-  const response = await fetch(generateBaseUrl() + "/nathan", {
+  const response = await fetch(generateBaseUrl() + "/api/nathan", {
     method: 'GET',
     credentials: 'include',
     headers: {
@@ -58,7 +58,7 @@ export const doNathanGet = async () => {
 function generateBaseUrl() {
   let baseUrl = window.location.origin
   if (baseUrl.startsWith("http://localhost")) {
-    baseUrl = "http://localhost:8787"
+    baseUrl = "http://localhost:8788"
   }
   return baseUrl
 }
