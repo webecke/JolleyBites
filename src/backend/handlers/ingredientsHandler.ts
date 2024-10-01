@@ -50,9 +50,22 @@ export async function handleIngredientsRequest (path: String, request: CfRequest
       const success = await ingredientsDataAccess.updateIngredient(patchIngredient)
 
       if (success) {
-        return new Response("Update was successful")
+        return new Response(JSON.stringify({message: 'success'}),{status: 200})
       } else {
-        return new Response("Update failed", { status: 500 })
+        return new Response(JSON.stringify({message: 'failed'}), { status: 500 })
+      }
+
+    case "DELETE":
+      const deleteReqBody: any = await request.json()
+      if (!('ids' in deleteReqBody)) {
+        throw HttpError.badRequest(`Missing ids of ingredients`);
+      }
+      const deleteSuccess = await ingredientsDataAccess.deleteIngredientsByIds(deleteReqBody.ids)
+
+      if (deleteSuccess) {
+        return new Response(JSON.stringify({message: 'success'}),{status: 200})
+      } else {
+        return new Response(JSON.stringify({message: 'failed'}), { status: 500 })
       }
 
     default:

@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import IngredientsView from '@/views/ingredients/IngredientsView.vue'
+import IngredientsView from '@/views/IngredientsView.vue'
 import WelcomeView from '@/views/WelcomeView.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 

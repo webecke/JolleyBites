@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { Ingredient } from '../../../shared/types'
+import type { Ingredient } from '../../shared/types'
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { useDataStore } from '@/stores/dataStore'
-import { addIngredient, updateIngredient } from '@/services/ingredientService'
+import { addIngredient, deleteIngredients, updateIngredient } from '@/services/IngredientService'
 import { snackbarStore } from '@/stores/snackbarStore'
 
 onMounted(async () => {
@@ -66,6 +66,19 @@ const openAddIngredient = () => {
   }
 }
 
+const deleteSelected = async () => {
+  const countDeleting = selected.value.length
+  try {
+    await deleteIngredients(selected.value)
+  } catch(error) {
+    snackbarStore.showMessage("Failed to delete ingredients", {color: "error", timeout: -1})
+  }
+
+  deleteWarning.value = false
+  snackbarStore.showMessage(`Successfully deleted ${countDeleting} ingredients`)
+  selected.value = []
+}
+
 const saveNewIngredient = async () => {
   try {
     await addIngredient(ingredientToAdd.value)
@@ -93,6 +106,8 @@ const editingField = ref<keyof Ingredient | null>(null);
 const editingValue = ref<string | number | null>(null);
 const editField = ref<HTMLInputElement | null>(null);
 const search = ref<string>("")
+const selected = ref<number []>([])
+const deleteWarning = ref<boolean>(false)
 
 const ingredientToAdd = ref<Omit<Ingredient, "id" | "price_per_unit" | "user_id"> | null>(null)
 </script>
@@ -108,11 +123,15 @@ const ingredientToAdd = ref<Omit<Ingredient, "id" | "price_per_unit" | "user_id"
       hide-details
       single-line
     />
+    <v-btn v-if="selected.length" color="red" style="margin: 10px" @click="deleteWarning = true">
+      Delete {{selected.length}} Selected
+      <i class="fa-regular fa-trash-can"></i>
+    </v-btn>
     <v-btn v-if="!ingredientToAdd" style="margin: 10px" variant="tonal" @click="openAddIngredient">
       Add Ingredient
       <font-awesome-icon :icon="['fas', 'plus']" />
     </v-btn>
-    <v-btn v-else style="margin: 10px" variant="tonal" color="green" @click="saveNewIngredient">
+    <v-btn v-else style="margin: 10px" color="green" @click="saveNewIngredient">
       Save Ingredient
       <font-awesome-icon :icon="['fas', 'file-arrow-up']" />
     </v-btn>
@@ -121,26 +140,32 @@ const ingredientToAdd = ref<Omit<Ingredient, "id" | "price_per_unit" | "user_id"
   <div id="addIngredient" v-if="ingredientToAdd">
     <v-text-field
       v-model="ingredientToAdd.name"
+      class="addIngredientCell"
       label="Ingredient Name"/>
     <v-text-field
       v-model="ingredientToAdd.quantity"
+      class="addIngredientCell"
       type="number"
       label="Quantity Purchased"/>
     <v-text-field
       v-model="ingredientToAdd.unit"
+      class="addIngredientCell"
       label="Units"/>
     <v-text-field
       v-model="ingredientToAdd.purchase_price"
+      class="addIngredientCell"
       prefix="$"
       type="number"
       label="Purchase Price"/>
     <v-text-field
       v-model="ingredientToAdd.notes"
+      class="addIngredientCell"
       label="Notes"/>
   </div>
 
   <v-data-table
     class="v-theme--dark"
+    v-model="selected"
     :headers="headers"
     :items="ingredients"
     :search="search"
@@ -185,9 +210,28 @@ const ingredientToAdd = ref<Omit<Ingredient, "id" | "price_per_unit" | "user_id"
     </template>
   </v-data-table>
 </div>
+
+
+  <v-dialog
+    v-model="deleteWarning"
+    width="auto"
+    min-width="300px"
+  >
+    <v-card title="Are you sure?">
+      <template v-slot:text>
+        <p>You are about to delete {{ selected.length }} ingredients. You can not undo this.</p>
+      </template>
+      <template v-slot:actions>
+        <v-btn @click="deleteSelected" color="red">Yes, delete</v-btn>
+        <v-btn @click="deleteWarning = false">No, cancel</v-btn>
+      </template>
+    </v-card>
+  </v-dialog>
 </template>
 
 <style scoped>
+
+
 .red-cell {
   background-color: #a60110;
 }
@@ -196,11 +240,15 @@ const ingredientToAdd = ref<Omit<Ingredient, "id" | "price_per_unit" | "user_id"
   display: flex;
   flex-direction: row;
   align-items: center;
+  margin: 10px;
 }
 
 #addIngredient {
   display: flex;
   flex-direction: row;
-  margin-top: 15px
+}
+
+.addIngredientCell {
+  margin: 5px;
 }
 </style>

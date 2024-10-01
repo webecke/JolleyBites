@@ -90,4 +90,20 @@ export class IngredientsDataAccess {
       throw HttpError.internalServerError("Failed to update ingredient");
     }
   }
+
+  public async deleteIngredientsByIds(idsToDelete: number[]) {
+    try {
+      const placeholders = idsToDelete.map(() => '?').join(',');
+      const query = `DELETE FROM ingredients WHERE id IN (${placeholders})`;
+
+      const { results } = await this.DB.prepare(query)
+        .bind(...idsToDelete)
+        .run();
+
+      return results;
+    } catch (error) {
+      console.error("Database error:", error);
+      throw HttpError.internalServerError("Failed to delete ingredients");
+    }
+  }
 }
