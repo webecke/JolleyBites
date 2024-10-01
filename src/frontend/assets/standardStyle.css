@@ -30,6 +30,10 @@ header {
     place-items: flex-start;
 }
 
+h1 {
+    font-weight: bolder;
+}
+
 footer {
     width: 100vw;
     padding: 5px 15px;

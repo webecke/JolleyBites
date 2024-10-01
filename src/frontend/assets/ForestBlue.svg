@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 864 180">
+  <defs>
+    <style>
+      .cls-1 {
+        font-family: SpaceGrotesk-Regular, 'Space Grotesk';
+        font-size: 59.762px;
+        font-variation-settings: 'wght' 400;
+      }
+
+      .cls-1, .cls-2 {
+        fill: #50A5D7;
+      }
+
+      .cls-2 {
+        font-family: SpaceGrotesk-Bold, 'Space Grotesk';
+        font-size: 138.989px;
+        font-variation-settings: 'wght' 700;
+        font-weight: 700;
+      }
+
+      .cls-3 {
+        fill: none;
+        stroke: #50A5D7;
+        stroke-miterlimit: 10;
+        stroke-width: 9px;
+      }
+    </style>
+  </defs>
+  <text class="cls-2" transform="translate(126.896 113.303)"><tspan x="0" y="0">ForestBlue</tspan></text>
+  <text class="cls-1" transform="translate(130.304 163.056)"><tspan x="0" y="0">Simply Branching Out</tspan></text>
+  <g>
+    <path class="cls-3" d="M73.516,25.49c-.216,12.64-19.018,12.638-19.232,0,.216-12.64,19.018-12.638,19.232,0Z"/>
+    <line class="cls-3" x1="63.9" y1="32.833" x2="63.9" y2="167.056"/>
+    <line class="cls-3" x1="63.9" y1="42.91" x2="82.814" y2="61.824"/>
+    <path class="cls-3" d="M98.773,68.146c-.216,12.64-19.018,12.638-19.232,0,.216-12.64,19.018-12.638,19.232,0Z"/>
+    <line class="cls-3" x1="64.703" y1="76.206" x2="94.107" y2="105.61"/>
+    <path class="cls-3" d="M110.066,111.933c-.216,12.64-19.018,12.638-19.232,0,.216-12.64,19.018-12.638,19.232,0Z"/>
+    <line class="cls-3" x1="62.974" y1="106.255" x2="102.87" y2="146.151"/>
+    <path class="cls-3" d="M118.694,152.339c-.216,12.64-19.018,12.638-19.232,0,.216-12.64,19.018-12.638,19.232,0Z"/>
+    <line class="cls-3" x1="63.997" y1="42.999" x2="45.083" y2="61.913"/>
+    <path class="cls-3" d="M29.124,68.236c.216,12.64,19.018,12.638,19.232,0-.216-12.64-19.018-12.638-19.232,0Z"/>
+    <line class="cls-3" x1="63.194" y1="76.295" x2="33.79" y2="105.699"/>
+    <path class="cls-3" d="M17.831,112.022c.216,12.64,19.018,12.638,19.232,0-.216-12.64-19.018-12.638-19.232,0Z"/>
+    <line class="cls-3" x1="64.923" y1="106.344" x2="25.027" y2="146.24"/>
+    <path class="cls-3" d="M9.203,152.428c.216,12.64,19.018,12.638,19.232,0-.216-12.64-19.018-12.638-19.232,0Z"/>
+  </g>
+</svg>

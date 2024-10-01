@@ -3,6 +3,7 @@ import { RouterView } from 'vue-router'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import GlobalSnackbar from '@/components/GlobalSnackbar.vue'
 import '@mdi/font/css/materialdesignicons.css'
+import AppInfo from '@/components/AppInfo.vue'
 
 const login = () => {
   alert('Login coming soon. Sheesh, be patient.')
@@ -34,8 +35,12 @@ const login = () => {
 
   <footer>
     <hr/>
-    <p>Built by <a href="https://webecke.dev" target="_blank">Dallin Webecke</a></p>
-    <p>Check it out on <a href="https://github.com/DallinFromEarth/JolleyBites" target="_blank">GitHub</a></p>
+    <div id="footer-content">
+      <v-card style="width: 275px; border-radius: 20px; display: flex; align-content: center;" color="#112C34">
+        <img style="margin: 10px;" src="/src/frontend/assets/ForestBlue.svg" alt="ForestBlue, Simply Branching Out"/>
+      </v-card>
+      <AppInfo style="width: max-content; margin: 0 0 0 20px"/>
+    </div>
   </footer>
 </template>
 
@@ -54,5 +59,15 @@ const login = () => {
 #login {
   height: 100%;
   margin: auto 0;
+}
+#footer-content {
+  display: flex;
+  flex-direction: row;
+  width: 75%;
+  justify-content: center;
+}
+footer {
+  margin-bottom: 70px;
+  margin-top: 50px
 }
 </style>
