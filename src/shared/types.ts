@@ -16,5 +16,5 @@ export type User = {
   email: string,
   created_at: string,
   updated_at: string,
-  last_login
+  last_login: string
 }
