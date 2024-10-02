@@ -24,6 +24,7 @@ const register = async () => {
   try {
     await doRegister(inputName.value, inputEmail.value, inputPassword.value)
     await router.push("/dashboard")
+    snackbarStore.showMessage(`Welcome to JolleyBites, ${inputName.value}`, {color:"green", timeout: 5000})
   } catch (error) {
     if (error instanceof Error) {
       snackbarStore.showMessage(error.message, {color:"red", timeout: 10000})
