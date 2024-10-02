@@ -18,4 +18,7 @@ RouterView {
   a:hover {
     background-color: hsla(0, 0%, 96%, 0.13);
   }
+  .noGlowLink:hover {
+    background-color: hsla(0, 0%, 0%, 0);
+  }
 }

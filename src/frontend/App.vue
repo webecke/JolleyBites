@@ -4,9 +4,10 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import GlobalSnackbar from '@/components/GlobalSnackbar.vue'
 import '@mdi/font/css/materialdesignicons.css'
 import AppInfo from '@/components/AppInfo.vue'
+import router from '@/router'
 
 const login = () => {
-  alert('Login coming soon. Sheesh, be patient.')
+  router.push("/login")
 }
 </script>
 
@@ -29,16 +30,18 @@ const login = () => {
     </div>
   </header>
 
-  <main>
+  <main style="padding: 15px">
     <RouterView />
   </main>
 
   <footer>
     <hr/>
     <div id="footer-content">
-      <v-card style="width: 275px; padding: 13px; border-radius: 20px; display: flex; align-content: center;" color="#0c1321">
-        <img style="width: 100%; height: 100%; object-fit: contain; margin: auto;" src="/src/frontend/assets/ForestBlue.svg" alt="ForestBlue, Simply Branching Out"/>
-      </v-card>
+      <a class="noGlowLink" href="https://webecke.dev/forestblue" target="_blank">
+        <v-card style="width: 275px; padding: 13px; border-radius: 20px; display: flex; align-content: center;" color="#0c1321">
+          <img style="width: 100%; height: 100%; object-fit: contain; margin: auto;" src="/src/frontend/assets/ForestBlue.svg" alt="ForestBlue, Simply Branching Out"/>
+        </v-card>
+      </a>
       <AppInfo style="width: max-content; margin: 0 0 0 20px"/>
     </div>
   </footer>

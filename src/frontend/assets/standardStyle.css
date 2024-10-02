@@ -9,6 +9,7 @@ a {
     text-decoration: none;
     color: var(--jb--lilac);
     transition: 0.4s;
+    cursor: pointer;
 }
 
 h1 {

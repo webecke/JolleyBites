@@ -12,9 +12,8 @@ export type Ingredient = {
 export type User = {
   id: number,
   name: string,
-  username: string,
   email: string,
   created_at: string,
-  updated_at: string,
+  password_changed_at: string,
   last_login: string
 }
