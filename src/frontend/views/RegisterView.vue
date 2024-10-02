@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { isAcceptablePassword } from '../../shared/acceptablePassword'
 import { doRegister } from '@/services/AuthService'
 import { snackbarStore } from '@/stores/snackbarStore'
+import router from '@/router'
 
 const inputName = ref<string>("")
 const inputEmail = ref<string>("")
@@ -22,14 +23,16 @@ const formReady = computed(() => {
 const register = async () => {
   try {
     await doRegister(inputName.value, inputEmail.value, inputPassword.value)
+    await router.push("/dashboard")
   } catch (error) {
     if (error instanceof Error) {
       snackbarStore.showMessage(error.message, {color:"red", timeout: 10000})
+      return
     } else {
       snackbarStore.showMessage("Something went horribly wrong")
+      return
     }
   }
-
 }
 </script>
 
