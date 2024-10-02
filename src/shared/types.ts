@@ -8,3 +8,13 @@ export type Ingredient = {
   price_per_unit: number,
   notes: string
 }
+
+export type User = {
+  id: number,
+  name: string,
+  username: string,
+  email: string,
+  created_at: string,
+  updated_at: string,
+  last_login
+}

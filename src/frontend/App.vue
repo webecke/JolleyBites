@@ -36,8 +36,8 @@ const login = () => {
   <footer>
     <hr/>
     <div id="footer-content">
-      <v-card style="width: 275px; border-radius: 20px; display: flex; align-content: center;" color="#112C34">
-        <img style="margin: 10px;" src="/src/frontend/assets/ForestBlue.svg" alt="ForestBlue, Simply Branching Out"/>
+      <v-card style="width: 275px; padding: 13px; border-radius: 20px; display: flex; align-content: center;" color="#0c1321">
+        <img style="width: 100%; height: 100%; object-fit: contain; margin: auto;" src="/src/frontend/assets/ForestBlue.svg" alt="ForestBlue, Simply Branching Out"/>
       </v-card>
       <AppInfo style="width: max-content; margin: 0 0 0 20px"/>
     </div>
