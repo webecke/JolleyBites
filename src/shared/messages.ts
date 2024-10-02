@@ -1,11 +1,17 @@
-import type { User } from './types'
+import type { AuthToken, User } from './types'
 
 export type LoginRequest = {
-  username: string,
+  email: string,
   password: string,
 }
 
 export type RegisterRequest = {
-  user: User,
+  name: string,
+  email: string,
   password: string,
+}
+
+export type RegisterResponse = {
+  user: User,
+  authToken: AuthToken
 }

@@ -43,6 +43,10 @@ export class HttpError extends Error {
     return new HttpError(message, 500, "Internal Server Error");
   }
 
+  static notImplemented(message: string): HttpError {
+    return new HttpError(message, 501, "Service Not Implemented");
+  }
+
   static serviceUnavailable(message: string): HttpError {
     return new HttpError(message, 503, "Service Unavailable");
   }

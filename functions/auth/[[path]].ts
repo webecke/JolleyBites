@@ -3,9 +3,10 @@ import { addCorsHeaders, Env, handleCors, parseNextApiToken } from '../requestTo
 import { handleIngredientsRequest } from '../../src/backend/handlers/ingredientsHandler'
 import { Request as CfRequest } from '@cloudflare/workers-types';
 import { HttpError } from '../../src/backend/errors/HttpError'
+import { handleAuthRequest } from '../../src/backend/handlers/authHandler'
 
 /*
-  This is the function that Cloudflare passes the request to.
+  This is the function that Cloudflare passes the request to for /auth requests
  */
 export const onRequest = async (
   context: EventContext<Env, any, Record<string, unknown>>
@@ -18,7 +19,7 @@ export const onRequest = async (
 
   try {
     // where most requests go
-    const response = await processRequest(context);
+    const response = await processAuthRequest(context);
     //response.headers.set('Content-Type', 'application/json')
     return addCorsHeaders(response, context.request.headers.get('Origin'));
 
@@ -33,7 +34,7 @@ export const onRequest = async (
   }
 };
 
-async function processRequest(
+async function processAuthRequest(
   context: EventContext<Env, any, Record<string, unknown>>
 ): Promise<Response>  {
   const request: CfRequest = context.request
@@ -47,9 +48,7 @@ async function processRequest(
   try {
     switch (apiToken) {
       case "":
-        return new Response("Oh hey! You found the api! But you didn't actually hit an endpoint, just the entrance... have a great day!")
-      case "ingredients":
-        return await handleIngredientsRequest(apiPath, request, env)
+        return await handleAuthRequest(apiPath, request, env)
       default:
         throw HttpError.notFound("Sorry, looks like that endpoint isn't here");
     }

@@ -10,10 +10,14 @@ export type Ingredient = {
 }
 
 export type User = {
-  id: number,
+  id: string,
   name: string,
   email: string,
   created_at: string,
   password_changed_at: string,
   last_login: string
+}
+
+export type AuthToken = {
+  token: string
 }
