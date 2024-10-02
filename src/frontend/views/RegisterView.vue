@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { isAcceptablePassword } from '../../shared/acceptablePassword'
 import { doRegister } from '@/services/AuthService'
+import { snackbarStore } from '@/stores/snackbarStore'
 
 const inputName = ref<string>("")
 const inputEmail = ref<string>("")
@@ -19,10 +20,16 @@ const formReady = computed(() => {
 })
 
 const register = async () => {
-  console.log("going to register")
-  const result = await doRegister(inputName.value, inputEmail.value, inputPassword.value)
-  console.log("back!")
-  console.log(result)
+  try {
+    await doRegister(inputName.value, inputEmail.value, inputPassword.value)
+  } catch (error) {
+    if (error instanceof Error) {
+      snackbarStore.showMessage(error.message, {color:"red", timeout: 10000})
+    } else {
+      snackbarStore.showMessage("Something went horribly wrong")
+    }
+  }
+
 }
 </script>
 

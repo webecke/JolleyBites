@@ -37,6 +37,9 @@ async function handleRegisterRequest(request: RegisterRequest, userDataAccess: U
   if (!isAcceptablePassword(request.password)) {
     throw HttpError.badRequest("Password doesn't meet requirements")
   }
+  if (await userDataAccess.getUserByEmail(request.email)) {
+    throw HttpError.conflict("Account already exists with that email")
+  }
 
   const now = new Date().toISOString();
   const user: Omit<User, 'id'> = {
@@ -48,9 +51,7 @@ async function handleRegisterRequest(request: RegisterRequest, userDataAccess: U
   }
 
   const hashedPassword = await bcrypt.hash(request.password, SALT_ROUNDS)
-
   const userId = await userDataAccess.insertUser(user, hashedPassword)
-
   const dataBaseUser = await userDataAccess.getUserById(userId) as User
 
   const response: RegisterResponse = {

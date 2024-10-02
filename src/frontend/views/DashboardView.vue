@@ -1,0 +1,11 @@
+<script setup lang="ts">
+
+</script>
+
+<template>
+<h1>THIS IS THE DASHBOARD</h1>
+</template>
+
+<style scoped>
+
+</style>

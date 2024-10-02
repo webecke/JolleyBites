@@ -29,7 +29,7 @@ async function doRequest<T>(method: string, endpoint: string, bodyObject?: Objec
     console.error('Error:', response.status, response.statusText);
     const errorText = await response.text();
     console.error('Error details:', errorText);
-    throw new Error(`HTTP error! status: ${response.status}`);
+    throw new Error(errorText);
   }
 
   return await response.json() as T;

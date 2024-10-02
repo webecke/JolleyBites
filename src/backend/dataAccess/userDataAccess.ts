@@ -43,7 +43,20 @@ export class UserDataAccess {
       return results[0] as User;
     } catch (error) {
       console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to fetch user");
+      throw HttpError.internalServerError("Failed to fetch user by id");
+    }
+  }
+
+  public async getUserByEmail(email: string) {
+    try {
+      const { results } = await this.DB.prepare(
+        "SELECT * FROM users WHERE email = ?"
+      ).bind(email).all();
+
+      return results[0] as User;
+    } catch (error) {
+      console.error("Database error:", error);
+      throw HttpError.internalServerError("Failed to fetch user by email");
     }
   }
 }

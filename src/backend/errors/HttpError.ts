@@ -35,6 +35,10 @@ export class HttpError extends Error {
     return new HttpError(message, 405, "Method Not Allowed");
   }
 
+  static conflict(message: string): HttpError {
+    return new HttpError(message, 409, "Conflict");
+}
+
   static teapot(message: string): HttpError {
     return new HttpError(message, 418, "I'm a Teapot");
   }
