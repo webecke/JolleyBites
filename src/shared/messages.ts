@@ -11,7 +11,7 @@ export type RegisterRequest = {
   password: string,
 }
 
-export type RegisterResponse = {
+export type LoginRegisterResponse = {
   user: User,
   authToken: AuthToken
 }

@@ -7,6 +7,7 @@ import TermsView from '@/views/info/TermsView.vue'
 import LoginView from '@/views/LoginView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import DashboardView from '@/views/DashboardView.vue'
+import { useAuthStore } from '@/stores/authStore'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,6 +16,18 @@ const router = createRouter({
       path: '/',
       name: 'welcome',
       component: WelcomeView
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: RegisterView,
+      beforeEnter: mustBeLoggedOut
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: LoginView,
+      beforeEnter: mustBeLoggedOut
     },
     {
       path: '/privacy',
@@ -29,22 +42,14 @@ const router = createRouter({
     {
       path: '/ingredients',
       name: 'ingredients',
-      component: IngredientsView
-    },
-    {
-      path: '/register',
-      name: 'register',
-      component: RegisterView
-    },
-    {
-      path: '/login',
-      name: 'login',
-      component: LoginView
+      component: IngredientsView,
+      beforeEnter: mustBeLoggedIn
     },
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: DashboardView
+      component: DashboardView,
+      beforeEnter: mustBeLoggedIn
     },
     // {
     //   path: '/about',
@@ -61,5 +66,18 @@ const router = createRouter({
     }
   ]
 })
+
+function mustBeLoggedIn() {
+  useAuthStore().getCurrentUser()
+  if (!useAuthStore().isLoggedIn) {
+    router.push('/login')
+  }
+}
+
+function mustBeLoggedOut() {
+  if (useAuthStore().isLoggedIn) {
+    router.push('/dashboard')
+  }
+}
 
 export default router

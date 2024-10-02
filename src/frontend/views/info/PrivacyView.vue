@@ -32,7 +32,10 @@
       and is encrypted via the HTTPS protocol during transit to our data storage.</p>
 
     <h2>Cookies and Tracking</h2>
-    <p>We do not use cookies or any tracking technologies. We're not that sophisticated.</p>
+    <p>We use one and only one cookie. Its called "jolleybites_auth_token" and its a
+      string of random characters, unique to you that allows you to stay logged in
+      between page reloads. It just lets us know you are you.
+    </p>
 
     <h2>Data Sharing</h2>
     <p>We do not purposefully share your data with anyone outside of our team.

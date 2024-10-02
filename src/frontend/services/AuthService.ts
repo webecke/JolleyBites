@@ -1,16 +1,18 @@
-import type { RegisterResponse } from '../../shared/messages'
+import type { LoginRegisterResponse } from '../../shared/messages'
 import { ServerCommunicator } from '@/services/ServerCommunicator'
 import { useAuthStore } from '@/stores/authStore'
+import type { User } from '../../shared/types'
 
 export const doRegister = async (name: string, email: string, password: string) => {
-  const {user, authToken} = await ServerCommunicator.postRequest<RegisterResponse>("/auth/register", {
+  const response = await ServerCommunicator.postRequest<LoginRegisterResponse>("/auth/register", {
     name: name,
     email: email,
     password: password
   })
 
-  const authStore = useAuthStore()
+  useAuthStore().login(response)
+}
 
-  authStore.authToken = authToken
-  authStore.currentUser = user
+export const getMe = async () => {
+  return await ServerCommunicator.getRequest<User>("/auth/me")
 }

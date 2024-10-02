@@ -1,4 +1,5 @@
 import type { Ingredient } from '../../shared/types'
+import { useAuthStore } from '@/stores/authStore'
 
 export const ServerCommunicator = {
   getRequest: getRequest,
@@ -16,11 +17,15 @@ function generateBaseUrl() {
 }
 
 async function doRequest<T>(method: string, endpoint: string, bodyObject?: Object): Promise<T> {
+  const authTokenObject = useAuthStore().getAuthToken()
+  const authToken: string = authTokenObject != null ? authTokenObject.token : ""
+
   const response = await fetch(generateBaseUrl() + endpoint, {
     method: method,
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': authToken
     },
     body: bodyObject ? JSON.stringify(bodyObject) : null
   });

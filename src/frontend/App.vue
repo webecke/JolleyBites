@@ -5,9 +5,18 @@ import GlobalSnackbar from '@/components/GlobalSnackbar.vue'
 import '@mdi/font/css/materialdesignicons.css'
 import AppInfo from '@/components/AppInfo.vue'
 import router from '@/router'
+import { useAuthStore } from '@/stores/authStore'
+import { computed } from 'vue'
+import { snackbarStore } from '@/stores/snackbarStore'
 
 const login = () => {
   router.push("/login")
+}
+
+const nameOfUser = computed( () => { return useAuthStore().isLoggedIn ? useAuthStore().nameOfUser : '' })
+
+const accountButton = () => {
+  snackbarStore.showMessage("We haven't made this button do anything yet. We're glad you're here!")
 }
 </script>
 
@@ -23,7 +32,12 @@ const login = () => {
       </div>
     </RouterLink>
     <div id="login">
-      <v-btn variant="outlined" @click="login">
+      <v-btn v-if="useAuthStore().isLoggedIn" id="userNameCard" @click="accountButton">
+        <font-awesome-icon :icon="['fas', 'user']" />
+        {{nameOfUser}}
+      </v-btn>
+
+      <v-btn v-else variant="outlined" @click="login">
         Login
         <font-awesome-icon :icon="['fas', 'right-to-bracket']" />
       </v-btn>

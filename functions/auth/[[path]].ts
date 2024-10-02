@@ -1,6 +1,5 @@
 import { EventContext } from '@cloudflare/workers-types';
 import { addCorsHeaders, Env, handleCors, parseNextApiToken } from '../requestTools'
-import { handleIngredientsRequest } from '../../src/backend/handlers/ingredientsHandler'
 import { Request as CfRequest } from '@cloudflare/workers-types';
 import { HttpError } from '../../src/backend/errors/HttpError'
 import { handleAuthRequest } from '../../src/backend/handlers/authHandler'
