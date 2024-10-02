@@ -19,7 +19,7 @@
   <ul>
     <li>Don't do anything illegal</li>
     <li>Don't try to break or damage our site</li>
-    <li>Don't try to access anything or do anything a reasonable person would think you should do</li>
+    <li>Don't try to access anything or do anything a reasonable person would think you shouldn't do</li>
   </ul>
 
   <h2>Your Account</h2>
