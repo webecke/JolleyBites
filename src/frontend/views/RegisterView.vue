@@ -1,10 +1,31 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { isAcceptablePassword } from '../../shared/acceptablePassword'
 import { doRegister } from '@/services/AuthService'
 import { snackbarStore } from '@/stores/snackbarStore'
 import router from '@/router'
 
+const handleKeyUp = (event: KeyboardEvent): void => {
+  if (event.key === 'Enter') {
+    register();
+  }
+};
+
+onMounted(() => {
+  const registerInput = document.getElementById('final-input') as HTMLInputElement | null;
+  if (registerInput) {
+    registerInput.addEventListener('keyup', handleKeyUp);
+  }
+});
+
+onUnmounted(() => {
+  const registerInput = document.getElementById('final-input') as HTMLInputElement | null;
+  if (registerInput) {
+    registerInput.removeEventListener('keyup', handleKeyUp);
+  }
+});
+
+const loading = ref<boolean>(false)
 const inputName = ref<string>("")
 const inputEmail = ref<string>("")
 const inputPassword = ref<string>("")
@@ -21,6 +42,7 @@ const formReady = computed(() => {
 })
 
 const register = async () => {
+  if (!formReady.value || loading.value) { return }
   try {
     await doRegister(inputName.value, inputEmail.value, inputPassword.value)
     await router.push("/dashboard")
@@ -63,6 +85,7 @@ const register = async () => {
           @click:append="showPassword = !showPassword"
         />
         <v-text-field
+          id="final-input"
           v-model="confirmPassword"
           label="Confirm Password"
           :type="showPassword ? 'text' : 'password'"
@@ -76,7 +99,7 @@ const register = async () => {
           text="Register"
           width="100%"
           :color="'green'"
-          :disabled="!formReady"
+          :disabled="(!formReady) || loading"
           @click="register"
         />
         <p>By registering you agree to the

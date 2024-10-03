@@ -1,17 +1,40 @@
 <script setup lang="ts">
 
-import { computed, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { doLogin } from '@/services/AuthService'
 import router from '@/router'
 import { snackbarStore } from '@/stores/snackbarStore'
 import { useAuthStore } from '@/stores/authStore'
+import { useDataStore } from '@/stores/dataStore'
 
 const inputEmail = ref<string>("")
 const inputPassword = ref<string>("")
 const showPassword = ref<boolean>(false)
 const formReady = computed(() => { return inputEmail.value.length > 0 && inputPassword.value.length >= 8 })
+const loading = ref<boolean>(false)
+
+const handleKeyUp = (event: KeyboardEvent): void => {
+  if (event.key === 'Enter') {
+    login();
+  }
+};
+
+onMounted(() => {
+  const registerInput = document.getElementById('final-input') as HTMLInputElement | null;
+  if (registerInput) {
+    registerInput.addEventListener('keyup', handleKeyUp);
+  }
+});
+
+onUnmounted(() => {
+  const registerInput = document.getElementById('final-input') as HTMLInputElement | null;
+  if (registerInput) {
+    registerInput.removeEventListener('keyup', handleKeyUp);
+  }
+});
 
 const login = async () => {
+  if (!formReady.value || loading.value) { return }
   try {
     await doLogin(inputEmail.value, inputPassword.value)
     await router.push("/dashboard")
@@ -39,6 +62,7 @@ const login = async () => {
           v-model="inputEmail"
         />
         <v-text-field
+          id="final-input"
           v-model="inputPassword"
           label="Password"
           :type="showPassword ? 'text' : 'password'"
@@ -52,7 +76,7 @@ const login = async () => {
           text="Login"
           width="100%"
           :color="'green'"
-          :disabled="!formReady"
+          :disabled="(!formReady) || loading"
           @click="login"
         />
 
