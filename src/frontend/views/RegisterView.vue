@@ -75,7 +75,7 @@ const register = async () => {
         <v-btn
           text="Register"
           width="100%"
-          :color="formReady ? 'green' : ''"
+          :color="'green'"
           :disabled="!formReady"
           @click="register"
         />

@@ -13,6 +13,15 @@ export const doRegister = async (name: string, email: string, password: string) 
   useAuthStore().login(response)
 }
 
+export const doLogin = async (email: string, password: string) => {
+  const response: LoginRegisterResponse = await ServerCommunicator.postRequest<LoginRegisterResponse>("/auth/login", {
+    email: email,
+    password: password
+  })
+
+  useAuthStore().login(response)
+}
+
 export const getMe = async () => {
   return await ServerCommunicator.getRequest<User>("/auth/me")
 }

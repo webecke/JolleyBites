@@ -1,5 +1,3 @@
-import type { User } from '../../shared/types'
-import { v4 as uuid } from 'uuid'
 import { HttpError } from '../errors/HttpError'
 import { MILLISECONDS_TO_LIVE } from '../utils/authTokenUtils'
 
@@ -15,7 +13,7 @@ export class AuthDataAccess {
     const expire: Date = new Date(now.getTime() + MILLISECONDS_TO_LIVE);
     try {
       const statement = await this.DB.prepare(`
-          INSERT INTO users (token_value, user_id, issued_at, expires_at)
+          INSERT INTO auth (token_value, user_id, issued_at, expires_at)
           VALUES (?, ?, ?, ?)
       `).bind(
         authToken,
@@ -24,7 +22,7 @@ export class AuthDataAccess {
         expire.toISOString()
       );
 
-      const result = await statement.run();
+      await statement.run();
 
       return expire.toISOString()
     } catch (error) {

@@ -6,14 +6,14 @@ import type { LoginRequest, RegisterRequest, LoginRegisterResponse } from '../..
 import type { User } from '../../shared/types'
 import { isAcceptablePassword } from '../../shared/acceptablePassword'
 import * as bcrypt from 'bcryptjs'
-import { AuthTokenPayload, generateToken, verifyToken } from '../utils/authTokenUtils'
+import type {AuthTokenPayload} from '../utils/authTokenUtils'
+import { generateToken, verifyToken } from '../utils/authTokenUtils'
 import { DataAccessMachine } from '../dataAccess/dataAccessMachine'
-import { MILLISECONDS_TO_LIVE } from '../utils/authTokenUtils'
-import { da } from 'vuetify/locale'
+
 
 const SALT_ROUNDS:number = 10;
 export async function handleAuthRequest (path: String, request: CfRequest, env: Env): Promise<Response> {
-  const {apiToken, apiPath} = parseNextApiToken(path)
+  const {apiToken} = parseNextApiToken(path)
 
   const dataAccessMachine = new DataAccessMachine(env.DB)
 

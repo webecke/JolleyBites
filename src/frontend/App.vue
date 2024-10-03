@@ -16,11 +16,10 @@ const login = () => {
   router.push("/login")
 }
 
-const nameOfUser = computed( () => { return useAuthStore().isLoggedIn ? "Hello" : '' })
+const nameOfUser = computed( () => { return useAuthStore().currentUser!.name })
 
-const accountButton = () => {
+const accountButton = async () => {
   snackbarStore.showMessage("We haven't made this button do anything yet. We're glad you're here!")
-  console.log(useAuthStore().getCurrentUser())
 }
 </script>
 
