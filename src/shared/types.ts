@@ -19,5 +19,6 @@ export type User = {
 }
 
 export type AuthToken = {
-  token: string
+  token: string,
+  expires_at: string
 }

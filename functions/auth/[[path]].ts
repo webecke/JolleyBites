@@ -55,6 +55,7 @@ async function processAuthRequest(
     if (error instanceof HttpError) {
       return new Response("Error: " + error.message, { status: error.statusCode })
     } else {
+      console.error("Unlabeled error: " + error)
       return new Response("Error, and we have no clue what happened", { status: 500 })
     }
   }

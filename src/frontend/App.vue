@@ -6,17 +6,21 @@ import '@mdi/font/css/materialdesignicons.css'
 import AppInfo from '@/components/AppInfo.vue'
 import router from '@/router'
 import { useAuthStore } from '@/stores/authStore'
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { snackbarStore } from '@/stores/snackbarStore'
 
+onMounted(() => {
+  useAuthStore().getAuthToken()
+})
 const login = () => {
   router.push("/login")
 }
 
-const nameOfUser = computed( () => { return useAuthStore().isLoggedIn ? useAuthStore().nameOfUser : '' })
+const nameOfUser = computed( () => { return useAuthStore().isLoggedIn ? "Hello" : '' })
 
 const accountButton = () => {
   snackbarStore.showMessage("We haven't made this button do anything yet. We're glad you're here!")
+  console.log(useAuthStore().getCurrentUser())
 }
 </script>
 

@@ -7,4 +7,3 @@ CREATE TABLE auth (
 );
 
 CREATE INDEX idx_auth_user_id ON auth(user_id);
-CREATE INDEX idx_auth_last_used ON auth(last_used);

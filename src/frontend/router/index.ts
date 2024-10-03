@@ -67,14 +67,15 @@ const router = createRouter({
   ]
 })
 
-function mustBeLoggedIn() {
-  useAuthStore().getCurrentUser()
+async function mustBeLoggedIn() {
+  await useAuthStore().getCurrentUser()
   if (!useAuthStore().isLoggedIn) {
     router.push('/login')
   }
 }
 
-function mustBeLoggedOut() {
+async function mustBeLoggedOut() {
+  await useAuthStore().getCurrentUser()
   if (useAuthStore().isLoggedIn) {
     router.push('/dashboard')
   }

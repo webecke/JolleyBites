@@ -18,7 +18,7 @@ function generateBaseUrl() {
 
 async function doRequest<T>(method: string, endpoint: string, bodyObject?: Object): Promise<T> {
   const authTokenObject = useAuthStore().getAuthToken()
-  const authToken: string = authTokenObject != null ? authTokenObject.token : ""
+  const authToken: string = authTokenObject != null ? authTokenObject : ""
 
   const response = await fetch(generateBaseUrl() + endpoint, {
     method: method,

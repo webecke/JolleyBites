@@ -1,16 +1,14 @@
-import { computed, readonly, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { AuthToken, User } from '../../shared/types'
 import type { LoginRegisterResponse } from '../../shared/messages'
 import { getMe } from '@/services/AuthService'
-import { snackbarStore } from '@/stores/snackbarStore'
 import router from '@/router'
 
 export const useAuthStore = defineStore('auth', () => {
 
   const currentUser = ref<User | null>(null)
-  const authToken = ref<AuthToken | null>(null)
-  const nameOfUser = currentUser.value?.name
+  const authTokenString = ref<string | null>(null)
   const isLoggedIn = computed(() => {
     return (currentUser.value != null);
   })
@@ -19,31 +17,34 @@ export const useAuthStore = defineStore('auth', () => {
     if (currentUser.value != null) { return currentUser.value }
     if (getAuthToken() == null) { return null }
     try {
-      currentUser.value = await getMe();
+      const user = await getMe();
+      currentUser.value = user
       return currentUser.value
     } catch (error) {
+      console.error("ERROR fetching user. Assuming logged out. Going to login now")
+      clearLocalAuthToken()
+      authTokenString.value = null
       router.push("/login")
       return null
     }
   }
 
-  const getAuthToken = (): AuthToken | null => {
-    if (authToken.value != null) { return authToken.value }
+  const getAuthToken = (): string | null => {
+    if (authTokenString.value != null) { return authTokenString.value }
 
     const local = getLocalAuthToken()
-    console.log(`fetched local authtoken: ${local}`)
     if (local == null) {
       currentUser.value = null
       return null
     }
 
-    authToken.value = { token: local }
-    return authToken.value
+    authTokenString.value = local
+    return authTokenString.value
   }
 
   const login = (response: LoginRegisterResponse) => {
     currentUser.value = response.user
-    authToken.value = response.authToken
+    authTokenString.value = response.authToken.token
 
     locallySaveAuthToken(response.authToken.token)
     console.log(`saved authtoken: ${response.authToken.token}`)
@@ -51,9 +52,9 @@ export const useAuthStore = defineStore('auth', () => {
 
   return {
     getCurrentUser,
+    currentUser,
     getAuthToken,
     isLoggedIn,
-    nameOfUser,
     login
   }
 })

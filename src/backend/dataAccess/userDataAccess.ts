@@ -1,4 +1,4 @@
-import type { Ingredient, User } from '../../shared/types'
+import type { User } from '../../shared/types'
 import { HttpError } from '../errors/HttpError'
 import { v4 as uuid } from 'uuid'
 
@@ -53,10 +53,32 @@ export class UserDataAccess {
         "SELECT * FROM users WHERE email = ?"
       ).bind(email).all();
 
+      if (results.length === 0) {
+        return null; // No user found with the given email
+      }
+
       return results[0] as User;
     } catch (error) {
       console.error("Database error:", error);
       throw HttpError.internalServerError("Failed to fetch user by email");
     }
   }
+
+  public async getPasswordHashByEmail(email: string):Promise<string | null> {
+    try {
+      const { results } = await this.DB.prepare(
+        "SELECT hashed_password FROM users WHERE email = ?"
+      ).bind(email).all();
+
+      if (results.length === 0) {
+        return null; // No user found with the given email
+      }
+
+      return results[0].hashed_password as string;
+    } catch (error) {
+      console.error("Database error:", error);
+      throw HttpError.internalServerError("Failed to fetch user by email");
+    }
+  }
+
 }

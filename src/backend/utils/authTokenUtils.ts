@@ -5,11 +5,11 @@ import { jwtVerify, SignJWT } from 'jose'
 import { HttpError } from '../errors/HttpError'
 
 const JWT_SECRET = new TextEncoder().encode("THIS IS A TEMP SECRET UNTIL I HOOK UP CLOUDFLARE KV")
-const MINUTES_TO_LIVE: number = 480
+export const MILLISECONDS_TO_LIVE: number = 480 * 60000 // 60000 milliseconds per minute
 
 export async function generateToken(user: User): Promise<string> {
   const now = new Date();
-  const expire = new Date(now.getTime() + MINUTES_TO_LIVE * 60000); // Convert minutes to milliseconds
+  const expire = new Date(now.getTime() + MILLISECONDS_TO_LIVE);
 
   const payload: AuthTokenPayload = {
     user_id: user.id,
@@ -24,7 +24,7 @@ export async function generateToken(user: User): Promise<string> {
     .sign(JWT_SECRET);
 }
 
-export async function verifyToken(token: string): Promise<AuthTokenPayload | string> {
+export async function verifyToken(token: string): Promise<AuthTokenPayload | null> {
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET);
 
@@ -36,7 +36,7 @@ export async function verifyToken(token: string): Promise<AuthTokenPayload | str
 
     return authPayload;
   } catch (error) {
-    return 'Invalid token';
+    return null;
   }
 }
 
