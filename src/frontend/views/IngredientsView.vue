@@ -43,7 +43,7 @@ const startEditing = (item: Ingredient, field: keyof Ingredient) => {
   });
 };
 
-const finishEditing = (item: Ingredient) => {
+const finishEditing = async (item: Ingredient) => {
   if (editingField.value == "purchase_price" || editingField.value == "quantity") {
     item.price_per_unit = item.purchase_price / item.quantity
   }
@@ -52,7 +52,12 @@ const finishEditing = (item: Ingredient) => {
   editingField.value = null;
   editingValue.value = "";
 
-  updateIngredient(item)
+  try {
+    await updateIngredient(item)
+  } catch (error) {
+    snackbarStore.showMessage("Something went wrong saving your changes. Please refresh the page", {color:"red", timeout: -1})
+    return
+  }
   console.log('Edited item:', item);
 };
 
