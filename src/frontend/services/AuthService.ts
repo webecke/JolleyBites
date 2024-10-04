@@ -3,6 +3,7 @@ import { ServerCommunicator } from '@/services/ServerCommunicator'
 import { useAuthStore } from '@/stores/authStore'
 import type { User } from '../../shared/types'
 import { snackbarStore } from '@/stores/snackbarStore'
+import { useDataStore } from '@/stores/dataStore'
 
 export const doRegister = async (name: string, email: string, password: string) => {
   const response = await ServerCommunicator.postRequest<LoginRegisterResponse>("/auth/register", {
@@ -12,6 +13,7 @@ export const doRegister = async (name: string, email: string, password: string) 
   })
 
   useAuthStore().login(response)
+  await initializeApp()
 }
 
 export const doLogin = async (email: string, password: string) => {
@@ -21,6 +23,7 @@ export const doLogin = async (email: string, password: string) => {
   })
 
   useAuthStore().login(response)
+  await initializeApp()
 }
 
 export const doLogout = async () => {
@@ -33,4 +36,10 @@ export const doLogout = async () => {
 
 export const getMe = async () => {
   return await ServerCommunicator.getRequest<User>("/auth/me")
+}
+
+export const initializeApp = async () => {
+  await useAuthStore().getAuthToken()
+  await useAuthStore().getCurrentUser()
+  await useDataStore().initializeDataStore()
 }
