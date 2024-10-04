@@ -3,6 +3,9 @@ import { addCorsHeaders, Env, handleCors, parseNextApiToken } from '../requestTo
 import { handleIngredientsRequest } from '../../src/backend/handlers/ingredientsHandler'
 import { Request as CfRequest } from '@cloudflare/workers-types';
 import { HttpError } from '../../src/backend/errors/HttpError'
+import { DataAccessMachine } from '../../src/backend/dataAccess/dataAccessMachine'
+import { User } from '../../src/shared/types'
+import { AuthTokenPayload, verifyToken } from '../../src/backend/utils/authTokenUtils'
 
 /*
   This is the function that Cloudflare passes the request to.
@@ -39,6 +42,11 @@ async function processRequest(
   const request: CfRequest = context.request
   const env: Env = context.env
 
+  const dataAccessMachine = new DataAccessMachine(env.DB)
+  env.user = await getUserFromAuth(request.headers.get('Authorization'), dataAccessMachine)
+
+  if (env.user == null) { throw HttpError.unauthorized("AuthToken invalid") }
+
   const url = new URL(request.url);
   const path: String = url.pathname.substring(5); // Extract the path from the URL, remove the '/api/'
 
@@ -60,4 +68,12 @@ async function processRequest(
       return new Response("Error, and we have no clue what happened", { status: 500 })
     }
   }
+}
+
+async function getUserFromAuth(authToken: string, dataAccessMachine: DataAccessMachine): Promise<User> {
+  const authTokenPayload: AuthTokenPayload = await verifyToken(authToken)
+
+  const userDataAccess = dataAccessMachine.getUserDA()
+
+  return userDataAccess.getUserById(authTokenPayload.user_id)
 }

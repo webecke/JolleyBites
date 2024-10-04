@@ -1,6 +1,7 @@
 import type { User } from '../../shared/types'
 import { HttpError } from '../errors/HttpError'
 import { v4 as uuid } from 'uuid'
+import { D1Database } from '@cloudflare/workers-types';
 
 export class UserDataAccess {
   private DB: D1Database

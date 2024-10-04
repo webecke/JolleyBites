@@ -1,5 +1,6 @@
 import { HttpError } from '../errors/HttpError'
 import { MILLISECONDS_TO_LIVE } from '../utils/authTokenUtils'
+import { D1Database } from '@cloudflare/workers-types';
 
 export class AuthDataAccess {
   private DB: D1Database

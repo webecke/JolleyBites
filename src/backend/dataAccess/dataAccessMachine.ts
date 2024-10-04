@@ -1,6 +1,8 @@
 import { AuthDataAccess } from './authDataAccess'
 import { IngredientsDataAccess } from './ingredientsDataAccess'
 import { UserDataAccess } from './userDataAccess'
+import { D1Database } from '@cloudflare/workers-types';
+
 
 export class DataAccessMachine {
 

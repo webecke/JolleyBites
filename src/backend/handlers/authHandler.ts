@@ -1,5 +1,5 @@
 import { Request as CfRequest } from '@cloudflare/workers-types'
-import type { Env } from '../defaultWorker'
+import type { Env } from '../../../functions/requestTools'
 import { parseNextApiToken } from '../../../functions/requestTools'
 import { HttpError } from '../errors/HttpError'
 import type { LoginRequest, RegisterRequest, LoginRegisterResponse } from '../../shared/messages'
@@ -9,7 +9,6 @@ import * as bcrypt from 'bcryptjs'
 import type {AuthTokenPayload} from '../utils/authTokenUtils'
 import { generateToken, verifyToken } from '../utils/authTokenUtils'
 import { DataAccessMachine } from '../dataAccess/dataAccessMachine'
-import type { UserDataAccess } from '../dataAccess/userDataAccess'
 import type { AuthDataAccess } from '../dataAccess/authDataAccess'
 
 const SALT_ROUNDS:number = 10;

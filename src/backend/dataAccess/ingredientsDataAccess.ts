@@ -1,5 +1,6 @@
 import type { Ingredient } from '../../shared/types'
 import { HttpError } from '../errors/HttpError'
+import { D1Database } from '@cloudflare/workers-types';
 
 export class IngredientsDataAccess {
   private DB: D1Database
