@@ -9,9 +9,11 @@ import * as bcrypt from 'bcryptjs'
 import type {AuthTokenPayload} from '../utils/authTokenUtils'
 import { generateToken, verifyToken } from '../utils/authTokenUtils'
 import { DataAccessMachine } from '../dataAccess/dataAccessMachine'
-
+import type { UserDataAccess } from '../dataAccess/userDataAccess'
+import type { AuthDataAccess } from '../dataAccess/authDataAccess'
 
 const SALT_ROUNDS:number = 10;
+
 export async function handleAuthRequest (path: String, request: CfRequest, env: Env): Promise<Response> {
   const {apiToken} = parseNextApiToken(path)
 
@@ -34,8 +36,15 @@ export async function handleAuthRequest (path: String, request: CfRequest, env: 
         throw HttpError.notFound("That GET endpoint wasn't found")
     }
 
+  } else if (request.method == 'DELETE') {
+    switch (apiToken) {
+      case "logout":
+        return await handleLogoutRequest(request, dataAccessMachine)
+      default:
+        throw HttpError.notFound("That DELETE endpoint wasn't found")
+    }
   } else {
-    throw HttpError.methodNotAllowed("Only POST and GET calls are allowed on /auth")
+    throw HttpError.methodNotAllowed("Only POST, GET, and DELETE calls are allowed on /auth")
   }
 }
 
@@ -108,6 +117,22 @@ async function finalizeLogin(userId: string, dataAccess: DataAccessMachine): Pro
 }
 
 async function handleMeRequest(request: CfRequest, dataAccessMachine: DataAccessMachine): Promise<Response> {
+  const user: User = await getUserFromRequest(request, dataAccessMachine)
+
+  return new Response(JSON.stringify(user), {status:200})
+}
+
+
+async function handleLogoutRequest(request: CfRequest, dataAccessMachine: DataAccessMachine): Promise<Response> {
+  const user: User = await getUserFromRequest(request, dataAccessMachine)
+  const authDataAccess: AuthDataAccess = dataAccessMachine.getAuthDA()
+
+  await authDataAccess.deleteToken(request.headers.get("Authorization")!)
+
+  return new Response(JSON.stringify({message: "Successfully logged out"}))
+}
+
+async function getUserFromRequest(request: CfRequest, dataAccessMachine: DataAccessMachine): Promise<User> {
   const authorization = request.headers.get("Authorization")
   if (authorization == null) { throw HttpError.unauthorized("No auth token provided")}
 
@@ -117,6 +142,5 @@ async function handleMeRequest(request: CfRequest, dataAccessMachine: DataAccess
 
   const userDataAccess = dataAccessMachine.getUserDA()
   const user: User = await userDataAccess.getUserById(authPayload.user_id)
-
-  return new Response(JSON.stringify(user), {status:200})
+  return user
 }

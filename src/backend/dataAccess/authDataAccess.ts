@@ -30,4 +30,21 @@ export class AuthDataAccess {
       throw HttpError.internalServerError("Failed to insert authToken");
     }
   }
+
+  public async deleteToken(authToken: string) {
+    try {
+      const statement = await this.DB.prepare(`
+          DELETE FROM auth WHERE authtoken = ?;
+      `).bind(
+        authToken
+      );
+
+      await statement.run();
+
+      return
+    } catch (error) {
+      console.error("Database error:", error);
+      throw HttpError.internalServerError("Failed to delete authToken");
+    }
+  }
 }
