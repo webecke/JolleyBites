@@ -8,6 +8,7 @@ import LoginView from '@/views/LoginView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import DashboardView from '@/views/DashboardView.vue'
 import { useAuthStore } from '@/stores/authStore'
+import BulkAddIngredientView from '@/views/BulkAddIngredientView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,6 +39,12 @@ const router = createRouter({
       path: '/terms',
       name: 'terms',
       component: TermsView
+    },
+    {
+      path: '/ingredients/add',
+      name: 'ingredientsBulk',
+      component: BulkAddIngredientView,
+      beforeEnter: mustBeLoggedIn
     },
     {
       path: '/ingredients',

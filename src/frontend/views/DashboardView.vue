@@ -3,6 +3,7 @@
 import { doLogout } from '@/services/AuthService'
 import router from '@/router'
 import { useAuthStore } from '../stores/authStore'
+import { useDataStore } from '../stores/dataStore'
 
 const logout = async () => {
   doLogout()
@@ -28,7 +29,7 @@ const logout = async () => {
           <RouterLink to="/ingredients">
             <div class="headerAndStat">
               <h3>Ingredients</h3>
-              <h3>0</h3>
+              <h3>{{useDataStore().ingredients.length}}</h3>
             </div>
             <p>Add ingredients you use in your recipes</p>
           </RouterLink>

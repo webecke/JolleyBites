@@ -4,10 +4,10 @@ import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { useDataStore } from '@/stores/dataStore'
 import { addIngredient, deleteIngredients, updateIngredient } from '@/services/IngredientService'
 import { snackbarStore } from '@/stores/snackbarStore'
+import router from '@/router'
 
 onMounted(async () => {
   document.addEventListener('keyup', handleEnterKey);
-  await useDataStore().initializeDataStore()
 })
 
 const ingredients = computed( () => useDataStore().ingredients)
@@ -119,6 +119,10 @@ const ingredientToAdd = ref<Omit<Ingredient, "id" | "price_per_unit" | "user_id"
 
 <template>
 <div id="ingredientsView">
+  <h1>My Ingredients</h1>
+  <p>Here is where you save all of your ingredients. All of your recipes pull from this list.
+    Click on ingredients on the list to edit them.</p>
+
   <div id="searchAddBar">
     <v-text-field
       v-model="search"
@@ -128,18 +132,26 @@ const ingredientToAdd = ref<Omit<Ingredient, "id" | "price_per_unit" | "user_id"
       hide-details
       single-line
     />
+
+    <!-- Bulk add / delete button -->
     <v-btn v-if="selected.length" color="red" style="margin: 10px" @click="deleteWarning = true">
       Delete {{selected.length}} Selected
       <i class="fa-regular fa-trash-can"></i>
     </v-btn>
-    <v-btn v-if="!ingredientToAdd" style="margin: 10px" variant="tonal" @click="openAddIngredient">
-      Add Ingredient
+    <v-btn v-else style="margin: 10px" variant="tonal" @click="router.push('/ingredients/add')">
+      Bulk Add
+    </v-btn>
+    <!--------------------------->
+    <!-- Add ingredient button -->
+    <v-btn v-if="!ingredientToAdd" style="margin: 10px" @click="openAddIngredient">
+      Add
       <font-awesome-icon :icon="['fas', 'plus']" />
     </v-btn>
     <v-btn v-else style="margin: 10px" color="green" @click="saveNewIngredient">
       Save Ingredient
       <font-awesome-icon :icon="['fas', 'file-arrow-up']" />
     </v-btn>
+    <!--------------------------->
   </div>
 
   <div id="addIngredient" v-if="ingredientToAdd">
