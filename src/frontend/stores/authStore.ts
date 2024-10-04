@@ -8,7 +8,6 @@ import router from '@/router'
 export const useAuthStore = defineStore('auth', () => {
 
   const currentUser = ref<User | null>(null)
-  const currentNameOfUser = currentUser.value?.name
   const authTokenString = ref<string | null>(null)
   const isLoggedIn = computed(() => {
     return (currentUser.value != null);
@@ -27,6 +26,10 @@ export const useAuthStore = defineStore('auth', () => {
       router.push("/login")
       return null
     }
+  }
+
+  const getNameOfCurrentUser = (): string => {
+    return currentUser.value == null ? "WHat" : currentUser.value.name
   }
 
   const getAuthToken = (): string | null => {
@@ -61,7 +64,7 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     getCurrentUser,
     currentUser,
-    currentNameOfUser,
+    getNameOfCurrentUser,
     getAuthToken,
     isLoggedIn,
     login,

@@ -7,7 +7,6 @@ import AppInfo from '@/components/AppInfo.vue'
 import router from '@/router'
 import { useAuthStore } from '@/stores/authStore'
 import { onMounted } from 'vue'
-import { snackbarStore } from '@/stores/snackbarStore'
 import { doLogout } from '@/services/AuthService'
 
 onMounted(async() => {
@@ -23,9 +22,8 @@ const logout = async () => {
   router.push("/")
 }
 
-const accountButton = async () => {
-  console.log(await useAuthStore().getCurrentUser())
-  snackbarStore.showMessage("We haven't made this button do anything yet. We're glad you're here!")
+const nameOfUser = () => {
+  return useAuthStore().getNameOfCurrentUser()
 }
 
 const clickBranding = () => {
@@ -53,7 +51,7 @@ const clickBranding = () => {
         <font-awesome-icon style="color: white" :icon="['fas', 'user']" />
         <v-menu activator="parent">
           <v-list>
-            <v-list-item>Howdy User Dallin</v-list-item>
+            <v-list-item @click="router.push('/dashboard')">Hello, {{nameOfUser()}}</v-list-item>
             <v-list-item @click="logout">Logout <font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" /></v-list-item>
           </v-list>
         </v-menu>
