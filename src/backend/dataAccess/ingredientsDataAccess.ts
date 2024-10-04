@@ -21,7 +21,7 @@ export class IngredientsDataAccess {
     }
   }
 
-  public async getIngredientById(id: Number) {
+  public async getIngredientById(id: Number): Promise<Ingredient> {
     try {
       const { results } = await this.DB.prepare(
         "SELECT * FROM ingredients WHERE id = ?"

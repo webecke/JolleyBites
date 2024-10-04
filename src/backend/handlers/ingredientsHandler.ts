@@ -46,7 +46,7 @@ export async function handleIngredientsRequest (path: String, request: CfRequest
         throw HttpError.badRequest(`Missing ingredient`);
       }
 
-      const patchIngredient: Ingredient = validateFullIngredient(patchReqBody.ingredient)
+      const patchIngredient: Ingredient = await validateFullIngredient(patchReqBody.ingredient, env)
       const success = await ingredientsDataAccess.updateIngredient(patchIngredient)
 
       if (success) {
@@ -96,7 +96,7 @@ function validateAndUnpackNewIngredient(data: any, env: Env): Omit<Ingredient, '
   };
 }
 
-function validateFullIngredient(data: any): Ingredient {
+async function validateFullIngredient(data: any, env: Env): Promise<Ingredient> {
   const requiredFields: (keyof Ingredient)[] = [
     'id', 'user_id', 'name', 'quantity', 'unit', 'purchase_price', 'price_per_unit', 'notes'
   ];
@@ -106,6 +106,14 @@ function validateFullIngredient(data: any): Ingredient {
       throw HttpError.badRequest(`Missing required field: ${field}`);
     }
   }
+
+  console.error(data)
+  const ingredientInQuestion: Ingredient = await env.dataAccessMachine.getIngredientsDA().getIngredientById(data.id)
+  if (ingredientInQuestion.user_id != env.user.id) {
+    throw HttpError.forbidden("This ingredient doesn't belong to you")
+  }
+
+  data.user_id = env.user.id
 
   return data as Ingredient;
 }

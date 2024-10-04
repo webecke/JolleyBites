@@ -44,6 +44,7 @@ async function processRequest(
 
   const dataAccessMachine = new DataAccessMachine(env.DB)
   env.user = await getUserFromAuth(request.headers.get('Authorization'), dataAccessMachine)
+  env.dataAccessMachine = dataAccessMachine
 
   if (env.user == null) { throw HttpError.unauthorized("AuthToken invalid") }
 
