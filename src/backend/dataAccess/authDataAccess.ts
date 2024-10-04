@@ -47,4 +47,45 @@ export class AuthDataAccess {
       throw HttpError.internalServerError("Failed to delete authToken");
     }
   }
+
+  public async deleteTokensExpiredAtTime(isoTime: string) {
+    try {
+      const statement = await this.DB.prepare(`
+        DELETE FROM auth WHERE expires_at < ?;
+      `).bind(
+        isoTime
+      );
+
+      await statement.run()
+
+      return
+    }
+    catch (error) {
+      console.error("Database error:", error);
+      throw HttpError.internalServerError("Failed to delete authToken");
+    }
+  }
+
+  public async isTokenInTableAndNotExpired(token_value: string, isoTime: string): Promise<boolean> {
+    try {
+      const currentTime = new Date().toISOString();
+      const statement = await this.DB.prepare(`
+      SELECT COUNT(*) as count
+      FROM auth
+      WHERE token_value = ?
+      AND expires_at > ?;
+    `).bind(
+        token_value,
+        isoTime
+      );
+
+      const result:Record<string, null> | null = await statement.first();
+      if (result == null) { return false; }
+      return true;
+    }
+    catch (error) {
+      console.error("Database error:", error);
+      throw HttpError.internalServerError("Failed to check token validity");
+    }
+  }
 }

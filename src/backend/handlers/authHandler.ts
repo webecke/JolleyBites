@@ -137,8 +137,17 @@ async function getUserFromRequest(request: CfRequest, dataAccessMachine: DataAcc
   if (authorization == null) { throw HttpError.unauthorized("No auth token provided")}
 
   const authPayload: AuthTokenPayload | null = await verifyToken(authorization)
-
   if (authPayload == null) { throw HttpError.unauthorized("Invalid auth token provided") }
+
+  const authDataAccess: AuthDataAccess = dataAccessMachine.getAuthDA()
+  if (!await authDataAccess.isTokenInTableAndNotExpired(authorization, new Date().toISOString())) {
+    throw HttpError.unauthorized("Auth token has been revoked"); //we know it was revoked because verifyToken would return null if the token is past expiration
+  }
+
+  if (Math.random() < 0.01) { // 1% chance to run cleanup
+    console.log("Running auth token table clean up")
+    await authDataAccess.deleteTokensExpiredAtTime(new Date().toISOString());
+  }
 
   const userDataAccess = dataAccessMachine.getUserDA()
   const user: User = await userDataAccess.getUserById(authPayload.user_id)
