@@ -8,6 +8,7 @@ import router from '@/router'
 import { useAuthStore } from '@/stores/authStore'
 import { onMounted } from 'vue'
 import { snackbarStore } from '@/stores/snackbarStore'
+import { doLogout } from '@/services/AuthService'
 
 onMounted(async() => {
   await useAuthStore().getAuthToken()
@@ -17,9 +18,22 @@ const login = () => {
   router.push("/login")
 }
 
+const logout = async () => {
+  doLogout()
+  router.push("/")
+}
+
 const accountButton = async () => {
   console.log(await useAuthStore().getCurrentUser())
   snackbarStore.showMessage("We haven't made this button do anything yet. We're glad you're here!")
+}
+
+const clickBranding = () => {
+  if (useAuthStore().isLoggedIn) {
+    router.push("/dashboard")
+  } else {
+    router.push("/")
+  }
 }
 </script>
 
@@ -27,17 +41,22 @@ const accountButton = async () => {
   <GlobalSnackbar ref="snackbarRef"/> <!-- this allows anywhere in the app to trigger the snackbar popups -->
 
   <header>
-    <RouterLink to="/">
+    <div @click="clickBranding" style="cursor: pointer">
       <div id="branding">
         <h1>JolleyBites</h1>
         <p class="tagline">Recipe Cost Calculator </p>
         <font-awesome-icon :icon="['fas', 'utensils']" />
       </div>
-    </RouterLink>
+    </div>
     <div id="login">
-      <v-btn v-if="useAuthStore().isLoggedIn" id="userNameCard" @click="accountButton">
-        <font-awesome-icon :icon="['fas', 'user']" />
-        {{useAuthStore().currentNameOfUser}}
+      <v-btn color="var(--jb--lilac-dark)" icon v-if="useAuthStore().isLoggedIn" id="userNameCard">
+        <font-awesome-icon style="color: white" :icon="['fas', 'user']" />
+        <v-menu activator="parent">
+          <v-list>
+            <v-list-item>Howdy User Dallin</v-list-item>
+            <v-list-item @click="logout">Logout <font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" /></v-list-item>
+          </v-list>
+        </v-menu>
       </v-btn>
 
       <v-btn v-else variant="outlined" @click="login">
