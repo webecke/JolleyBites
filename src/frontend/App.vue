@@ -9,8 +9,9 @@ import { useAuthStore } from '@/stores/authStore'
 import { onMounted } from 'vue'
 import { snackbarStore } from '@/stores/snackbarStore'
 
-onMounted(() => {
-  useAuthStore().getAuthToken()
+onMounted(async() => {
+  await useAuthStore().getAuthToken()
+  await useAuthStore().getCurrentUser()
 })
 const login = () => {
   router.push("/login")

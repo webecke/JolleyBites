@@ -21,6 +21,7 @@ const state = reactive<SnackbarState>({
 export const snackbarStore = {
   state,
   showMessage(message: string, options?: Partial<SnackbarState>) {
+    state.show = false
     state.message = message
     state.show = true
     Object.assign(state, options)
