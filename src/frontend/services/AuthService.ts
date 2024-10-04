@@ -41,5 +41,7 @@ export const getMe = async () => {
 export const initializeApp = async () => {
   await useAuthStore().getAuthToken()
   await useAuthStore().getCurrentUser()
-  await useDataStore().initializeDataStore()
+  if (useAuthStore().isLoggedIn) {
+    await useDataStore().initializeDataStore()
+  }
 }

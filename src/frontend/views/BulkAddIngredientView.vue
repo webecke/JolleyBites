@@ -1,16 +1,13 @@
 <script setup lang="ts">
 
 import router from '@/router'
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import type { Ingredient } from '../../shared/types'
-
-let ingredientIdIndex;
 
 onMounted(() => {
   for (let i = 0; i < 5; i++) {
     addIngredientRow()
   }
-  ingredientIdIndex = 5
 })
 
 const addIngredientRow = () => {
@@ -20,12 +17,12 @@ const addIngredientRow = () => {
     quantity: 0,
     unit: "",
     purchase_price: 0,
-    notes: ""
+    notes: "",
   }))
 }
 
 const save = async () => {
-  router.push("/ingredients")
+  showErrors.value = true
 }
 
 const cancel = async () => {
@@ -37,6 +34,8 @@ const ingredients = ref<Omit<Ingredient, 'user_id' | 'price_per_unit'>[]>([])
 const removeIngredient = (index: number) => {
   ingredients.value.splice(index, 1)
 }
+
+const showErrors = ref<boolean>(false)
 </script>
 
 <template>
@@ -50,16 +49,22 @@ const removeIngredient = (index: number) => {
     <v-text-field
       v-model="ingredient.name"
       class="addIngredientCell"
-      label="Ingredient Name"/>
+      label="Ingredient Name"
+      :error="showErrors && ingredient.name.length == 0"
+    />
     <v-text-field
       v-model="ingredient.quantity"
       class="addIngredientCell"
       type="number"
-      label="Quantity Purchased"/>
+      label="Quantity Purchased"
+      :error="showErrors && ingredient.quantity <= 0"
+    />
     <v-text-field
       v-model="ingredient.unit"
       class="addIngredientCell"
-      label="Units"/>
+      label="Units"
+      :error="showErrors && ingredient.unit.length == 0"
+    />
     <v-text-field
       v-model="ingredient.purchase_price"
       class="addIngredientCell"

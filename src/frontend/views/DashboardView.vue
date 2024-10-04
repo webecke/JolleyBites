@@ -1,9 +1,16 @@
 <script setup lang="ts">
 
-import { doLogout } from '@/services/AuthService'
+import { doLogout, initializeApp } from '@/services/AuthService'
 import router from '@/router'
 import { useAuthStore } from '../stores/authStore'
 import { useDataStore } from '../stores/dataStore'
+import { computed, onBeforeMount, onMounted } from 'vue'
+
+onBeforeMount(async () => {
+  await initializeApp()
+})
+
+const ingredientCount = computed(() => useDataStore().ingredients.length)
 
 const logout = async () => {
   doLogout()
@@ -29,7 +36,7 @@ const logout = async () => {
           <RouterLink to="/ingredients">
             <div class="headerAndStat">
               <h3>Ingredients</h3>
-              <h3>{{useDataStore().ingredients.length}}</h3>
+              <h3>{{ingredientCount}}</h3>
             </div>
             <p>Add ingredients you use in your recipes</p>
           </RouterLink>

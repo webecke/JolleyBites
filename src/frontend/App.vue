@@ -7,14 +7,13 @@ import AppInfo from '@/components/AppInfo.vue'
 import router from '@/router'
 import { useAuthStore } from '@/stores/authStore'
 import { onMounted } from 'vue'
-import { doLogout } from '@/services/AuthService'
+import { doLogout, initializeApp } from '@/services/AuthService'
 import { useDataStore } from '@/stores/dataStore'
 
 onMounted(async() => {
-  await useAuthStore().getAuthToken()
-  await useAuthStore().getCurrentUser()
-  await useDataStore().initializeDataStore()
+  await initializeApp()
 })
+
 const login = () => {
   router.push("/login")
 }

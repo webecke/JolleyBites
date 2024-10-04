@@ -9,6 +9,8 @@ import RegisterView from '@/views/RegisterView.vue'
 import DashboardView from '@/views/DashboardView.vue'
 import { useAuthStore } from '@/stores/authStore'
 import BulkAddIngredientView from '@/views/BulkAddIngredientView.vue'
+import { useDataStore } from '@/stores/dataStore'
+import { initializeApp } from '@/services/AuthService'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -72,6 +74,13 @@ const router = createRouter({
       component: NotFoundView
     }
   ]
+})
+
+router.beforeEach(async (to, from, next) => {
+  if (!useDataStore().dataIsLoaded) {
+    await initializeApp()
+  }
+  next()
 })
 
 async function mustBeLoggedIn() {

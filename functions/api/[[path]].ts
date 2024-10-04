@@ -1,7 +1,6 @@
-import { EventContext } from '@cloudflare/workers-types';
+import { EventContext, Request as CfRequest } from '@cloudflare/workers-types'
 import { addCorsHeaders, Env, handleCors, parseNextApiToken } from '../requestTools'
 import { handleIngredientsRequest } from '../../src/backend/handlers/ingredientsHandler'
-import { Request as CfRequest } from '@cloudflare/workers-types';
 import { HttpError } from '../../src/backend/errors/HttpError'
 import { DataAccessMachine } from '../../src/backend/dataAccess/dataAccessMachine'
 import { User } from '../../src/shared/types'
@@ -73,6 +72,8 @@ async function processRequest(
 
 async function getUserFromAuth(authToken: string, dataAccessMachine: DataAccessMachine): Promise<User> {
   const authTokenPayload: AuthTokenPayload = await verifyToken(authToken)
+
+  if (authTokenPayload == null) { throw HttpError.unauthorized("Invalid authToken")}
 
   const userDataAccess = dataAccessMachine.getUserDA()
 

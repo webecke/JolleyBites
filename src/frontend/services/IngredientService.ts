@@ -29,9 +29,9 @@ export const addIngredient = async (ingredient: Omit<Ingredient, 'id' | 'price_p
   }
 
   const response = await newIngredientPost(submittableIngredient);
-
   const newIngredient: Ingredient = { ...submittableIngredient, ...response }
   useDataStore().addIngredient(newIngredient)
+  console.log(useDataStore().ingredients)
 }
 
 export const updateIngredient = async (ingredient: Ingredient)=> {
