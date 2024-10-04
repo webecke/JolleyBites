@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { AuthToken, User } from '../../shared/types'
+import type { User } from '../../shared/types'
 import type { LoginRegisterResponse } from '../../shared/messages'
 import { getMe } from '@/services/AuthService'
 import router from '@/router'
@@ -8,6 +8,7 @@ import router from '@/router'
 export const useAuthStore = defineStore('auth', () => {
 
   const currentUser = ref<User | null>(null)
+  const currentNameOfUser = currentUser.value?.name
   const authTokenString = ref<string | null>(null)
   const isLoggedIn = computed(() => {
     return (currentUser.value != null);
@@ -22,8 +23,7 @@ export const useAuthStore = defineStore('auth', () => {
       return currentUser.value
     } catch (error) {
       console.error("ERROR fetching user. Assuming logged out. Going to login now")
-      clearLocalAuthToken()
-      authTokenString.value = null
+      logout()
       router.push("/login")
       return null
     }
@@ -50,12 +50,22 @@ export const useAuthStore = defineStore('auth', () => {
     console.log(`saved authtoken: ${response.authToken.token}`)
   }
 
+  const logout = () => {
+    currentUser.value = null
+    authTokenString.value = null
+
+    clearLocalAuthToken()
+    console.log('logged out and cleared local authtoken')
+  }
+
   return {
     getCurrentUser,
     currentUser,
+    currentNameOfUser,
     getAuthToken,
     isLoggedIn,
-    login
+    login,
+    logout
   }
 })
 

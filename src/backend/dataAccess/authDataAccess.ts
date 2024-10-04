@@ -34,7 +34,7 @@ export class AuthDataAccess {
   public async deleteToken(authToken: string) {
     try {
       const statement = await this.DB.prepare(`
-          DELETE FROM auth WHERE authtoken = ?;
+          DELETE FROM auth WHERE token_value = ?;
       `).bind(
         authToken
       );

@@ -22,6 +22,12 @@ export const doLogin = async (email: string, password: string) => {
   useAuthStore().login(response)
 }
 
+export const doLogout = async () => {
+  await ServerCommunicator.deleteRequest<{message: string}>("/auth/logout")
+
+  useAuthStore().logout()
+}
+
 export const getMe = async () => {
   return await ServerCommunicator.getRequest<User>("/auth/me")
 }

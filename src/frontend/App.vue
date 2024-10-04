@@ -6,7 +6,7 @@ import '@mdi/font/css/materialdesignicons.css'
 import AppInfo from '@/components/AppInfo.vue'
 import router from '@/router'
 import { useAuthStore } from '@/stores/authStore'
-import { computed, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { snackbarStore } from '@/stores/snackbarStore'
 
 onMounted(() => {
@@ -16,9 +16,8 @@ const login = () => {
   router.push("/login")
 }
 
-const nameOfUser = computed( () => { return useAuthStore().currentUser!.name })
-
 const accountButton = async () => {
+  console.log(await useAuthStore().getCurrentUser())
   snackbarStore.showMessage("We haven't made this button do anything yet. We're glad you're here!")
 }
 </script>
@@ -37,7 +36,7 @@ const accountButton = async () => {
     <div id="login">
       <v-btn v-if="useAuthStore().isLoggedIn" id="userNameCard" @click="accountButton">
         <font-awesome-icon :icon="['fas', 'user']" />
-        {{nameOfUser}}
+        {{useAuthStore().currentNameOfUser}}
       </v-btn>
 
       <v-btn v-else variant="outlined" @click="login">
