@@ -1,5 +1,5 @@
-import type { Env } from '../defaultWorker'
 import { Request as CfRequest } from '@cloudflare/workers-types'
+import type { Env } from '../../../functions/requestTools'
 import { parseNextApiToken } from '../../../functions/requestTools'
 import { IngredientsDataAccess } from '../dataAccess/ingredientsDataAccess'
 import type { Ingredient } from '../../shared/types'
@@ -16,7 +16,7 @@ export async function handleIngredientsRequest (path: String, request: CfRequest
 
     case "GET":
       if (apiToken == "") {
-        return new Response(JSON.stringify(await ingredientsDataAccess.getIngredientsForUser("GENERIC")), { status: 200 });
+        return new Response(JSON.stringify(await ingredientsDataAccess.getIngredientsForUser(env.user.id)), { status: 200 });
       }
       const response = await ingredientsDataAccess.getIngredientById(Number(apiToken))
       if (response == null) {
@@ -29,7 +29,7 @@ export async function handleIngredientsRequest (path: String, request: CfRequest
       if (!('ingredient' in postReqBody)) {
         throw HttpError.badRequest(`Missing ingredient`);
       }
-      const ingredient = validateNewIngredient(postReqBody.ingredient)
+      const ingredient = validateAndUnpackNewIngredient(postReqBody.ingredient, env)
 
       let newIngredientId: number
       try {
@@ -74,9 +74,9 @@ export async function handleIngredientsRequest (path: String, request: CfRequest
   }
 }
 
-function validateNewIngredient(data: any): Omit<Ingredient, 'id'> {
-  const requiredFields: (keyof Omit<Ingredient, 'id'>)[] = [
-    'user_id', 'name', 'quantity', 'unit', 'purchase_price', 'price_per_unit', 'notes'
+function validateAndUnpackNewIngredient(data: any, env: Env): Omit<Ingredient, 'id'> {
+  const requiredFields: (keyof Omit<Ingredient, 'id' | 'user_id'>)[] = [
+    'name', 'quantity', 'unit', 'purchase_price', 'price_per_unit', 'notes'
   ];
 
   for (const field of requiredFields) {
@@ -86,7 +86,7 @@ function validateNewIngredient(data: any): Omit<Ingredient, 'id'> {
   }
 
   return {
-    user_id: String(data.user_id),
+    user_id: env.user.id,
     name: String(data.name),
     quantity: Number(data.quantity),
     unit: String(data.unit),
