@@ -8,11 +8,12 @@ export const getAllIngredients = async (): Promise<Ingredient []> => {
 }
 
 export const getIngredient = async (id: number): Promise<Ingredient> => {
+  console.log(id)
   return await ServerCommunicator.getRequest<Ingredient>("/api/ingredients/" + String(id))
 }
 
 const newIngredientPost = async (ingredient: ClientGeneratedIngredient) => {
-  return await ServerCommunicator.postRequest<{id: number}>("/api/ingredients", {ingredient: ingredient})
+  return await ServerCommunicator.postRequest<{ingredientId: number}>("/api/ingredients", {ingredient: ingredient})
 };
 
 const batchIngredientsPost = async (ingredients: ClientGeneratedIngredient[]) => {
@@ -27,8 +28,8 @@ export const addIngredient = async (ingredient: ClientGeneratedIngredient | null
     throw Error("Please enter an ingredient name, quantity, and unit")
   }
 
-  const response = await newIngredientPost(ingredient);
-  const newIngredient: Ingredient = await getIngredient(response.id)
+  const response = await newIngredientPost(ingredient)
+  const newIngredient: Ingredient = await getIngredient(response.ingredientId)
   useDataStore().addIngredient(newIngredient)
 }
 
