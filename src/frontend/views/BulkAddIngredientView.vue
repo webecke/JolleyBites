@@ -1,8 +1,9 @@
 <script setup lang="ts">
 
 import router from '@/router'
-import { computed, onMounted, reactive, ref } from 'vue'
-import type { Ingredient } from '../../shared/types'
+import { onMounted, reactive, ref } from 'vue'
+import { snackbarStore } from '@/stores/snackbarStore'
+import type { ClientGeneratedIngredient } from '../../shared/messages'
 
 onMounted(() => {
   for (let i = 0; i < 5; i++) {
@@ -21,15 +22,39 @@ const addIngredientRow = () => {
   }))
 }
 
-const save = async () => {
+const handleSaveButtonClick = async () => {
   showErrors.value = true
+
+  // remove all blank rows
+  ingredients.value = ingredients.value.filter((ingredient) => {
+    return !((ingredient.name == "") && (ingredient.quantity == 0) && (ingredient.unit == "") && (ingredient.purchase_price == 0) && (ingredient.notes == ""));
+  })
+
+  // find if any have missing fields
+  ingredientsWithErrors.value = ingredients.value.filter((ingredient) => {
+    if (ingredient.quantity <= 0) { return true }
+    if (ingredient.name.length <= 0) { return true }
+    if (ingredient.unit.length <= 0) { return true }
+    return false
+  })
+
+  if (ingredientsWithErrors.value.length > 0) {
+    showIngredientErrorPopup.value = true
+    return
+  }
+
+  await router.push("/ingredients")
+  snackbarStore.showMessage(`Successfully saved ${"4"} new ingredients`, {color:'green'})
 }
 
-const cancel = async () => {
+const showIngredientErrorPopup = ref<boolean>(false)
+
+const handleCancelButtonClick = async () => {
   router.push("/ingredients")
 }
 
-const ingredients = ref<Omit<Ingredient, 'user_id' | 'price_per_unit'>[]>([])
+const ingredients = ref<ClientGeneratedIngredient[]>([])
+const ingredientsWithErrors = ref<ClientGeneratedIngredient[]>([])
 
 const removeIngredient = (index: number) => {
   ingredients.value.splice(index, 1)
@@ -42,10 +67,13 @@ const showErrors = ref<boolean>(false)
   <h1>Bulk Add Ingredients</h1>
   <p>Use this page if you're adding a lot of ingredients to your list at once.
     Click save or cancel to return to the main ingredients list.</p>
-  <v-btn @click="save">Save {{ingredients.length}} Ingredients</v-btn>
-  <v-btn @click="cancel">Cancel</v-btn>
+  <div class="bulkAddActionButtons">
+    <v-btn @click="handleSaveButtonClick" color="green">Save {{ingredients.length}} Ingredients</v-btn>
+    <v-btn @click="handleCancelButtonClick" color="yellow">Cancel</v-btn>
+    <v-btn @click="addIngredientRow">Add Another Ingredient</v-btn>
+  </div>
 
-  <div class="ingredientRow" v-for="(ingredient, index) in ingredients.values()" :key="ingredient.id">
+  <div class="ingredientRow" v-for="(ingredient, index) in ingredients.values()" :key="index">
     <v-text-field
       v-model="ingredient.name"
       class="addIngredientCell"
@@ -79,15 +107,48 @@ const showErrors = ref<boolean>(false)
       <font-awesome-icon :icon="['fas', 'trash']" />
     </v-btn>
   </div>
-  <v-btn @click="addIngredientRow">
-    Add Another Ingredient
-  </v-btn>
+  <div class="bulkAddActionButtons">
+    <v-btn @click="handleSaveButtonClick" color="green">Save {{ingredients.length}} Ingredients</v-btn>
+    <v-btn @click="handleCancelButtonClick" color="yellow">Cancel</v-btn>
+    <v-btn @click="addIngredientRow">Add Another Ingredient</v-btn>
+  </div>
 
+
+
+  <v-dialog
+    v-model="showIngredientErrorPopup"
+    width="auto"
+    min-width="300px"
+    max-width="500px"
+  >
+    <v-card title="Ingredients have errors">
+      <template v-slot:text>
+        <p>The following ingredients are missing values. Please make sure all red fields are filled in, or remove them.</p>
+        <hr style="width: 100%"/>
+        <p v-for="(ingredient) in ingredientsWithErrors" :key="ingredient.id">
+          {{ ingredient.name.length > 0 ? ingredient.name
+          : `Unnamed ingredient with ${ingredient.quantity} ${ingredient.unit.length > 0 ? ingredient.unit : "unnamed units"}` }}
+        </p>
+      </template>
+      <template v-slot:actions>
+        <v-btn @click="showIngredientErrorPopup = false">Ok</v-btn>
+      </template>
+    </v-card>
+  </v-dialog>
 </template>
 
 <style scoped>
 .ingredientRow {
   display: flex;
   flex-direction: row;
+}
+
+.bulkAddActionButtons {
+  display: flex;
+  flex-direction: row;
+}
+
+.bulkAddActionButtons > * {
+  margin: 10px;
 }
 </style>

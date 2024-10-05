@@ -15,3 +15,11 @@ export type LoginRegisterResponse = {
   user: User,
   authToken: AuthToken
 }
+
+export type ClientGeneratedIngredient = {
+  name: string,
+  quantity: number,
+  unit: string,
+  purchase_price: number,
+  notes: string
+}
