@@ -1,4 +1,4 @@
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { Ingredient } from '../../shared/types'
 import { getAllIngredients } from '@/services/IngredientService'
@@ -22,6 +22,8 @@ export const useDataStore = defineStore('data', () => {
     ingredients: [] as Ingredient[]
   })
 
+  const ingredients = computed(() => state.ingredients)
+
   const loadIngredients = async () => {
     const response: Ingredient[] = await getAllIngredients()
     state.ingredients.length = 0
@@ -37,7 +39,7 @@ export const useDataStore = defineStore('data', () => {
   }
 
   return {
-    ingredients: state.ingredients,
+    ingredients: ingredients,
     dataIsLoaded,
     loadIngredients,
     initializeDataStore,

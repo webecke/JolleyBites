@@ -80,6 +80,7 @@ const deleteSelected = async () => {
     snackbarStore.showMessage("Failed to delete ingredients", {color: "error", timeout: -1})
   }
 
+  console.log(useDataStore().ingredients)
   deleteWarning.value = false
   snackbarStore.showMessage(`Successfully deleted ${countDeleting} ingredients`)
   selected.value = []

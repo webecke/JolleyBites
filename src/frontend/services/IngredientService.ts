@@ -8,7 +8,6 @@ export const getAllIngredients = async (): Promise<Ingredient []> => {
 }
 
 export const getIngredient = async (id: number): Promise<Ingredient> => {
-  console.log(id)
   return await ServerCommunicator.getRequest<Ingredient>("/api/ingredients/" + String(id))
 }
 
