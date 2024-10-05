@@ -7,7 +7,11 @@ export const getAllIngredients = async (): Promise<Ingredient []> => {
   return await ServerCommunicator.getRequest<Ingredient[]>("/api/ingredients")
 }
 
-const newIngredientPost = async (ingredient: Omit<Ingredient, "id">) => {
+export const getIngredient = async (id: number): Promise<Ingredient> => {
+  return await ServerCommunicator.getRequest<Ingredient>("/api/ingredients/" + String(id))
+}
+
+const newIngredientPost = async (ingredient: ClientGeneratedIngredient) => {
   return await ServerCommunicator.postRequest<{id: number}>("/api/ingredients", {ingredient: ingredient})
 };
 
@@ -24,7 +28,7 @@ export const addIngredient = async (ingredient: ClientGeneratedIngredient | null
   }
 
   const response = await newIngredientPost(ingredient);
-  const newIngredient: Ingredient = { ...ingredient, ...response }
+  const newIngredient: Ingredient = await getIngredient(response.id)
   useDataStore().addIngredient(newIngredient)
 }
 

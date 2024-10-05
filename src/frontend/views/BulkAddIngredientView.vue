@@ -141,7 +141,7 @@ const showErrors = ref<boolean>(false)
       <template v-slot:text>
         <p>The following ingredients are missing values. Please make sure all red fields are filled in, or remove them.</p>
         <hr style="width: 100%"/>
-        <p v-for="(ingredient) in ingredientsWithErrors" :key="ingredient.id">
+        <p v-for="(ingredient, index) in ingredientsWithErrors.values()" :key="index">
           {{ ingredient.name.length > 0 ? ingredient.name
           : `Unnamed ingredient with ${ingredient.quantity} ${ingredient.unit.length > 0 ? ingredient.unit : "unnamed units"}` }}
         </p>

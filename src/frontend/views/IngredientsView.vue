@@ -5,6 +5,7 @@ import { useDataStore } from '@/stores/dataStore'
 import { addIngredient, deleteIngredients, updateIngredient } from '@/services/IngredientService'
 import { snackbarStore } from '@/stores/snackbarStore'
 import router from '@/router'
+import type { ClientGeneratedIngredient } from '../../shared/messages'
 
 onMounted(async () => {
   document.addEventListener('keyup', handleEnterKey);
@@ -114,7 +115,7 @@ const search = ref<string>("")
 const selected = ref<number []>([])
 const deleteWarning = ref<boolean>(false)
 
-const ingredientToAdd = ref<Omit<Ingredient, "id" | "price_per_unit" | "user_id"> | null>(null)
+const ingredientToAdd = ref<ClientGeneratedIngredient | null>(null)
 </script>
 
 <template>

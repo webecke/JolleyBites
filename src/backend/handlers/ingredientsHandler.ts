@@ -49,7 +49,7 @@ export async function handleIngredientsRequest (path: String, request: CfRequest
         } catch (error) {
           throw HttpError.internalServerError("Something went wrong inserting ingredient batch into database")
         }
-        return new Response(JSON.stringify({ingredientsIds: newIngredientsIds}, {status:201}))
+        return new Response(JSON.stringify({ingredientsIds: newIngredientsIds}), {status:201})
 
       } else {
         throw HttpError.badRequest(`Missing ingredient or batch of ingredients`);
@@ -96,7 +96,7 @@ function validateAndUnpackBatchOfNewIngredients(data: any, env: Env): Omit<Ingre
   }
 
   const ingredients: Omit<Ingredient, 'id'>[] = []
-  data.forEach((item) => {
+  data.forEach((item: Omit<Ingredient, 'id'>) => {
     ingredients.push(validateAndUnpackNewIngredient(item, env))
   })
 
