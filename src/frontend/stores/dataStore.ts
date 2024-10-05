@@ -8,9 +8,7 @@ export const useDataStore = defineStore('data', () => {
     if (dataIsLoaded.value) { return }
 
     try {
-      const response: Ingredient[] = await getAllIngredients()
-      state.ingredients.length = 0
-      state.ingredients.push(...response)
+      await loadIngredients()
     } catch(e) {
       console.log("Error initializing local DataStore: " + e)
       return
@@ -24,6 +22,12 @@ export const useDataStore = defineStore('data', () => {
     ingredients: [] as Ingredient[]
   })
 
+  const loadIngredients = async () => {
+    const response: Ingredient[] = await getAllIngredients()
+    state.ingredients.length = 0
+    state.ingredients.push(...response)
+  }
+
   const addIngredient = (newIngredient: Ingredient) => {
     state.ingredients.push(newIngredient);
   };
@@ -35,6 +39,7 @@ export const useDataStore = defineStore('data', () => {
   return {
     ingredients: state.ingredients,
     dataIsLoaded,
+    loadIngredients,
     initializeDataStore,
     addIngredient,
     deleteIngredients

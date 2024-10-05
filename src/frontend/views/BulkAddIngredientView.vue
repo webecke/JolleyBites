@@ -4,6 +4,8 @@ import router from '@/router'
 import { onMounted, reactive, ref } from 'vue'
 import { snackbarStore } from '@/stores/snackbarStore'
 import type { ClientGeneratedIngredient } from '../../shared/messages'
+import { addIngredientsBatch } from '@/services/IngredientService'
+import { useDataStore } from '@/stores/dataStore'
 
 onMounted(() => {
   for (let i = 0; i < 5; i++) {
@@ -43,8 +45,22 @@ const handleSaveButtonClick = async () => {
     return
   }
 
+  let ingredientsSaved
+  try {
+    const response = await addIngredientsBatch(ingredients.value)
+    ingredientsSaved = response.ingredientsIds.length
+  } catch (error) {
+    if (error instanceof Error) {
+      snackbarStore.showMessage(error.message, {color: "warning", timeout: 10000})
+    } else {
+      snackbarStore.showMessage("Something went wrong, ingredient wasn't saved", {color: "error", timeout: -1})
+    }
+    return
+  }
+
+  await useDataStore().loadIngredients()
   await router.push("/ingredients")
-  snackbarStore.showMessage(`Successfully saved ${"4"} new ingredients`, {color:'green'})
+  snackbarStore.showMessage(`Successfully saved ${ingredientsSaved} new ingredients`, {color:'green', timeout: 5000})
 }
 
 const showIngredientErrorPopup = ref<boolean>(false)

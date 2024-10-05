@@ -62,6 +62,43 @@ export class IngredientsDataAccess {
     }
   }
 
+  public async insertBatchIngredients(ingredients: Omit<Ingredient, 'id'>[]): Promise<number[]> {
+    try {
+      const insertedIds: number[] = [];
+      const stmt = this.DB.prepare(`
+      INSERT INTO ingredients (user_id, name, quantity, unit, purchase_price, price_per_unit, notes)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `);
+
+      const batchPromises = ingredients.map(ingredient =>
+        stmt.bind(
+          ingredient.user_id,
+          ingredient.name,
+          ingredient.quantity,
+          ingredient.unit,
+          ingredient.purchase_price,
+          ingredient.price_per_unit,
+          ingredient.notes
+        ).run()
+      );
+
+      const results = await Promise.all(batchPromises);
+
+      for (const result of results) {
+        if (result && typeof result.meta?.last_row_id === 'number') {
+          insertedIds.push(result.meta.last_row_id);
+        } else {
+          console.warn('Failed to retrieve an inserted ID');
+        }
+      }
+
+      return insertedIds;
+    } catch (error) {
+      console.error("Database error:", error);
+      throw HttpError.internalServerError("Failed to insert ingredients");
+    }
+  }
+
   public async updateIngredient(ingredient: Ingredient): Promise<boolean> {
     try {
       const statement = await this.DB.prepare(`

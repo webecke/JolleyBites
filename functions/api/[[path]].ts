@@ -65,6 +65,7 @@ async function processRequest(
     if (error instanceof HttpError) {
       return new Response("Error: " + error.message, { status: error.statusCode })
     } else {
+      console.error("Non-HttpError: ", error)
       return new Response("Error, and we have no clue what happened", { status: 500 })
     }
   }
