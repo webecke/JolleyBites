@@ -66,8 +66,8 @@ const login = async () => {
           v-model="inputPassword"
           label="Password"
           :type="showPassword ? 'text' : 'password'"
-          name="new-password"
-          autocomplete="new-password"
+          name="password"
+          autocomplete="password"
           :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
           @click:append="showPassword = !showPassword"
         />
