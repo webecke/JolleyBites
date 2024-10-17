@@ -45,6 +45,13 @@ const handleSaveButtonClick = async () => {
     return
   }
 
+  if (ingredients.value.length == 0) {
+    snackbarStore.showMessage("There are no ingredients to save", {color: "warning", timeout: 10000})
+    showIngredientErrorPopup.value = false
+    addIngredientRow()
+    return
+  }
+
   let ingredientsSaved
   try {
     const response = await addIngredientsBatch(ingredients.value)
