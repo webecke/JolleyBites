@@ -20,3 +20,18 @@ export function convertNewlinesToBr(str: string | undefined): string {
   }
   return str.replace(/\n/g, '<br>');
 }
+
+export function trimObjectStrings<T>(obj: T): T {
+  const trimmedObj = { ...obj };
+
+  for (const key in trimmedObj) {
+    if (Object.prototype.hasOwnProperty.call(trimmedObj, key)) {
+      const value = trimmedObj[key];
+      if (typeof value === 'string') {
+        trimmedObj[key] = value.trim();
+      }
+    }
+  }
+
+  return trimmedObj;
+}

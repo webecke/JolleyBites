@@ -2,7 +2,7 @@
 import { useRoute } from 'vue-router'
 import { onBeforeMount, onMounted, ref } from 'vue'
 import type { Recipe } from '../../shared/types'
-import { convertNewlinesToBr, formatDate, roundToTwoDecimals } from '@/utils/formatUtils'
+import { convertNewlinesToBr, formatDate, roundToTwoDecimals, trimObjectStrings } from '@/utils/formatUtils'
 
 let testRecipe: Recipe = {
   id: 37,
@@ -39,6 +39,11 @@ const loadRecipe = () => {
     console.log("Error loading recipe")
   }
 }
+
+const saveRecipe = () => {
+  recipe.value = trimObjectStrings<Recipe>(recipe.value)
+  showEditMode.value = false
+}
 </script>
 
 <template>
@@ -58,7 +63,7 @@ const loadRecipe = () => {
       </p>
       <p v-else><em>This recipe makes {{recipe.servings_per_recipe}} servings</em></p>
     </div>
-    <v-btn v-if="showEditMode" color="green" @click="showEditMode = false">
+    <v-btn v-if="showEditMode" color="green" @click="saveRecipe">
       Save <font-awesome-icon :icon="['fas', 'file-arrow-up']" />
     </v-btn>
     <v-btn v-else @click="showEditMode = true">
@@ -74,10 +79,10 @@ const loadRecipe = () => {
   </div>
 
   <div class="flexableColumnContainer">
-    <div class="flexableColumns" style="flex: 60%">
-
+    <div class="flexableColumns" style="width: 60%">
+      This is the ingredients area
     </div>
-    <div class="flexableColumns" style="flex: 40%">
+    <div class="flexableColumns" style="width: 40%">
       <v-textarea
         v-if="showEditMode"
         v-model="recipe.instructions"

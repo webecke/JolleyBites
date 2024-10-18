@@ -5,6 +5,7 @@ import { HttpError } from '../../src/backend/errors/HttpError'
 import { DataAccessMachine } from '../../src/backend/dataAccess/dataAccessMachine'
 import { User } from '../../src/shared/types'
 import { AuthTokenPayload, verifyToken } from '../../src/backend/utils/authTokenUtils'
+import { handleRecipesRequest } from '../../src/backend/handlers/recipesHandler'
 
 /*
   This is the function that Cloudflare passes the request to.
@@ -58,6 +59,8 @@ async function processRequest(
         return new Response("Oh hey! You found the api! But you didn't actually hit an endpoint, just the entrance... have a great day!")
       case "ingredients":
         return await handleIngredientsRequest(apiPath, request, env)
+      case "recipes":
+        return await handleRecipesRequest(apiPath, request, env)
       default:
         throw HttpError.notFound("Sorry, looks like that endpoint isn't here");
     }
