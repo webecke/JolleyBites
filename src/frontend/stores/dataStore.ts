@@ -36,7 +36,8 @@ export const useDataStore = defineStore('data', () => {
 
   const loadRecipes = async () => {
     const response: Recipe[] = await getAllRecipes()
-    console.log(response)
+    state.recipes.length = 0
+    state.recipes.push(...response)
   }
 
   const addIngredient = (newIngredient: Ingredient) => {
@@ -45,6 +46,22 @@ export const useDataStore = defineStore('data', () => {
 
   const addRecipe = (newRecipe: Recipe) => {
     state.recipes.push(newRecipe)
+  }
+
+  const getRecipe = (id: number): Recipe | null => {
+    let foundRecipe: Recipe| null = null;
+
+    try {
+      state.recipes.forEach(recipe => {
+        if (recipe.id == id) {
+          foundRecipe = recipe
+          throw {}
+        }
+      })
+    } catch (e) {
+      return foundRecipe
+    }
+    return null
   }
 
   const deleteIngredients = (ids: number[]) => {
@@ -60,6 +77,7 @@ export const useDataStore = defineStore('data', () => {
     initializeDataStore,
     addIngredient,
     addRecipe,
+    getRecipe,
     deleteIngredients
   }
 })

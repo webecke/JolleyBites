@@ -3,6 +3,8 @@ import { useRoute } from 'vue-router'
 import { onMounted, ref } from 'vue'
 import type { Recipe } from '../../shared/types'
 import { convertNewlinesToBr, formatDate, roundToTwoDecimals, trimObjectStrings } from '@/utils/formatUtils'
+import { useDataStore } from '@/stores/dataStore'
+import router from '@/router'
 
 let testRecipe: Recipe = {
   id: 37,
@@ -29,15 +31,16 @@ const id = ref(route.params.id as string)
 const recipe = ref<Recipe>({} as Recipe)
 const showEditMode = ref<boolean>(false)
 
-onMounted(() => {
-  loadRecipe()
+onMounted(async () => {
+  await loadRecipe()
 })
 
-const loadRecipe = () => {
-  recipe.value = testRecipe
-  if (!recipe.value) {
-    console.log("Error loading recipe")
-  }
+const loadRecipe = async () => {
+  const foundRecipe = useDataStore().getRecipe(Number(id.value))
+
+  if (foundRecipe == null) { await router.push("/404"); return }
+  recipe.value = foundRecipe
+  console.log(recipe.value)
 }
 
 const saveRecipe = () => {
