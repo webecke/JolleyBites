@@ -43,12 +43,22 @@ const loadRecipe = () => {
 
 <template>
   <div id="recipeTopArea">
-    <div>
-      <h1>Recipe: {{recipe.name}}</h1>
-      <p>{{recipe.description}}</p>
-      <p><em>This recipe makes {{recipe.servings_per_recipe}} servings</em></p>
+    <div style="width: 100%;">
+      <h1 style="display: flex">
+        <v-text-field v-if="showEditMode" v-model="recipe.name" label="Name"/>
+        <span v-else>{{recipe.name}}</span>
+      </h1>
+
+      <v-text-field v-if="showEditMode" v-model="recipe.description" label="Description"/>
+      <p v-else>{{recipe.description}}</p>
+
+      <p v-if="showEditMode">
+        Servings per recipe:
+        <v-text-field style="width: 100px" type="number" v-model="recipe.servings_per_recipe"/>
+      </p>
+      <p v-else><em>This recipe makes {{recipe.servings_per_recipe}} servings</em></p>
     </div>
-    <v-btn v-if="showEditMode" color="green">
+    <v-btn v-if="showEditMode" color="green" @click="showEditMode = false">
       Save <font-awesome-icon :icon="['fas', 'file-arrow-up']" />
     </v-btn>
     <v-btn v-else @click="showEditMode = true">
@@ -68,15 +78,36 @@ const loadRecipe = () => {
 
     </div>
     <div class="flexableColumns" style="flex: 40%">
-      <h3>Instructions:</h3>
-      <p v-if="recipe.instructions == ''"><em>No instructions</em></p>
-      <p v-else v-html="convertNewlinesToBr(recipe.instructions)"/>
+      <v-textarea
+        v-if="showEditMode"
+        v-model="recipe.instructions"
+        label="Instructions"
+        placeholder="How to actually make this"
+        :rows="3"
+        auto-grow
+        outlined
+      />
+      <div v-else>
+        <h3>Instructions:</h3>
+        <p v-if="recipe.instructions == ''"><em>No instructions</em></p>
+        <p v-else v-html="convertNewlinesToBr(recipe.instructions)"/>
+      </div>
 
-      <hr style="width: 100%;"/>
-
-      <h3>Notes:</h3>
-      <p v-if="recipe.notes == ''"><em>No notes</em></p>
-      <p v-else v-html="convertNewlinesToBr(recipe.notes)"/>
+      <v-textarea
+        v-if="showEditMode"
+        v-model="recipe.notes"
+        label="Notes"
+        placeholder="Things to remember about this recipe"
+        :rows="2"
+        auto-grow
+        outlined
+      />
+      <div v-else>
+        <hr style="width: 100%;"/>
+        <h3>Notes:</h3>
+        <p v-if="recipe.notes == ''"><em>No notes</em></p>
+        <p v-else v-html="convertNewlinesToBr(recipe.notes)"/>
+      </div>
 
       <hr style="width: 100%;"/>
 
