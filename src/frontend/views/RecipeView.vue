@@ -6,25 +6,6 @@ import { convertNewlinesToBr, formatDate, roundToTwoDecimals, trimObjectStrings 
 import { useDataStore } from '@/stores/dataStore'
 import router from '@/router'
 
-let testRecipe: Recipe = {
-  id: 37,
-  user_id: "TEST_MCGEE",
-  name: "Youngberg Meatloaf",
-  description: "An amazing meatloaf that is both amazing and meatloaf",
-  servings_per_recipe: 6,
-  ingredients: [
-    {id: 17, quantity: 13},
-    {id: 18, quantity: 3},
-    {id: 19, quantity: 66},
-    {id: 10, quantity: 32},
-  ],
-  calculated_cost: 35.12,
-  instructions: "Set on fire. \n Eat blue cheese",
-  notes: "Good for the homies\n bad for joe biden",
-  created_at: new Date(),
-  updated_at: new Date()
-}
-
 const route = useRoute()
 
 const id = ref(route.params.id as string)
