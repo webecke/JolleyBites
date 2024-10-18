@@ -9,6 +9,20 @@ export type Ingredient = {
   notes: string
 }
 
+export type Recipe = {
+  id: number,
+  user_id: string,
+  name: string,
+  description: string,
+  servings_per_recipe: number,
+  ingredients: { id: number, quantity: number }[],
+  calculated_cost: number,
+  instructions: string,
+  notes: string,
+  created_at: Date,
+  updated_at: Date
+}
+
 export type User = {
   id: string,
   name: string,

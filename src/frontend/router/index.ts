@@ -11,6 +11,8 @@ import { useAuthStore } from '@/stores/authStore'
 import BulkAddIngredientView from '@/views/BulkAddIngredientView.vue'
 import { useDataStore } from '@/stores/dataStore'
 import { initializeApp } from '@/services/AuthService'
+import RecipesListView from '@/views/RecipesListView.vue'
+import RecipeView from '@/views/RecipeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -58,6 +60,18 @@ const router = createRouter({
       path: '/dashboard',
       name: 'dashboard',
       component: DashboardView,
+      beforeEnter: mustBeLoggedIn
+    },
+    {
+      path: '/recipes',
+      name: 'recipes',
+      component: RecipesListView,
+      beforeEnter: mustBeLoggedIn
+    },
+    {
+      path: '/recipes/:id',
+      name: 'recipe',
+      component: RecipeView,
       beforeEnter: mustBeLoggedIn
     },
     // {

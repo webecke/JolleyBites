@@ -9,3 +9,14 @@ export const formatDate = (dateString: Date) => {
 
   return `${month} ${day} ${year} ${hours}:${minutes}`
 }
+
+export function roundToTwoDecimals(num: number): number {
+  return Math.round((num + Number.EPSILON) * 100) / 100;
+}
+
+export function convertNewlinesToBr(str: string | undefined): string {
+  if (str === undefined || str === null) {
+    return ''; // or return some default value
+  }
+  return str.replace(/\n/g, '<br>');
+}
