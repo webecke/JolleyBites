@@ -5,12 +5,15 @@ import type { Recipe } from '../../shared/types'
 import { convertNewlinesToBr, formatDate, roundToTwoDecimals, trimObjectStrings } from '@/utils/formatUtils'
 import { useDataStore } from '@/stores/dataStore'
 import router from '@/router'
+import { deleteRecipe } from '@/services/RecipeService'
+import { snackbarStore } from '@/stores/snackbarStore'
 
 const route = useRoute()
 
 const id = ref(route.params.id as string)
 const recipe = ref<Recipe>({} as Recipe)
 const showEditMode = ref<boolean>(false)
+const showDeleteConfirmation = ref<boolean>(false)
 
 onMounted(async () => {
   await loadRecipe()
@@ -27,6 +30,21 @@ const loadRecipe = async () => {
 const saveRecipe = () => {
   recipe.value = trimObjectStrings<Recipe>(recipe.value)
   showEditMode.value = false
+}
+
+const doDeleteRecipe = async () => {
+  try {
+    await deleteRecipe(recipe.value.id)
+  } catch (error) {
+    if (error instanceof Error) {
+      snackbarStore.showMessage(error.message, {color: "warning", timeout: 10000})
+    } else {
+      snackbarStore.showMessage("Something went wrong, recipe wasn't delete", {color: "error", timeout: -1})
+    }
+    return
+  }
+  snackbarStore.showMessage("Recipe deleted")
+  await router.push("/recipes")
 }
 </script>
 
@@ -103,8 +121,26 @@ const saveRecipe = () => {
 
       <p>Created {{formatDate(recipe.created_at)}}</p>
       <p>Last edited {{formatDate(recipe.updated_at)}}</p>
+      <v-btn v-if="showEditMode" color="red" @click="showDeleteConfirmation = true">Delete Recipe</v-btn>
     </div>
   </div>
+
+
+  <v-dialog
+    v-model="showDeleteConfirmation"
+    width="auto"
+    min-width="300px">
+    <v-card title="Are you sure?">
+      <template v-slot:text>
+        <p>Do you want to delete your {{recipe.name}} recipe?</p>
+        <p><em>You can not undo this</em></p>
+      </template>
+      <template v-slot:actions>
+        <v-btn @click="doDeleteRecipe" color="red">Delete</v-btn>
+        <v-btn @click="showDeleteConfirmation = false">Cancel</v-btn>
+      </template>
+    </v-card>
+  </v-dialog>
 </template>
 
 <style scoped>

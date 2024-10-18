@@ -11,6 +11,8 @@ export async function handleRecipesRequest (path: String, request: CfRequest, en
       return await processNewRecipeRequest(request, env)
     case "GET":
       return await processGetRecipesRequest(path, request, env)
+    case "DELETE":
+      return await processDeleteRecipeRequest(path, request, env)
     default:
       console.error(requestType)
       throw HttpError.methodNotAllowed(`Request type of ${requestType} not allowed at this endpoint`)
@@ -50,4 +52,17 @@ async function processGetRecipesRequest(path: String, request: CfRequest, env: E
     }
     return new Response(JSON.stringify(recipe), { status: 200 })
   }
+}
+
+async function processDeleteRecipeRequest(path: String, request: CfRequest, env: Env): Promise<Response> {
+  const {apiToken, apiPath} = parseNextApiToken(path)
+  const recipeDataAccess = new RecipeDataAccess(env.DB)
+
+  const id = Number(apiToken)
+  if (isNaN(id)) {
+    throw HttpError.badRequest("Recipe id must be a number")
+  }
+
+  await recipeDataAccess.deleteRecipeById(id)
+  return new Response(JSON.stringify({message: "Successfully deleted"}), {status: 200})
 }

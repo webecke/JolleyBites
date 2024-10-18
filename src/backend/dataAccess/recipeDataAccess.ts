@@ -67,4 +67,17 @@ export class RecipeDataAccess {
       throw HttpError.internalServerError("Failed to fetch recipe");
     }
   }
+
+  public async deleteRecipeById(id: number):Promise<void> {
+    try {
+      const { results } = await this.DB.prepare(
+        "DELETE FROM recipes WHERE id = ?"
+      ).bind(id).run();
+
+      return;
+    } catch (error) {
+      console.error("Database error:", error);
+      throw HttpError.internalServerError("Failed to delete recipe");
+    }
+  }
 }

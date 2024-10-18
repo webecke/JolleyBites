@@ -12,3 +12,8 @@ export const addNewRecipe = async (name: string): Promise<number> => {
 export const getAllRecipes = async (): Promise<Recipe []> => {
   return await ServerCommunicator.getRequest<Recipe[]>("/api/recipes")
 }
+
+export const deleteRecipe = async (id: number) => {
+  await ServerCommunicator.deleteRequest("/api/recipes/" + String(id))
+  useDataStore().deleteRecipe(id)
+}

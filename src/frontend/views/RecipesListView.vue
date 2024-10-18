@@ -1,18 +1,34 @@
 <script setup lang="ts">
 
 import { addNewRecipe } from '@/services/RecipeService'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { snackbarStore } from '@/stores/snackbarStore'
 import router from '@/router'
+import { useDataStore } from '@/stores/dataStore'
+import type { Recipe } from '../../shared/types'
 
 const newRecipeName = ref<string>("")
 const showNewRecipeMenu = ref<boolean>(false)
+const searchKey = ref<string>("")
+
+const visibleRecipes = computed(() => {
+  const lowercaseSearchKey = searchKey.value.trim().toLowerCase()
+  return useDataStore().recipes.filter( recipe =>
+    recipe.name.toLowerCase().includes(lowercaseSearchKey) ||
+    recipe.description.toLowerCase().includes(lowercaseSearchKey)) as Recipe[]
+})
+
 const openNewRecipeMenu = () => {
   newRecipeName.value = ""
   showNewRecipeMenu.value = true
 }
 
 const submitNewRecipe = async () => {
+  if (newRecipeName.value.trim() == '') {
+    snackbarStore.showMessage("Please enter a name for your recipe", {color: "warning"})
+    return
+  }
+
   let recipeId;
   try {
     recipeId = await addNewRecipe(newRecipeName.value)
@@ -35,7 +51,14 @@ const submitNewRecipe = async () => {
 
   <v-btn @click="openNewRecipeMenu">Create New Recipe</v-btn>
 
+  <div>
+    <div v-for="recipe in visibleRecipes" :key="recipe.id"
+         @click="router.push('/recipes/' + recipe.id)"
+         style="display: flex">
 
+      <p>{{recipe.name}}</p>
+    </div>
+  </div>
 
 
 

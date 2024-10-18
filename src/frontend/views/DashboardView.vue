@@ -11,6 +11,7 @@ onBeforeMount(async () => {
 })
 
 const ingredientCount = computed(() => useDataStore().ingredients.length)
+const recipeCount = computed(() => useDataStore().recipes.length)
 
 const logout = async () => {
   doLogout()
@@ -46,7 +47,7 @@ const logout = async () => {
           <RouterLink to="/recipes">
             <div class="headerAndStat">
               <h3>Recipes</h3>
-              <h3>0</h3>
+              <h3>{{recipeCount}}</h3>
             </div>
             <p>Calculate how much your recipes cost</p>
           </RouterLink>

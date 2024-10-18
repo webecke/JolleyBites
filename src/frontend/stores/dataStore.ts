@@ -68,6 +68,10 @@ export const useDataStore = defineStore('data', () => {
     state.ingredients = state.ingredients.filter(ingredient => !ids.includes(ingredient.id));
   }
 
+  const deleteRecipe = (id: number) => {
+    state.recipes = state.recipes.filter(recipe => recipe.id != id)
+  }
+
   return {
     ingredients: ingredients,
     recipes: recipes,
@@ -78,6 +82,7 @@ export const useDataStore = defineStore('data', () => {
     addIngredient,
     addRecipe,
     getRecipe,
-    deleteIngredients
+    deleteIngredients,
+    deleteRecipe
   }
 })
