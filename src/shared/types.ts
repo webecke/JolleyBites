@@ -15,7 +15,7 @@ export type Recipe = {
   name: string,
   description: string,
   servings_per_recipe: number,
-  ingredients: { id: number, quantity: number }[],
+  //ingredients: { id: number, quantity: number }[],
   calculated_cost: number,
   instructions: string,
   notes: string,

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { onBeforeMount, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import type { Recipe } from '../../shared/types'
 import { convertNewlinesToBr, formatDate, roundToTwoDecimals, trimObjectStrings } from '@/utils/formatUtils'
 
@@ -55,6 +55,7 @@ const saveRecipe = () => {
       </h1>
 
       <v-text-field v-if="showEditMode" v-model="recipe.description" label="Description"/>
+      <p v-else-if="recipe.description == ''"><em>No description</em></p>
       <p v-else>{{recipe.description}}</p>
 
       <p v-if="showEditMode">

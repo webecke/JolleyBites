@@ -41,4 +41,30 @@ export class RecipeDataAccess {
       throw HttpError.internalServerError("Failed to insert new recipe");
     }
   }
+
+  public async getRecipesForUser(userId: String):Promise<Recipe[]> {
+    try {
+      const { results } = await this.DB.prepare(
+        "SELECT * FROM recipes WHERE user_id = ?"
+      ).bind(userId).all();
+
+      return results as Recipe[];
+    } catch (error) {
+      console.error("Database error:", error);
+      throw HttpError.internalServerError("Failed to fetch recipes");
+    }
+  }
+
+  public async getRecipeById(id: number):Promise<Recipe> {
+    try {
+      const { results } = await this.DB.prepare(
+        "SELECT * FROM recipes WHERE id = ?"
+      ).bind(id).all();
+
+      return results[0] as Recipe;
+    } catch (error) {
+      console.error("Database error:", error);
+      throw HttpError.internalServerError("Failed to fetch recipe");
+    }
+  }
 }

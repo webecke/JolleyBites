@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { newRecipePost } from '@/services/RecipeService'
+import { addNewRecipe } from '@/services/RecipeService'
 import { ref } from 'vue'
 import { snackbarStore } from '@/stores/snackbarStore'
 import router from '@/router'
@@ -15,7 +15,7 @@ const openNewRecipeMenu = () => {
 const submitNewRecipe = async () => {
   let recipeId;
   try {
-    recipeId = await newRecipePost(newRecipeName.value)
+    recipeId = await addNewRecipe(newRecipeName.value)
   } catch (error) {
     if (error instanceof Error) {
       snackbarStore.showMessage(error.message, {color: "warning", timeout: 10000})
@@ -25,7 +25,7 @@ const submitNewRecipe = async () => {
     return
   }
   snackbarStore.showMessage("Recipe created!", {color: "green"})
-  await router.push("/recipes/" + recipeId.recipeId)
+  await router.push("/recipes/" + recipeId)
 }
 </script>
 

@@ -1,7 +1,8 @@
 import { computed, reactive, ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { Ingredient } from '../../shared/types'
+import type { Ingredient, Recipe } from '../../shared/types'
 import { getAllIngredients } from '@/services/IngredientService'
+import { getAllRecipes } from '@/services/RecipeService'
 
 export const useDataStore = defineStore('data', () => {
   const initializeDataStore = async ()  => {
@@ -9,6 +10,7 @@ export const useDataStore = defineStore('data', () => {
 
     try {
       await loadIngredients()
+      await loadRecipes()
     } catch(e) {
       console.log("Error initializing local DataStore: " + e)
       return
@@ -19,10 +21,12 @@ export const useDataStore = defineStore('data', () => {
   const dataIsLoaded = ref<boolean>(false)
 
   const state = reactive({
-    ingredients: [] as Ingredient[]
+    ingredients: [] as Ingredient[],
+    recipes: [] as Recipe[]
   })
 
   const ingredients = computed(() => state.ingredients)
+  const recipes = computed(() => state.recipes)
 
   const loadIngredients = async () => {
     const response: Ingredient[] = await getAllIngredients()
@@ -30,9 +34,18 @@ export const useDataStore = defineStore('data', () => {
     state.ingredients.push(...response)
   }
 
+  const loadRecipes = async () => {
+    const response: Recipe[] = await getAllRecipes()
+    console.log(response)
+  }
+
   const addIngredient = (newIngredient: Ingredient) => {
     state.ingredients.push(newIngredient);
   };
+
+  const addRecipe = (newRecipe: Recipe) => {
+    state.recipes.push(newRecipe)
+  }
 
   const deleteIngredients = (ids: number[]) => {
     state.ingredients = state.ingredients.filter(ingredient => !ids.includes(ingredient.id));
@@ -40,10 +53,13 @@ export const useDataStore = defineStore('data', () => {
 
   return {
     ingredients: ingredients,
+    recipes: recipes,
     dataIsLoaded,
     loadIngredients,
+    loadRecipes,
     initializeDataStore,
     addIngredient,
+    addRecipe,
     deleteIngredients
   }
 })
