@@ -22,6 +22,8 @@ export async function handleIngredientsRequest (path: String, request: CfRequest
       const response = await ingredientsDataAccess.getIngredientById(Number(apiToken))
       if (response == null) {
         throw HttpError.notFound("Ingredient not found with id [" + apiToken + "]")
+      } else if (response.user_id != env.user.id) {
+        throw HttpError.unauthorized("Ingredient owned by a different user")
       }
       return new Response(JSON.stringify(response), { status: 200 })
 
