@@ -23,7 +23,11 @@ onMounted(async () => {
 const loadRecipe = async () => {
   const foundRecipe = useDataStore().getRecipe(Number(id.value))
 
-  if (foundRecipe == null) { await router.push("/404"); return }
+  if (foundRecipe == null) {
+    await router.push("/recipes");
+    snackbarStore.showWarningMessage("Not Found: That recipe either doesn't belong to you, or no longer exists")
+    return
+  }
   recipe.value = foundRecipe
   console.log(recipe.value)
 }
