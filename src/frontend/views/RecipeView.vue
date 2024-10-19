@@ -7,6 +7,7 @@ import { useDataStore } from '@/stores/dataStore'
 import router from '@/router'
 import { deleteRecipe } from '@/services/RecipeService'
 import { snackbarStore } from '@/stores/snackbarStore'
+import { doErrorHandling } from '@/utils/generalUtils'
 
 const route = useRoute()
 
@@ -33,18 +34,11 @@ const saveRecipe = () => {
 }
 
 const doDeleteRecipe = async () => {
-  try {
+  await doErrorHandling(async () => {
     await deleteRecipe(recipe.value.id)
-  } catch (error) {
-    if (error instanceof Error) {
-      snackbarStore.showMessage(error.message, {color: "warning", timeout: 10000})
-    } else {
-      snackbarStore.showMessage("Something went wrong, recipe wasn't delete", {color: "error", timeout: -1})
-    }
-    return
-  }
-  snackbarStore.showMessage("Recipe deleted")
-  await router.push("/recipes")
+    snackbarStore.showSuccessMessage("Recipe deleted")
+    await router.push("/recipes")
+  }, "deleting recipe")
 }
 </script>
 

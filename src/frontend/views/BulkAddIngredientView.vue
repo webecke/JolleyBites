@@ -6,6 +6,7 @@ import { snackbarStore } from '@/stores/snackbarStore'
 import type { ClientGeneratedIngredient } from '../../shared/messages'
 import { addIngredientsBatch } from '@/services/IngredientService'
 import { useDataStore } from '@/stores/dataStore'
+import { doErrorHandling } from '@/utils/generalUtils'
 
 onMounted(() => {
   for (let i = 0; i < 5; i++) {
@@ -46,28 +47,22 @@ const handleSaveButtonClick = async () => {
   }
 
   if (ingredients.value.length == 0) {
-    snackbarStore.showMessage("There are no ingredients to save", {color: "warning", timeout: 10000})
+    snackbarStore.showWarningMessage("There are no ingredients to save")
     showIngredientErrorPopup.value = false
     addIngredientRow()
     return
   }
 
   let ingredientsSaved
-  try {
+
+  await doErrorHandling(async () => {
     const response = await addIngredientsBatch(ingredients.value)
     ingredientsSaved = response.ingredientsIds.length
-  } catch (error) {
-    if (error instanceof Error) {
-      snackbarStore.showMessage(error.message, {color: "warning", timeout: 10000})
-    } else {
-      snackbarStore.showMessage("Something went wrong, ingredient wasn't saved", {color: "error", timeout: -1})
-    }
-    return
-  }
 
-  await useDataStore().loadIngredients()
-  await router.push("/ingredients")
-  snackbarStore.showMessage(`Successfully saved ${ingredientsSaved} new ingredients`, {color:'green', timeout: 5000})
+    await useDataStore().loadIngredients()
+    await router.push("/ingredients")
+    snackbarStore.showSuccessMessage(`Successfully saved ${ingredientsSaved} new ingredients`)
+  }, "saving ingredients")
 }
 
 const showIngredientErrorPopup = ref<boolean>(false)

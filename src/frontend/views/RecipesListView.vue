@@ -6,6 +6,7 @@ import { snackbarStore } from '@/stores/snackbarStore'
 import router from '@/router'
 import { useDataStore } from '@/stores/dataStore'
 import type { Recipe } from '../../shared/types'
+import { doErrorHandling } from '@/utils/generalUtils'
 
 const newRecipeName = ref<string>("")
 const showNewRecipeMenu = ref<boolean>(false)
@@ -25,23 +26,16 @@ const openNewRecipeMenu = () => {
 
 const submitNewRecipe = async () => {
   if (newRecipeName.value.trim() == '') {
-    snackbarStore.showMessage("Please enter a name for your recipe", {color: "warning"})
+    snackbarStore.showWarningMessage("Please enter a name for your recipe")
     return
   }
 
-  let recipeId;
-  try {
+  await doErrorHandling(async () => {
+    let recipeId;
     recipeId = await addNewRecipe(newRecipeName.value)
-  } catch (error) {
-    if (error instanceof Error) {
-      snackbarStore.showMessage(error.message, {color: "warning", timeout: 10000})
-    } else {
-      snackbarStore.showMessage("Something went wrong, recipe wasn't created", {color: "error", timeout: -1})
-    }
-    return
-  }
-  snackbarStore.showMessage("Recipe created!", {color: "green"})
-  await router.push("/recipes/" + recipeId)
+    snackbarStore.showSuccessMessage("Recipe created!")
+    await router.push("/recipes/" + recipeId)
+  }, "creating new recipe")
 }
 </script>
 

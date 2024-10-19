@@ -6,6 +6,7 @@ import { addIngredient, deleteIngredients, updateIngredient } from '@/services/I
 import { snackbarStore } from '@/stores/snackbarStore'
 import router from '@/router'
 import type { ClientGeneratedIngredient } from '../../shared/messages'
+import { doErrorHandling } from '@/utils/generalUtils'
 
 onMounted(async () => {
   document.addEventListener('keyup', handleEnterKey);
@@ -56,7 +57,7 @@ const finishEditing = async (item: Ingredient) => {
   try {
     await updateIngredient(item)
   } catch (error) {
-    snackbarStore.showMessage("Something went wrong saving your changes. Please refresh the page", {color:"red", timeout: -1})
+    snackbarStore.showCriticalErrorMessage("Something went wrong saving your changes. Please refresh the page")
     return
   }
   console.log('Edited item:', item);
@@ -74,32 +75,21 @@ const openAddIngredient = () => {
 
 const deleteSelected = async () => {
   const countDeleting = selected.value.length
-  try {
-    await deleteIngredients(selected.value)
-  } catch(error) {
-    snackbarStore.showMessage("Failed to delete ingredients", {color: "error", timeout: -1})
-  }
 
-  console.log(useDataStore().ingredients)
-  deleteWarning.value = false
-  snackbarStore.showMessage(`Successfully deleted ${countDeleting} ingredients`)
-  selected.value = []
+  await doErrorHandling(async () => {
+    await deleteIngredients(selected.value)
+    deleteWarning.value = false
+    snackbarStore.showSuccessMessage(`Successfully deleted ${countDeleting} ingredients`)
+    selected.value = []
+  }, "deleting ingredients")
 }
 
 const saveNewIngredient = async () => {
-  try {
+  await doErrorHandling(async () => {
     await addIngredient(ingredientToAdd.value)
-  } catch (error) {
-    if (error instanceof Error) {
-      snackbarStore.showMessage(error.message, {color: "warning", timeout: 10000})
-    } else {
-      snackbarStore.showMessage("Something went wrong, ingredient wasn't saved", {color: "error", timeout: -1})
-    }
-    return
-  }
-
-  snackbarStore.showMessage(`Successfully added ingredient "${ingredientToAdd.value?.name}"`, {color:"success"})
-  openAddIngredient()
+    snackbarStore.showSuccessMessage(`Successfully added ingredient "${ingredientToAdd.value?.name}"`)
+    openAddIngredient()
+  }, "saving ingredient")
 }
 
 const handleEnterKey = (event: KeyboardEvent) => {

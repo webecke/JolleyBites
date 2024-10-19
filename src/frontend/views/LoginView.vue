@@ -5,7 +5,7 @@ import { doLogin } from '@/services/AuthService'
 import router from '@/router'
 import { snackbarStore } from '@/stores/snackbarStore'
 import { useAuthStore } from '@/stores/authStore'
-import { useDataStore } from '@/stores/dataStore'
+import { doErrorHandling } from '@/utils/generalUtils'
 
 const inputEmail = ref<string>("")
 const inputPassword = ref<string>("")
@@ -35,19 +35,12 @@ onUnmounted(() => {
 
 const login = async () => {
   if (!formReady.value || loading.value) { return }
-  try {
+
+  await doErrorHandling(async () => {
     await doLogin(inputEmail.value, inputPassword.value)
     await router.push("/dashboard")
-    snackbarStore.showMessage(`Logged in ${useAuthStore().currentUser?.name}`, {color:"green", timeout: 5000})
-  } catch (error) {
-    if (error instanceof Error) {
-      snackbarStore.showMessage(error.message, {color:"red", timeout: 10000})
-      return
-    } else {
-      snackbarStore.showMessage("Something went horribly wrong")
-      return
-    }
-  }
+    snackbarStore.showSuccessMessage(`Logged in ${useAuthStore().currentUser?.name}`)
+  }, "logging in")
 }
 </script>
 

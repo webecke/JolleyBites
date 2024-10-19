@@ -46,7 +46,7 @@ export const useAuthStore = defineStore('auth', () => {
     return authTokenString.value
   }
 
-  const login = (response: LoginRegisterResponse) => {
+  const login = async (response: LoginRegisterResponse) => {
     currentUser.value = response.user
     authTokenString.value = response.authToken.token
 

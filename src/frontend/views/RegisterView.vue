@@ -4,6 +4,7 @@ import { isAcceptablePassword } from '../../shared/acceptablePassword'
 import { doRegister } from '@/services/AuthService'
 import { snackbarStore } from '@/stores/snackbarStore'
 import router from '@/router'
+import { doErrorHandling } from '@/utils/generalUtils'
 
 const handleKeyUp = (event: KeyboardEvent): void => {
   if (event.key === 'Enter') {
@@ -43,19 +44,12 @@ const formReady = computed(() => {
 
 const register = async () => {
   if (!formReady.value || loading.value) { return }
-  try {
+
+  await doErrorHandling(async () => {
     await doRegister(inputName.value, inputEmail.value, inputPassword.value)
     await router.push("/dashboard")
-    snackbarStore.showMessage(`Welcome to JolleyBites, ${inputName.value}`, {color:"green", timeout: 5000})
-  } catch (error) {
-    if (error instanceof Error) {
-      snackbarStore.showMessage(error.message, {color:"red", timeout: 10000})
-      return
-    } else {
-      snackbarStore.showMessage("Something went horribly wrong")
-      return
-    }
-  }
+    snackbarStore.showSuccessMessage(`Welcome to JolleyBites, ${inputName.value}`)
+  }, "registering")
 }
 </script>
 

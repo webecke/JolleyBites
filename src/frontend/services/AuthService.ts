@@ -12,7 +12,7 @@ export const doRegister = async (name: string, email: string, password: string) 
     password: password
   })
 
-  useAuthStore().login(response)
+  await useAuthStore().login(response)
   await initializeApp()
 }
 
@@ -22,7 +22,7 @@ export const doLogin = async (email: string, password: string) => {
     password: password
   })
 
-  useAuthStore().login(response)
+  await useAuthStore().login(response)
   await initializeApp()
 }
 

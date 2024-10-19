@@ -26,6 +26,21 @@ export const snackbarStore = {
     state.show = true
     Object.assign(state, options)
   },
+  showSuccessMessage(message: string) {
+    this.showMessage(message, {color: "green", timeout: 5000})
+  },
+  showWarningMessage(message: string) {
+    this.showMessage(message, {color: "yellow", timeout: 10000})
+  },
+  showCriticalErrorMessage(message: string) {
+    this.showMessage(message, {color: "error", timeout: -1})
+  },
+  showTempInfoMessage(message: string) {
+    this.showMessage(message, {color: "grey", timeout: 2500})
+  },
+  showPersistentInfoMessage(message: string) {
+    this.showMessage(message, {color: "grey", timeout: -1})
+  },
   hideMessage() {
     state.show = false
   },
