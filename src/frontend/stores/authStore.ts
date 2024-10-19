@@ -4,6 +4,7 @@ import type { User } from '../../shared/types'
 import type { LoginRegisterResponse } from '../../shared/messages'
 import { getMe } from '@/services/AuthService'
 import router from '@/router'
+import { useDataStore } from '@/stores/dataStore'
 
 export const useAuthStore = defineStore('auth', () => {
 
@@ -58,7 +59,8 @@ export const useAuthStore = defineStore('auth', () => {
     authTokenString.value = null
 
     clearLocalAuthToken()
-    console.log('logged out and cleared local authtoken')
+    useDataStore().clearDataStore()
+    console.log('logged out, cleared local authtoken, and cleared local dataStore')
   }
 
   return {

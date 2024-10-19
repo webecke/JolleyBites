@@ -18,6 +18,10 @@ export const useDataStore = defineStore('data', () => {
     dataIsLoaded.value = true
   }
 
+  const clearDataStore = () => {
+    state.ingredients.length = 0
+    state.recipes.length = 0
+  }
   const dataIsLoaded = ref<boolean>(false)
 
   const state = reactive({
@@ -83,6 +87,7 @@ export const useDataStore = defineStore('data', () => {
     addRecipe,
     getRecipe,
     deleteIngredients,
-    deleteRecipe
+    deleteRecipe,
+    clearDataStore
   }
 })
