@@ -19,7 +19,7 @@ export class UserDataAccess {
     `).bind(
         id,
         user.name,
-        user.email,
+        user.email.toLowerCase(),
         hashed_password,
         user.created_at,
         user.password_changed_at,
@@ -52,7 +52,7 @@ export class UserDataAccess {
     try {
       const { results } = await this.DB.prepare(
         "SELECT * FROM users WHERE email = ?"
-      ).bind(email).all();
+      ).bind(email.toLowerCase()).all();
 
       if (results.length === 0) {
         return null; // No user found with the given email
@@ -69,7 +69,7 @@ export class UserDataAccess {
     try {
       const { results } = await this.DB.prepare(
         "SELECT hashed_password FROM users WHERE email = ?"
-      ).bind(email).all();
+      ).bind(email.toLowerCase()).all();
 
       if (results.length === 0) {
         return null; // No user found with the given email
