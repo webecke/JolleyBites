@@ -40,19 +40,22 @@ const saveRecipe = async () => {
   recipe.value = trimObjectStrings<Recipe>(recipe.value)
   if (recipe.value.servings_per_recipe <= 0) {
     snackbarStore.showWarningMessage("Please enter a value greater than 0 for 'servings per recipe'")
-    return;
-  }
-
-  await updateRecipe(recipe.value)
-  const updatedRecipe = useDataStore().getRecipe(recipe.value.id)
-  if (updatedRecipe == null) {
-    snackbarStore.showCriticalErrorMessage("Something went wrong saving the recipe, please reload the page")
+    return
+  } else if (recipe.value.name == "") {
+    snackbarStore.showWarningMessage("Please enter a recipe name")
     return
   }
 
-  recipe.value = updatedRecipe
-
-  showEditMode.value = false
+  await doErrorHandling(async () => {
+    await updateRecipe(recipe.value)
+    const updatedRecipe = useDataStore().getRecipe(recipe.value.id)
+    if (updatedRecipe == null) {
+      snackbarStore.showCriticalErrorMessage("Something went wrong saving the recipe, please reload the page")
+      return
+    }
+    recipe.value = updatedRecipe
+    showEditMode.value = false
+  }, "saving changes to recipe")
 }
 
 const startEdit = () => {

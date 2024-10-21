@@ -83,6 +83,10 @@ async function processPatchRecipeRequest(path: String, request: CfRequest, env: 
       throw HttpError.notFound("That recipe was not found")
     } else if (currentRecipe.user_id != env.user.id) {
       throw HttpError.forbidden("That recipe is owned by another user")
+    } else if (metaUpdate.name.trim() == "") {
+      throw HttpError.badRequest("Name cannot be empty")
+    } else if (metaUpdate.servings_per_recipe <= 0) {
+      throw HttpError.badRequest("Servings per recipe must be greater than 0")
     }
 
     const updatedRecipe: Recipe = {
