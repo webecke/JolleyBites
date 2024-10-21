@@ -1,5 +1,5 @@
 import { D1Database } from '@cloudflare/workers-types'
-import type { Ingredient, Recipe } from '../../shared/types'
+import type { Recipe } from '../../shared/types'
 import { HttpError } from '../errors/HttpError'
 
 export class RecipeDataAccess {
@@ -78,6 +78,36 @@ export class RecipeDataAccess {
     } catch (error) {
       console.error("Database error:", error);
       throw HttpError.internalServerError("Failed to delete recipe");
+    }
+  }
+
+  public async updateRecipe(recipe: Recipe): Promise<boolean> {
+    try {
+      const statement = await this.DB.prepare(`
+      UPDATE recipes
+      SET name = ?, description = ?, servings_per_recipe = ?, calculated_cost = ?, instructions = ?, notes = ?, updated_at = ?
+      WHERE id = ?
+    `).bind(
+        recipe.name,
+        recipe.description,
+        recipe.servings_per_recipe,
+        recipe.calculated_cost,
+        recipe.instructions,
+        recipe.notes,
+        recipe.updated_at.toISOString(),
+        recipe.id
+      );
+
+      const result = await statement.run();
+
+      if (result && result.success) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.error("Database error:", error);
+      throw HttpError.internalServerError("Failed to update recipe");
     }
   }
 }

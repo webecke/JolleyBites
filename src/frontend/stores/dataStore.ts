@@ -68,6 +68,11 @@ export const useDataStore = defineStore('data', () => {
     return null
   }
 
+  const updateRecipe = (updatedRecipe: Recipe) => {
+    const index = state.recipes.findIndex(recipe  => recipe.id === updatedRecipe.id);
+    state.recipes[index] = updatedRecipe
+  }
+
   const deleteIngredients = (ids: number[]) => {
     state.ingredients = state.ingredients.filter(ingredient => !ids.includes(ingredient.id));
   }
@@ -86,6 +91,7 @@ export const useDataStore = defineStore('data', () => {
     addIngredient,
     addRecipe,
     getRecipe,
+    updateRecipe,
     deleteIngredients,
     deleteRecipe,
     clearDataStore

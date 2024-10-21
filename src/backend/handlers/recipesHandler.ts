@@ -2,6 +2,8 @@ import { Request as CfRequest } from '@cloudflare/workers-types'
 import { type Env, parseNextApiToken } from '../../../functions/requestTools'
 import { HttpError } from '../errors/HttpError'
 import { RecipeDataAccess } from '../dataAccess/recipeDataAccess'
+import type { RecipeMetaUpdate } from '../../shared/messages'
+import type { Recipe } from '../../shared/types'
 
 export async function handleRecipesRequest (path: String, request: CfRequest, env: Env): Promise<Response> {
   const requestType = request.method
@@ -9,6 +11,8 @@ export async function handleRecipesRequest (path: String, request: CfRequest, en
   switch (requestType) {
     case "POST":
       return await processNewRecipeRequest(request, env)
+    case "PATCH":
+      return await processPatchRecipeRequest(path, request, env)
     case "GET":
       return await processGetRecipesRequest(path, request, env)
     case "DELETE":
@@ -32,7 +36,7 @@ async function processNewRecipeRequest(request: CfRequest, env: Env): Promise<Re
 }
 
 async function processGetRecipesRequest(path: String, request: CfRequest, env: Env): Promise<Response> {
-  const {apiToken, apiPath} = parseNextApiToken(path)
+  const {apiToken} = parseNextApiToken(path)
   const recipeDataAccess = new RecipeDataAccess(env.DB)
 
   if (apiToken == "") {
@@ -55,7 +59,7 @@ async function processGetRecipesRequest(path: String, request: CfRequest, env: E
 }
 
 async function processDeleteRecipeRequest(path: String, request: CfRequest, env: Env): Promise<Response> {
-  const {apiToken, apiPath} = parseNextApiToken(path)
+  const {apiToken} = parseNextApiToken(path)
   const recipeDataAccess = new RecipeDataAccess(env.DB)
 
   const id = Number(apiToken)
@@ -65,4 +69,37 @@ async function processDeleteRecipeRequest(path: String, request: CfRequest, env:
 
   await recipeDataAccess.deleteRecipeById(id)
   return new Response(JSON.stringify({message: "Successfully deleted"}), {status: 200})
+}
+
+async function processPatchRecipeRequest(path: String, request: CfRequest, env: Env): Promise<Response> {
+  const recipeDataAccess = new RecipeDataAccess(env.DB)
+  const reqBody: any = await request.json()
+
+  if ('recipeMetaUpdate' in reqBody) {
+    const metaUpdate: RecipeMetaUpdate = reqBody.recipeMetaUpdate
+    const currentRecipe: Recipe = await recipeDataAccess.getRecipeById(metaUpdate.id)
+
+    if (currentRecipe == null) {
+      throw HttpError.notFound("That recipe was not found")
+    } else if (currentRecipe.user_id != env.user.id) {
+      throw HttpError.forbidden("That recipe is owned by another user")
+    }
+
+    const updatedRecipe: Recipe = {
+      id: currentRecipe.id,
+      user_id: currentRecipe.user_id,
+      name: metaUpdate.name,
+      description: metaUpdate.description,
+      servings_per_recipe: metaUpdate.servings_per_recipe,
+      calculated_cost: currentRecipe.calculated_cost,
+      instructions: metaUpdate.instructions,
+      notes: metaUpdate.notes,
+      created_at: currentRecipe.created_at,
+      updated_at: new Date(Date.now())
+    }
+    const recipeId = await recipeDataAccess.updateRecipe(updatedRecipe)
+    return new Response(JSON.stringify({recipeId: recipeId}), {status: 200})
+  } else {
+    throw HttpError.badRequest("Missing recipeMetaUpdate field")
+  }
 }

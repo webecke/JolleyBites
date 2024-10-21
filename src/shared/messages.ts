@@ -23,3 +23,12 @@ export type ClientGeneratedIngredient = {
   purchase_price: number,
   notes: string
 }
+
+export type RecipeMetaUpdate = {
+  id: number,
+  name: string,
+  description: string,
+  servings_per_recipe: number,
+  instructions: string,
+  notes: string,
+}

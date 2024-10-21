@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import type { Recipe } from '../../shared/types'
 import { convertNewlinesToBr, formatDate, roundToTwoDecimals, trimObjectStrings } from '@/utils/formatUtils'
 import { useDataStore } from '@/stores/dataStore'
 import router from '@/router'
-import { deleteRecipe } from '@/services/RecipeService'
+import { deleteRecipe, updateRecipe } from '@/services/RecipeService'
 import { snackbarStore } from '@/stores/snackbarStore'
 import { doErrorHandling } from '@/utils/generalUtils'
 
@@ -13,8 +13,10 @@ const route = useRoute()
 
 const id = ref(route.params.id as string)
 const recipe = ref<Recipe>({} as Recipe)
+const preEditedRecipe = ref<Recipe>({} as Recipe)
 const showEditMode = ref<boolean>(false)
 const showDeleteConfirmation = ref<boolean>(false)
+const initialEdit = computed(() => recipe.value.created_at == recipe.value.updated_at)
 
 onMounted(async () => {
   await loadRecipe()
@@ -29,11 +31,42 @@ const loadRecipe = async () => {
     return
   }
   recipe.value = foundRecipe
-  console.log(recipe.value)
+  if (initialEdit.value) {
+    showEditMode.value = true
+  }
 }
 
-const saveRecipe = () => {
+const saveRecipe = async () => {
   recipe.value = trimObjectStrings<Recipe>(recipe.value)
+  if (recipe.value.servings_per_recipe <= 0) {
+    snackbarStore.showWarningMessage("Please enter a value greater than 0 for 'servings per recipe'")
+    return;
+  }
+
+  await updateRecipe(recipe.value)
+  const updatedRecipe = useDataStore().getRecipe(recipe.value.id)
+  if (updatedRecipe == null) {
+    snackbarStore.showCriticalErrorMessage("Something went wrong saving the recipe, please reload the page")
+    return
+  }
+
+  recipe.value = updatedRecipe
+
+  showEditMode.value = false
+}
+
+const startEdit = () => {
+  preEditedRecipe.value = { ...recipe.value }
+  showEditMode.value = true
+}
+
+const cancelEdit = () => {
+  if (initialEdit.value) {
+    showDeleteConfirmation.value = true
+    return
+  }
+
+  recipe.value = { ...preEditedRecipe.value }
   showEditMode.value = false
 }
 
@@ -60,14 +93,17 @@ const doDeleteRecipe = async () => {
 
       <p v-if="showEditMode">
         Servings per recipe:
-        <v-text-field style="width: 100px" type="number" v-model="recipe.servings_per_recipe"/>
+        <v-text-field style="width: 100px" type="number" :error-messages="recipe.servings_per_recipe <= 0 ? 'Must be over zero' : ''" v-model="recipe.servings_per_recipe"/>
       </p>
       <p v-else><em>This recipe makes {{recipe.servings_per_recipe}} servings</em></p>
     </div>
+    <v-btn v-if="showEditMode" @click="cancelEdit">
+      Cancel
+    </v-btn>
     <v-btn v-if="showEditMode" color="green" @click="saveRecipe">
       Save <font-awesome-icon :icon="['fas', 'file-arrow-up']" />
     </v-btn>
-    <v-btn v-else @click="showEditMode = true">
+    <v-btn v-else @click="startEdit">
       Edit<font-awesome-icon :icon="['fas', 'pen-to-square']" />
     </v-btn>
   </div>
@@ -128,7 +164,17 @@ const doDeleteRecipe = async () => {
     v-model="showDeleteConfirmation"
     width="auto"
     min-width="300px">
-    <v-card title="Are you sure?">
+    <v-card v-if="initialEdit" title="Are you sure?">
+      <template v-slot:text>
+        <p>Do you want to cancel creating this recipe?</p>
+        <p><em>You can not undo this</em></p>
+      </template>
+      <template v-slot:actions>
+        <v-btn @click="doDeleteRecipe" color="red">Cancel creating recipe</v-btn>
+        <v-btn @click="showDeleteConfirmation = false">Continue making recipe</v-btn>
+      </template>
+    </v-card>
+    <v-card v-else title="Are you sure?">
       <template v-slot:text>
         <p>Do you want to delete your {{recipe.name}} recipe?</p>
         <p><em>You can not undo this</em></p>
