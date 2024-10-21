@@ -18,7 +18,7 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
+      path: '',
       name: 'welcome',
       component: WelcomeView
     },
@@ -100,14 +100,14 @@ router.beforeEach(async (to, from, next) => {
 async function mustBeLoggedIn() {
   await useAuthStore().getCurrentUser()
   if (!useAuthStore().isLoggedIn) {
-    router.push('/login')
+    await router.push('/login')
   }
 }
 
 async function mustBeLoggedOut() {
   await useAuthStore().getCurrentUser()
   if (useAuthStore().isLoggedIn) {
-    router.push('/dashboard')
+    await router.push('/dashboard')
   }
 }
 
