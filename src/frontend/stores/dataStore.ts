@@ -1,8 +1,8 @@
 import { computed, reactive, ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { Ingredient, Recipe } from '../../shared/types'
+import type { Ingredient, Recipe, IngredientRecipe } from '../../shared/types'
 import { getAllIngredients } from '@/services/IngredientService'
-import { getAllRecipes } from '@/services/RecipeService'
+import { getAllRecipes, getIngredientRecipes } from '@/services/RecipeService'
 
 export const useDataStore = defineStore('data', () => {
   const initializeDataStore = async ()  => {
@@ -26,11 +26,13 @@ export const useDataStore = defineStore('data', () => {
 
   const state = reactive({
     ingredients: [] as Ingredient[],
-    recipes: [] as Recipe[]
+    recipes: [] as Recipe[],
+    ingredientRecipes: new Map<number, IngredientRecipe[]>()
   })
 
   const ingredients = computed(() => state.ingredients)
   const recipes = computed(() => state.recipes)
+  const ingredientRecipes = computed(() => state.ingredientRecipes)
 
   const loadIngredients = async () => {
     const response: Ingredient[] = await getAllIngredients()
@@ -42,6 +44,15 @@ export const useDataStore = defineStore('data', () => {
     const response: Recipe[] = await getAllRecipes()
     state.recipes.length = 0
     state.recipes.push(...response)
+  }
+
+  const loadIngredientRecipes = async (recipeId: number, cache: boolean = true) => {
+    if (cache && state.ingredientRecipes.has(recipeId)) {
+      return;
+    }
+
+    const response: IngredientRecipe[] = await getIngredientRecipes(recipeId)
+    state.ingredientRecipes.set(recipeId, response);
   }
 
   const addIngredient = (newIngredient: Ingredient) => {
@@ -84,9 +95,11 @@ export const useDataStore = defineStore('data', () => {
   return {
     ingredients: ingredients,
     recipes: recipes,
+    ingredientRecipes: ingredientRecipes,
     dataIsLoaded,
     loadIngredients,
     loadRecipes,
+    loadIngredientRecipes,
     initializeDataStore,
     addIngredient,
     addRecipe,

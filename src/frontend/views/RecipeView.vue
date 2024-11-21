@@ -1,18 +1,21 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { computed, onMounted, ref } from 'vue'
-import type { Recipe } from '../../shared/types'
+import type { Recipe, IngredientRecipe } from '../../shared/types'
 import { convertNewlinesToBr, formatDate, roundToTwoDecimals, trimObjectStrings } from '@/utils/formatUtils'
 import { useDataStore } from '@/stores/dataStore'
 import router from '@/router'
 import { deleteRecipe, updateRecipe } from '@/services/RecipeService'
 import { snackbarStore } from '@/stores/snackbarStore'
 import { doErrorHandling } from '@/utils/generalUtils'
+import { ServerCommunicator } from '@/services/ServerCommunicator'
 
 const route = useRoute()
 
+const data = useDataStore()
 const id = ref(route.params.id as string)
 const recipe = ref<Recipe>({} as Recipe)
+const ingredientList = ref<IngredientRecipe[]>([])
 const preEditedRecipe = ref<Recipe>({} as Recipe)
 const showEditMode = ref<boolean>(false)
 const showDeleteConfirmation = ref<boolean>(false)
@@ -31,6 +34,11 @@ const loadRecipe = async () => {
     return
   }
   recipe.value = foundRecipe
+
+  await data.loadIngredientRecipes(recipe.value.id)
+  const recipeIngredients = data.ingredientRecipes.get(recipe.value.id) || []
+  ingredientList.value = [...recipeIngredients]
+
   if (initialEdit.value) {
     showEditMode.value = true
   }
@@ -120,7 +128,7 @@ const doDeleteRecipe = async () => {
 
   <div class="flexableColumnContainer">
     <div class="flexableColumns" style="width: 60%">
-      This is the ingredients area
+      <p v-for="ingredient in ingredientList">You need {{ingredient.quantity_in_recipe}} units of ingredient #{{ingredient.ingredient_id}}</p>
     </div>
     <div class="flexableColumns" style="width: 40%">
       <v-textarea

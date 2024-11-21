@@ -1,3 +1,21 @@
+export interface IngredientForRecipe {
+  id: number;
+  user_id: string;
+  recipe_id: number;
+  ingredient_id: number;
+  quantity_in_recipe: number;
+  notes: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export type IngredientRecipe = {
+  recipe_id: number;
+  ingredient_id: number;
+  quantity_in_recipe: number;
+  notes: string;
+}
+
 export type Ingredient = {
   id: number,
   user_id: string,

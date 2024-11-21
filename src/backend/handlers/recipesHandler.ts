@@ -4,6 +4,8 @@ import { HttpError } from '../errors/HttpError'
 import { RecipeDataAccess } from '../dataAccess/recipeDataAccess'
 import type { RecipeMetaUpdate } from '../../shared/messages'
 import type { Recipe } from '../../shared/types'
+import { DataAccessMachine } from '../dataAccess/dataAccessMachine'
+import { IngredientRecipeDataAccess, ingredientRecipeDataAccess } from '../dataAccess/ingredientRecipeDataAccess'
 
 export async function handleRecipesRequest (path: String, request: CfRequest, env: Env): Promise<Response> {
   const requestType = request.method
@@ -37,25 +39,46 @@ async function processNewRecipeRequest(request: CfRequest, env: Env): Promise<Re
 
 async function processGetRecipesRequest(path: String, request: CfRequest, env: Env): Promise<Response> {
   const {apiToken} = parseNextApiToken(path)
+
   const recipeDataAccess = new RecipeDataAccess(env.DB)
 
   if (apiToken == "") {
     return new Response(JSON.stringify(await recipeDataAccess.getRecipesForUser(env.user.id)), { status: 200 });
   } else {
-    const id = Number(apiToken)
-    if (isNaN(id)) {
-      throw HttpError.badRequest("Recipe id must be a number")
-    }
-
-    const recipe = await recipeDataAccess.getRecipeById(id)
-
-    if (recipe == null) {
-      throw HttpError.notFound("Recipe not found with id [" + apiToken + "]")
-    } else if (recipe.user_id != env.user.id) {
-      throw HttpError.unauthorized("Recipe owned by a different user")
-    }
-    return new Response(JSON.stringify(recipe), { status: 200 })
+    return await processGetSpecificRecipeRequest(path, request, env)
   }
+}
+
+async function processGetSpecificRecipeRequest(path: String, request: CfRequest, env: Env): Promise<Response> {
+  const {apiToken, apiPath} = parseNextApiToken(path)
+  console.error(apiPath)
+
+  const id: number = Number(apiToken)
+  if (isNaN(id)) {
+    throw HttpError.badRequest("Recipe id must be a number")
+  }
+
+  if (apiPath == "ingredients") {
+    return await processGetRecipeIngredientsRequest(id, env)
+  }
+
+  const recipeDataAccess = new RecipeDataAccess(env.DB)
+  const recipe = await recipeDataAccess.getRecipeById(id)
+
+  if (recipe == null) {
+    throw HttpError.notFound("Recipe not found with id [" + apiToken + "]")
+  } else if (recipe.user_id != env.user.id) {
+    throw HttpError.unauthorized("Recipe owned by a different user")
+  }
+  return new Response(JSON.stringify(recipe), { status: 200 })
+}
+
+async function processGetRecipeIngredientsRequest(recipeId: number, env: Env): Promise<Response> {
+  const dataAccess = new IngredientRecipeDataAccess(env.DB)
+
+  const result = await dataAccess.getByRecipeId(recipeId, env.user.id)
+
+  return new Response(JSON.stringify(result), { status: 200 })
 }
 
 async function processDeleteRecipeRequest(path: String, request: CfRequest, env: Env): Promise<Response> {

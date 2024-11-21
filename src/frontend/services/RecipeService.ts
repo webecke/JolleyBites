@@ -1,5 +1,5 @@
 import { ServerCommunicator } from '@/services/ServerCommunicator'
-import type { Recipe } from '../../shared/types'
+import type { IngredientRecipe, Recipe } from '../../shared/types'
 import { useDataStore } from '@/stores/dataStore'
 import type { RecipeMetaUpdate } from '../../shared/messages'
 
@@ -12,6 +12,10 @@ export const addNewRecipe = async (name: string): Promise<number> => {
 
 export const getAllRecipes = async (): Promise<Recipe []> => {
   return await ServerCommunicator.getRequest<Recipe[]>("/api/recipes")
+}
+
+export const getIngredientRecipes = async (recipeId: number) :Promise<IngredientRecipe []> => {
+  return await ServerCommunicator.getRequest<IngredientRecipe[]>(`/api/recipes/${recipeId}/ingredients`)
 }
 
 export const deleteRecipe = async (id: number) => {
