@@ -72,9 +72,9 @@ const clickBranding = () => {
   <footer>
     <hr/>
     <div id="footer-content">
-      <a class="noGlowLink" href="https://webecke.dev/forestblue" target="_blank">
+      <a class="noGlowLink" href="https://webecke.dev" target="_blank">
         <v-card style="width: 275px; padding: 13px; border-radius: 20px; display: flex; align-content: center;" color="#0c1321">
-          <img style="width: 100%; height: 100%; object-fit: contain; margin: auto;" src="/src/frontend/assets/ForestBlue.svg" alt="ForestBlue, Simply Branching Out"/>
+          <img style="width: 100%; height: 100%; object-fit: contain; margin: auto;" src="/src/frontend/assets/webeckedev.svg" alt="Webecke Dev"/>
         </v-card>
       </a>
       <AppInfo style="width: max-content; margin: 0 0 0 20px"/>

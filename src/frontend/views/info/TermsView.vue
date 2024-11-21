@@ -7,12 +7,14 @@
   <h1>Terms of Service</h1>
   <p>I'm not a lawyer, nor am I a big software company, so lets not make this too complicated.</p>
   <hr/>
-  <p>Last updated: <em>October 1, 2024</em></p>
+  <p>Last updated: <em>November 20, 2024</em></p>
 
   <h2>Introduction</h2>
-  <p>Welcome to JolleyBites, as product of ForestBlue Development. By using our website and services,
+  <p>Welcome to JolleyBites, a product of Dallin Webecke. By using this website and service,
     you're agreeing to these Terms of Service.
-    If you don't agree, please don't use our site.</p>
+    If you don't agree, please don't use the site.
+    This document uses "we", "our", and "us", even though I'm just one guy.
+  </p>
 
   <h2>Use of the Service</h2>
   <p>You agree to use our service responsibly and like a reasonable person. This means:</p>

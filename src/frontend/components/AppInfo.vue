@@ -19,8 +19,8 @@ export default defineComponent({
 
 <template>
   <div style="width: 100%">
-    <p>© 2024 ForestBlue Development</p>
-    <p><a href="https://github.com/DallinFromEarth/JolleyBites" target="_blank">View on Github</a>  |  Latest build: <em>{{formattedBuildDate}}</em></p>
+    <p>© 2024 Dallin Webecke</p>
+    <p><a href="https://github.com/webecke/JolleyBites" target="_blank">View on Github</a>  |  Latest build: <em>{{formattedBuildDate}}</em></p>
     <p><RouterLink to="/privacy">Privacy Notice</RouterLink>  |  <RouterLink to="/terms">Terms of Service</RouterLink></p>
   </div>
 </template>

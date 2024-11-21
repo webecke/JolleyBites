@@ -7,10 +7,10 @@
     <h1>Privacy Notice</h1>
     <p>I'm not a lawyer, nor am I a big software company, so lets not make this too complicated.</p>
     <hr/>
-    <p>Last updated: <em>October 3, 2024</em></p>
+    <p>Last updated: <em>November 20, 2024</em></p>
 
     <h2>Introduction</h2>
-    <p>ForestBlue Development ("we", "our", or "us") is committed to protecting your privacy.
+    <p>Dallin Webecke ("we", "our", or "us", even though I'm just one guy) is committed to protecting your privacy.
       This Privacy Notice explains how we collect, use,
       and protect your data when you use JolleyBites' website and services.</p>
 
