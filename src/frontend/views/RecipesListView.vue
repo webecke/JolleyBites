@@ -14,9 +14,10 @@ const searchKey = ref<string>("")
 
 const visibleRecipes = computed(() => {
   const lowercaseSearchKey = searchKey.value.trim().toLowerCase()
-  return useDataStore().recipes.filter( recipe =>
+  return Array.from(useDataStore().recipes.values()).filter(recipe =>
     recipe.name.toLowerCase().includes(lowercaseSearchKey) ||
-    recipe.description.toLowerCase().includes(lowercaseSearchKey)) as Recipe[]
+    recipe.description.toLowerCase().includes(lowercaseSearchKey)
+  ) as Recipe[]
 })
 
 const openNewRecipeMenu = () => {

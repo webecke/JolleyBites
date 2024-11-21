@@ -2,16 +2,16 @@
 
 import { doLogout, initializeApp } from '@/services/AuthService'
 import router from '@/router'
-import { useAuthStore } from '../stores/authStore'
-import { useDataStore } from '../stores/dataStore'
-import { computed, onBeforeMount, onMounted } from 'vue'
+import { useAuthStore } from '@/stores/authStore'
+import { useDataStore } from '@/stores/dataStore'
+import { computed, onBeforeMount } from 'vue'
 
 onBeforeMount(async () => {
   await initializeApp()
 })
 
-const ingredientCount = computed(() => useDataStore().ingredients.length)
-const recipeCount = computed(() => useDataStore().recipes.length)
+const ingredientCount = computed(() => useDataStore().ingredients.size)
+const recipeCount = computed(() => useDataStore().recipes.size)
 
 const logout = async () => {
   doLogout()

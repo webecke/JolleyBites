@@ -12,7 +12,7 @@ onMounted(async () => {
   document.addEventListener('keyup', handleEnterKey);
 })
 
-const ingredients = computed( () => useDataStore().ingredients)
+const ingredients = computed( () => Array.from(useDataStore().ingredients.values()))
 
 onUnmounted( () => {
   document.removeEventListener('keyup', handleEnterKey)
@@ -214,7 +214,7 @@ const ingredientToAdd = ref<ClientGeneratedIngredient | null>(null)
     </template>
     <template v-slot:bottom>
       <div class="d-flex justify-end pa-4">
-        <span>You have {{ useDataStore().ingredients.length }} ingredients</span>
+        <span>You have {{ useDataStore().ingredients.size }} ingredients</span>
       </div>
     </template>
   </v-data-table>

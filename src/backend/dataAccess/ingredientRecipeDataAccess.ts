@@ -1,7 +1,8 @@
 import type { IngredientForRecipe, IngredientRecipe } from '../../shared/types'
+import { D1Database } from '@cloudflare/workers-types';
 
 export class IngredientRecipeDataAccess {
-  db: D1Database;
+  private db: D1Database;
 
   constructor(db: D1Database) {
     this.db = db;

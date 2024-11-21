@@ -4,8 +4,7 @@ import { HttpError } from '../errors/HttpError'
 import { RecipeDataAccess } from '../dataAccess/recipeDataAccess'
 import type { RecipeMetaUpdate } from '../../shared/messages'
 import type { Recipe } from '../../shared/types'
-import { DataAccessMachine } from '../dataAccess/dataAccessMachine'
-import { IngredientRecipeDataAccess, ingredientRecipeDataAccess } from '../dataAccess/ingredientRecipeDataAccess'
+import { IngredientRecipeDataAccess } from '../dataAccess/ingredientRecipeDataAccess'
 
 export async function handleRecipesRequest (path: String, request: CfRequest, env: Env): Promise<Response> {
   const requestType = request.method

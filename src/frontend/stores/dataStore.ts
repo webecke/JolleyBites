@@ -19,14 +19,15 @@ export const useDataStore = defineStore('data', () => {
   }
 
   const clearDataStore = () => {
-    state.ingredients.length = 0
-    state.recipes.length = 0
+    state.ingredients = new Map<number, Ingredient>()
+    state.recipes = new Map<number, Recipe>()
+    state.ingredientRecipes = new Map<number, IngredientRecipe[]>()
   }
   const dataIsLoaded = ref<boolean>(false)
 
   const state = reactive({
-    ingredients: [] as Ingredient[],
-    recipes: [] as Recipe[],
+    ingredients: new Map<number, Ingredient>(),
+    recipes: new Map<number, Recipe>(),
     ingredientRecipes: new Map<number, IngredientRecipe[]>()
   })
 
@@ -36,14 +37,18 @@ export const useDataStore = defineStore('data', () => {
 
   const loadIngredients = async () => {
     const response: Ingredient[] = await getAllIngredients()
-    state.ingredients.length = 0
-    state.ingredients.push(...response)
+
+    response.forEach((ingredient: Ingredient) => {
+      state.ingredients.set(ingredient.id, ingredient)
+    })
   }
 
   const loadRecipes = async () => {
     const response: Recipe[] = await getAllRecipes()
-    state.recipes.length = 0
-    state.recipes.push(...response)
+
+    response.forEach((recipe: Recipe) => {
+      state.recipes.set(recipe.id, recipe)
+    })
   }
 
   const loadIngredientRecipes = async (recipeId: number, cache: boolean = true) => {
@@ -56,40 +61,31 @@ export const useDataStore = defineStore('data', () => {
   }
 
   const addIngredient = (newIngredient: Ingredient) => {
-    state.ingredients.push(newIngredient);
+    state.ingredients.set(newIngredient.id, newIngredient);
   };
 
-  const addRecipe = (newRecipe: Recipe) => {
-    state.recipes.push(newRecipe)
+  const getIngredient = (id: number): Ingredient | undefined => {
+    return state.ingredients.get(id)
   }
 
-  const getRecipe = (id: number): Recipe | null => {
-    let foundRecipe: Recipe| null = null;
+  const addRecipe = (newRecipe: Recipe) => {
+    state.recipes.set(newRecipe.id, newRecipe)
+  }
 
-    try {
-      state.recipes.forEach(recipe => {
-        if (recipe.id == id) {
-          foundRecipe = recipe
-          throw {}
-        }
-      })
-    } catch (e) {
-      return foundRecipe
-    }
-    return null
+  const getRecipe = (id: number): Recipe | undefined => {
+    return state.recipes.get(id)
   }
 
   const updateRecipe = (updatedRecipe: Recipe) => {
-    const index = state.recipes.findIndex(recipe  => recipe.id === updatedRecipe.id);
-    state.recipes[index] = updatedRecipe
+    state.recipes.set(updatedRecipe.id, updatedRecipe)
   }
 
   const deleteIngredients = (ids: number[]) => {
-    state.ingredients = state.ingredients.filter(ingredient => !ids.includes(ingredient.id));
+    ids.forEach(id => state.ingredientRecipes.delete(id));
   }
 
   const deleteRecipe = (id: number) => {
-    state.recipes = state.recipes.filter(recipe => recipe.id != id)
+    state.recipes.delete(id)
   }
 
   return {
