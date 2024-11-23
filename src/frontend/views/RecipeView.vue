@@ -1,25 +1,27 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import type { Recipe, IngredientRecipe } from '../../shared/types'
-import { convertNewlinesToBr, formatDate, roundToTwoDecimals, trimObjectStrings } from '@/utils/formatUtils'
+import { roundToTwoDecimals, trimObjectStrings } from '@/utils/formatUtils'
 import { useDataStore } from '@/stores/dataStore'
 import router from '@/router'
 import { deleteRecipe, updateRecipe } from '@/services/RecipeService'
 import { snackbarStore } from '@/stores/snackbarStore'
 import { doErrorHandling } from '@/utils/generalUtils'
-import { ServerCommunicator } from '@/services/ServerCommunicator'
+import RecipeDetails from '@/components/recipes/RecipeDetails.vue'
+import RecipeInfo from '@/components/recipes/RecipeInfo.vue'
+import RecipeIngredientsList from '@/components/recipes/RecipeIngredientsList.vue'
 
 const route = useRoute()
 
 const data = useDataStore()
 const id = ref(route.params.id as string)
-const recipe = ref<Recipe>({} as Recipe)
+const recipe = reactive<Recipe>({} as Recipe)
 const ingredientList = ref<IngredientRecipe[]>([])
 const preEditedRecipe = ref<Recipe>({} as Recipe)
 const showEditMode = ref<boolean>(false)
 const showDeleteConfirmation = ref<boolean>(false)
-const initialEdit = computed(() => recipe.value.created_at == recipe.value.updated_at)
+const initialEdit = computed(() => recipe.created_at == recipe.updated_at)
 
 onMounted(async () => {
   await loadRecipe()
@@ -33,10 +35,11 @@ const loadRecipe = async () => {
     snackbarStore.showWarningMessage("Not Found: That recipe either doesn't belong to you, or no longer exists")
     return
   }
-  recipe.value = foundRecipe
 
-  await data.loadIngredientRecipes(recipe.value.id)
-  const recipeIngredients = data.ingredientRecipes.get(recipe.value.id) || []
+  Object.assign(recipe, foundRecipe)
+
+  await data.loadIngredientRecipes(recipe.id)
+  const recipeIngredients = data.ingredientRecipes.get(recipe.id) || []
   ingredientList.value = [...recipeIngredients]
 
   if (initialEdit.value) {
@@ -45,29 +48,30 @@ const loadRecipe = async () => {
 }
 
 const saveRecipe = async () => {
-  recipe.value = trimObjectStrings<Recipe>(recipe.value)
-  if (recipe.value.servings_per_recipe <= 0) {
+  Object.assign(recipe, trimObjectStrings<Recipe>(recipe))
+
+  if (recipe.servings_per_recipe <= 0) {
     snackbarStore.showWarningMessage("Please enter a value greater than 0 for 'servings per recipe'")
     return
-  } else if (recipe.value.name == "") {
+  } else if (recipe.name == "") {
     snackbarStore.showWarningMessage("Please enter a recipe name")
     return
   }
 
   await doErrorHandling(async () => {
-    await updateRecipe(recipe.value)
-    const updatedRecipe = useDataStore().getRecipe(recipe.value.id)
+    await updateRecipe(recipe)
+    const updatedRecipe = useDataStore().getRecipe(recipe.id)
     if (updatedRecipe == null) {
       snackbarStore.showCriticalErrorMessage("Something went wrong saving the recipe, please reload the page")
       return
     }
-    recipe.value = updatedRecipe
+    Object.assign(recipe, updatedRecipe)
     showEditMode.value = false
   }, "saving changes to recipe")
 }
 
 const startEdit = () => {
-  preEditedRecipe.value = { ...recipe.value }
+  preEditedRecipe.value = { ...recipe }
   showEditMode.value = true
 }
 
@@ -77,96 +81,60 @@ const cancelEdit = () => {
     return
   }
 
-  recipe.value = { ...preEditedRecipe.value }
+  Object.assign(recipe, { ...preEditedRecipe.value })
   showEditMode.value = false
 }
 
 const doDeleteRecipe = async () => {
   await doErrorHandling(async () => {
-    await deleteRecipe(recipe.value.id)
+    await deleteRecipe(recipe.id)
     snackbarStore.showSuccessMessage("Recipe deleted")
     await router.push("/recipes")
   }, "deleting recipe")
 }
+
+const ingredientsWithDetails = computed(() =>
+  ingredientList.value.map(ingredient => ({
+    ...ingredient,
+    details: data.getIngredient(ingredient.ingredient_id)
+  }))
+)
 </script>
 
 <template>
-  <div id="recipeTopArea">
-    <div style="width: 100%;">
-      <h1 style="display: flex">
-        <v-text-field v-if="showEditMode" v-model="recipe.name" label="Name"/>
-        <span v-else>{{recipe.name}}</span>
-      </h1>
-
-      <v-text-field v-if="showEditMode" v-model="recipe.description" label="Description"/>
-      <p v-else-if="recipe.description == ''"><em>No description</em></p>
-      <p v-else>{{recipe.description}}</p>
-
-      <p v-if="showEditMode">
-        Servings per recipe:
-        <v-text-field style="width: 100px" type="number" :error-messages="recipe.servings_per_recipe <= 0 ? 'Must be over zero' : ''" v-model="recipe.servings_per_recipe"/>
-      </p>
-      <p v-else><em>This recipe makes {{recipe.servings_per_recipe}} servings</em></p>
-    </div>
-    <v-btn v-if="showEditMode" @click="cancelEdit">
-      Cancel
-    </v-btn>
-    <v-btn v-if="showEditMode" color="green" @click="saveRecipe">
-      Save <font-awesome-icon :icon="['fas', 'file-arrow-up']" />
-    </v-btn>
-    <v-btn v-else @click="startEdit">
-      Edit<font-awesome-icon :icon="['fas', 'pen-to-square']" />
-    </v-btn>
-  </div>
-
-  <hr style="width: 100%;"/>
-
-  <div>
-    <h3>Recipe Cost: <b>${{roundToTwoDecimals(recipe.calculated_cost)}}</b></h3>
-    <h3>Cost Per Serving: <b>${{roundToTwoDecimals(recipe.calculated_cost / recipe.servings_per_recipe)}}</b></h3>
-  </div>
+  <RecipeInfo
+    :calculated_cost="recipe.calculated_cost"
+    :name="recipe.name"
+    :description="recipe.description"
+    :servings_per_recipe="recipe.servings_per_recipe"/>
 
   <div class="flexableColumnContainer">
     <div class="flexableColumns" style="width: 60%">
-      <p v-for="ingredient in ingredientList">You need {{ingredient.quantity_in_recipe}} units of ingredient #{{ingredient.ingredient_id}}</p>
+<!--      <div v-for="ingredient in ingredientsWithDetails" :key="ingredient.ingredient_id">-->
+<!--        <div v-if="!ingredient.details">-->
+<!--          <p>Error loading ingredient {{ingredient.ingredient_id}}</p>-->
+<!--        </div>-->
+<!--        <div v-else-if="showEditMode">-->
+<!--          <v-text-field label="Quantity"/>-->
+<!--          {{ingredient.details.unit}} of {{ingredient.details.name}}-->
+<!--        </div>-->
+<!--        <div v-else>-->
+<!--          {{ingredient.quantity_in_recipe}} {{ingredient.details.unit}} of {{ingredient.details.name}}-->
+<!--        </div>-->
+<!--      </div>-->
+      <RecipeIngredientsList
+        :ingredientRecipes="ingredientList"
+        :recipeId="recipe.id"/>
     </div>
+
     <div class="flexableColumns" style="width: 40%">
-      <v-textarea
-        v-if="showEditMode"
-        v-model="recipe.instructions"
-        label="Instructions"
-        placeholder="How to actually make this"
-        :rows="3"
-        auto-grow
-        outlined
-      />
-      <div v-else>
-        <h3>Instructions:</h3>
-        <p v-if="recipe.instructions == ''"><em>No instructions</em></p>
-        <p v-else v-html="convertNewlinesToBr(recipe.instructions)"/>
-      </div>
-
-      <v-textarea
-        v-if="showEditMode"
-        v-model="recipe.notes"
-        label="Notes"
-        placeholder="Things to remember about this recipe"
-        :rows="2"
-        auto-grow
-        outlined
-      />
-      <div v-else>
-        <hr style="width: 100%;"/>
-        <h3>Notes:</h3>
-        <p v-if="recipe.notes == ''"><em>No notes</em></p>
-        <p v-else v-html="convertNewlinesToBr(recipe.notes)"/>
-      </div>
-
-      <hr style="width: 100%;"/>
-
-      <p>Created {{formatDate(recipe.created_at)}}</p>
-      <p>Last edited {{formatDate(recipe.updated_at)}}</p>
-      <v-btn v-if="showEditMode" color="red" @click="showDeleteConfirmation = true">Delete Recipe</v-btn>
+      <RecipeDetails
+        :recipeId="recipe.id"
+        :instructions="recipe.instructions"
+        :notes="recipe.notes"
+        :created_at="recipe.created_at"
+        :updated_at="recipe.updated_at"
+        :showEditMode="showEditMode"/>
     </div>
   </div>
 

@@ -100,6 +100,7 @@ export const useDataStore = defineStore('data', () => {
     addIngredient,
     addRecipe,
     getRecipe,
+    getIngredient,
     updateRecipe,
     deleteIngredients,
     deleteRecipe,
