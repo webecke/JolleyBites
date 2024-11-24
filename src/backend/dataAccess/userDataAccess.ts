@@ -35,13 +35,13 @@ export class UserDataAccess {
     }
   }
 
-  public async getUserById(id: string) {
+  public async getUserById(id: string): Promise<User | null> {
     try {
       const { results } = await this.DB.prepare(
         "SELECT * FROM users WHERE id = ?"
       ).bind(id).all();
 
-      return results[0] as User;
+      return results[0] as User | null;
     } catch (error) {
       console.error("Database error:", error);
       throw ServerError.internalServerError("Failed to fetch user by id");

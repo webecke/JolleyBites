@@ -116,14 +116,14 @@ async function finalizeLogin(userId: string, dataAccess: DataAccessMachine): Pro
 }
 
 async function handleMeRequest(request: CfRequest, dataAccessMachine: DataAccessMachine): Promise<Response> {
-  const user: User = await getUserFromRequest(request, dataAccessMachine)
+  const user: User | null = await getUserFromRequest(request, dataAccessMachine)
 
   return new Response(JSON.stringify(user), {status:200})
 }
 
 
 async function handleLogoutRequest(request: CfRequest, dataAccessMachine: DataAccessMachine): Promise<Response> {
-  const user: User = await getUserFromRequest(request, dataAccessMachine)
+  const user: User | null = await getUserFromRequest(request, dataAccessMachine)
   const authDataAccess: AuthDataAccess = dataAccessMachine.getAuthDA()
 
   await authDataAccess.deleteToken(request.headers.get("Authorization")!)
@@ -131,7 +131,7 @@ async function handleLogoutRequest(request: CfRequest, dataAccessMachine: DataAc
   return new Response(JSON.stringify({message: "Successfully logged out"}))
 }
 
-async function getUserFromRequest(request: CfRequest, dataAccessMachine: DataAccessMachine): Promise<User> {
+async function getUserFromRequest(request: CfRequest, dataAccessMachine: DataAccessMachine): Promise<User | null> {
   const authorization = request.headers.get("Authorization")
   if (authorization == null) { throw ServerError.unauthorized("No auth token provided")}
 
@@ -149,6 +149,6 @@ async function getUserFromRequest(request: CfRequest, dataAccessMachine: DataAcc
   }
 
   const userDataAccess = dataAccessMachine.getUserDA()
-  const user: User = await userDataAccess.getUserById(authPayload.user_id)
+  const user: User | null = await userDataAccess.getUserById(authPayload.user_id)
   return user
 }

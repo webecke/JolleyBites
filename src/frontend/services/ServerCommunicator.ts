@@ -1,4 +1,3 @@
-import type { Ingredient } from '../../shared/types'
 import { useAuthStore } from '@/stores/authStore'
 
 export const ServerCommunicator = {
