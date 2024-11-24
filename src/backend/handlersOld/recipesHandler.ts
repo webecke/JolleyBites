@@ -1,6 +1,6 @@
 import { Request as CfRequest } from '@cloudflare/workers-types'
 import { type Env, parseNextApiToken } from '../../../functions/requestTools'
-import { HttpError } from '../errors/HttpError'
+import { ServerError } from '../network/ServerError'
 import { RecipeDataAccess } from '../dataAccess/recipeDataAccess'
 import type { RecipeMetaUpdate } from '../../shared/messages'
 import type { Recipe } from '../../shared/types'
@@ -20,7 +20,7 @@ export async function handleRecipesRequest (path: String, request: CfRequest, en
       return await processDeleteRecipeRequest(path, request, env)
     default:
       console.error(requestType)
-      throw HttpError.methodNotAllowed(`Request type of ${requestType} not allowed at this endpoint`)
+      throw ServerError.methodNotAllowed(`Request type of ${requestType} not allowed at this endpoint`)
   }
 }
 
@@ -32,7 +32,7 @@ async function processNewRecipeRequest(request: CfRequest, env: Env): Promise<Re
     const recipeId = await recipeDataAccess.insertNewRecipe(reqBody.name, env.user.id)
     return new Response(JSON.stringify({recipeId: recipeId}), {status: 201})
   } else {
-    throw HttpError.badRequest(`Missing name for new recipe`);
+    throw ServerError.badRequest(`Missing name for new recipe`);
   }
 }
 
@@ -54,7 +54,7 @@ async function processGetSpecificRecipeRequest(path: String, request: CfRequest,
 
   const id: number = Number(apiToken)
   if (isNaN(id)) {
-    throw HttpError.badRequest("Recipe id must be a number")
+    throw ServerError.badRequest("Recipe id must be a number")
   }
 
   if (apiPath == "ingredients") {
@@ -65,9 +65,9 @@ async function processGetSpecificRecipeRequest(path: String, request: CfRequest,
   const recipe = await recipeDataAccess.getRecipeById(id)
 
   if (recipe == null) {
-    throw HttpError.notFound("Recipe not found with id [" + apiToken + "]")
+    throw ServerError.notFound("Recipe not found with id [" + apiToken + "]")
   } else if (recipe.user_id != env.user.id) {
-    throw HttpError.unauthorized("Recipe owned by a different user")
+    throw ServerError.unauthorized("Recipe owned by a different user")
   }
   return new Response(JSON.stringify(recipe), { status: 200 })
 }
@@ -86,7 +86,7 @@ async function processDeleteRecipeRequest(path: String, request: CfRequest, env:
 
   const id = Number(apiToken)
   if (isNaN(id)) {
-    throw HttpError.badRequest("Recipe id must be a number")
+    throw ServerError.badRequest("Recipe id must be a number")
   }
 
   await recipeDataAccess.deleteRecipeById(id)
@@ -102,13 +102,13 @@ async function processPatchRecipeRequest(path: String, request: CfRequest, env: 
     const currentRecipe: Recipe = await recipeDataAccess.getRecipeById(metaUpdate.id)
 
     if (currentRecipe == null) {
-      throw HttpError.notFound("That recipe was not found")
+      throw ServerError.notFound("That recipe was not found")
     } else if (currentRecipe.user_id != env.user.id) {
-      throw HttpError.forbidden("That recipe is owned by another user")
+      throw ServerError.forbidden("That recipe is owned by another user")
     } else if (metaUpdate.name.trim() == "") {
-      throw HttpError.badRequest("Name cannot be empty")
+      throw ServerError.badRequest("Name cannot be empty")
     } else if (metaUpdate.servings_per_recipe <= 0) {
-      throw HttpError.badRequest("Servings per recipe must be greater than 0")
+      throw ServerError.badRequest("Servings per recipe must be greater than 0")
     }
 
     const updatedRecipe: Recipe = {
@@ -126,6 +126,6 @@ async function processPatchRecipeRequest(path: String, request: CfRequest, env: 
     const recipeId = await recipeDataAccess.updateRecipe(updatedRecipe)
     return new Response(JSON.stringify({recipeId: recipeId}), {status: 200})
   } else {
-    throw HttpError.badRequest("Missing recipeMetaUpdate field")
+    throw ServerError.badRequest("Missing recipeMetaUpdate field")
   }
 }

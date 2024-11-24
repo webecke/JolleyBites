@@ -22,7 +22,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "esModuleInterop": true,
-    "lib": ["esnext", "dom"],
+    "lib": ["esnext", "dom", "WebWorker"],
     "types": ["@cloudflare/workers-types", "vite/client"],
     "skipLibCheck": true,
     "baseUrl": ".",

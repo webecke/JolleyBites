@@ -1,5 +1,5 @@
 import type { Ingredient } from '../../shared/types'
-import { HttpError } from '../errors/HttpError'
+import { ServerError } from '../network/ServerError'
 import { D1Database } from '@cloudflare/workers-types';
 
 export class IngredientsDataAccess {
@@ -17,7 +17,7 @@ export class IngredientsDataAccess {
       return results as Ingredient[];
     } catch (error) {
       console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to fetch ingredients");
+      throw ServerError.internalServerError("Failed to fetch ingredients");
     }
   }
 
@@ -30,7 +30,7 @@ export class IngredientsDataAccess {
       return results[0] as Ingredient;
     } catch (error) {
       console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to fetch ingredient");
+      throw ServerError.internalServerError("Failed to fetch ingredient");
     }
   }
 
@@ -58,7 +58,7 @@ export class IngredientsDataAccess {
       }
     } catch (error) {
       console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to insert ingredient");
+      throw ServerError.internalServerError("Failed to insert ingredient");
     }
   }
 
@@ -95,7 +95,7 @@ export class IngredientsDataAccess {
       return insertedIds;
     } catch (error) {
       console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to insert ingredients");
+      throw ServerError.internalServerError("Failed to insert ingredients");
     }
   }
 
@@ -125,7 +125,7 @@ export class IngredientsDataAccess {
       }
     } catch (error) {
       console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to update ingredient");
+      throw ServerError.internalServerError("Failed to update ingredient");
     }
   }
 
@@ -141,7 +141,7 @@ export class IngredientsDataAccess {
       return results;
     } catch (error) {
       console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to delete ingredients");
+      throw ServerError.internalServerError("Failed to delete ingredients");
     }
   }
 }

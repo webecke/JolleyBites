@@ -1,5 +1,5 @@
 import type { User } from '../../shared/types'
-import { HttpError } from '../errors/HttpError'
+import { ServerError } from '../network/ServerError'
 import { v4 as uuid } from 'uuid'
 import { D1Database } from '@cloudflare/workers-types';
 
@@ -31,7 +31,7 @@ export class UserDataAccess {
       return id
     } catch (error) {
       console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to insert user");
+      throw ServerError.internalServerError("Failed to insert user");
     }
   }
 
@@ -44,7 +44,7 @@ export class UserDataAccess {
       return results[0] as User;
     } catch (error) {
       console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to fetch user by id");
+      throw ServerError.internalServerError("Failed to fetch user by id");
     }
   }
 
@@ -61,7 +61,7 @@ export class UserDataAccess {
       return results[0] as User;
     } catch (error) {
       console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to fetch user by email");
+      throw ServerError.internalServerError("Failed to fetch user by email");
     }
   }
 
@@ -78,7 +78,7 @@ export class UserDataAccess {
       return results[0].hashed_password as string;
     } catch (error) {
       console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to fetch user by email");
+      throw ServerError.internalServerError("Failed to fetch user by email");
     }
   }
 

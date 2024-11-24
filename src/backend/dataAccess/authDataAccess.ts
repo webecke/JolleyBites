@@ -1,4 +1,4 @@
-import { HttpError } from '../errors/HttpError'
+import { ServerError } from '../network/ServerError'
 import { MILLISECONDS_TO_LIVE } from '../utils/authTokenUtils'
 import { D1Database } from '@cloudflare/workers-types';
 
@@ -28,7 +28,7 @@ export class AuthDataAccess {
       return expire.toISOString()
     } catch (error) {
       console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to insert authToken");
+      throw ServerError.internalServerError("Failed to insert authToken");
     }
   }
 
@@ -45,7 +45,7 @@ export class AuthDataAccess {
       return
     } catch (error) {
       console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to delete authToken");
+      throw ServerError.internalServerError("Failed to delete authToken");
     }
   }
 
@@ -63,7 +63,7 @@ export class AuthDataAccess {
     }
     catch (error) {
       console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to delete authToken");
+      throw ServerError.internalServerError("Failed to delete authToken");
     }
   }
 
@@ -86,7 +86,7 @@ export class AuthDataAccess {
     }
     catch (error) {
       console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to check token validity");
+      throw ServerError.internalServerError("Failed to check token validity");
     }
   }
 }

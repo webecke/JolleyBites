@@ -4,8 +4,8 @@ import type { DataAccessMachine } from '../src/backend/dataAccess/dataAccessMach
 
 export interface Env {
   DB: D1Database
+  dataAccess: DataAccessMachine
   user: User
-  dataAccessMachine: DataAccessMachine
 }
 
 export function parseNextApiToken(path: String) {

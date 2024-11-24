@@ -1,6 +1,6 @@
 import { D1Database } from '@cloudflare/workers-types'
 import type { Recipe } from '../../shared/types'
-import { HttpError } from '../errors/HttpError'
+import { ServerError } from '../network/ServerError'
 
 export class RecipeDataAccess {
   private DB: D1Database
@@ -38,7 +38,7 @@ export class RecipeDataAccess {
       }
     } catch (error) {
       console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to insert new recipe");
+      throw ServerError.internalServerError("Failed to insert new recipe");
     }
   }
 
@@ -51,7 +51,7 @@ export class RecipeDataAccess {
       return results as Recipe[];
     } catch (error) {
       console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to fetch recipes");
+      throw ServerError.internalServerError("Failed to fetch recipes");
     }
   }
 
@@ -64,7 +64,7 @@ export class RecipeDataAccess {
       return results[0] as Recipe;
     } catch (error) {
       console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to fetch recipe");
+      throw ServerError.internalServerError("Failed to fetch recipe");
     }
   }
 
@@ -77,7 +77,7 @@ export class RecipeDataAccess {
       return;
     } catch (error) {
       console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to delete recipe");
+      throw ServerError.internalServerError("Failed to delete recipe");
     }
   }
 
@@ -107,7 +107,7 @@ export class RecipeDataAccess {
       }
     } catch (error) {
       console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to update recipe");
+      throw ServerError.internalServerError("Failed to update recipe");
     }
   }
 }

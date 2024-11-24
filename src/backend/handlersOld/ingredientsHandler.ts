@@ -3,7 +3,7 @@ import type { Env } from '../../../functions/requestTools'
 import { parseNextApiToken } from '../../../functions/requestTools'
 import { IngredientsDataAccess } from '../dataAccess/ingredientsDataAccess'
 import type { Ingredient } from '../../shared/types'
-import { HttpError } from '../errors/HttpError'
+import { ServerError } from '../network/ServerError'
 import type { ClientGeneratedIngredient } from '../../shared/messages'
 
 
@@ -21,9 +21,9 @@ export async function handleIngredientsRequest (path: String, request: CfRequest
       }
       const response = await ingredientsDataAccess.getIngredientById(Number(apiToken))
       if (response == null) {
-        throw HttpError.notFound("Ingredient not found with id [" + apiToken + "]")
+        throw ServerError.notFound("Ingredient not found with id [" + apiToken + "]")
       } else if (response.user_id != env.user.id) {
-        throw HttpError.unauthorized("Ingredient owned by a different user")
+        throw ServerError.unauthorized("Ingredient owned by a different user")
       }
       return new Response(JSON.stringify(response), { status: 200 })
 
@@ -38,7 +38,7 @@ export async function handleIngredientsRequest (path: String, request: CfRequest
         try {
           newIngredientId = await ingredientsDataAccess.insertIngredient(ingredient)
         } catch(error) {
-          throw HttpError.internalServerError("Something went wrong inserting ingredient into database")
+          throw ServerError.internalServerError("Something went wrong inserting ingredient into database")
         }
         return new Response(JSON.stringify({ingredientId: newIngredientId}), { status: 201 })
 
@@ -49,18 +49,18 @@ export async function handleIngredientsRequest (path: String, request: CfRequest
         try{
           newIngredientsIds = await ingredientsDataAccess.insertBatchIngredients(ingredients)
         } catch (error) {
-          throw HttpError.internalServerError("Something went wrong inserting ingredient batch into database")
+          throw ServerError.internalServerError("Something went wrong inserting ingredient batch into database")
         }
         return new Response(JSON.stringify({ingredientsIds: newIngredientsIds}), {status:201})
 
       } else {
-        throw HttpError.badRequest(`Missing ingredient or batch of ingredients`);
+        throw ServerError.badRequest(`Missing ingredient or batch of ingredients`);
       }
 
     case "PATCH":
       const patchReqBody: any = await request.json()
       if (!('ingredient' in patchReqBody)) {
-        throw HttpError.badRequest(`Missing ingredient`);
+        throw ServerError.badRequest(`Missing ingredient`);
       }
 
       const patchIngredient: Ingredient = await validateFullIngredient(patchReqBody.ingredient, env)
@@ -75,7 +75,7 @@ export async function handleIngredientsRequest (path: String, request: CfRequest
     case "DELETE":
       const deleteReqBody: any = await request.json()
       if (!('ids' in deleteReqBody)) {
-        throw HttpError.badRequest(`Missing ids of ingredients`);
+        throw ServerError.badRequest(`Missing ids of ingredients`);
       }
       const deleteSuccess = await ingredientsDataAccess.deleteIngredientsByIds(deleteReqBody.ids)
 
@@ -87,14 +87,14 @@ export async function handleIngredientsRequest (path: String, request: CfRequest
 
     default:
       console.error(requestType)
-      throw HttpError.methodNotAllowed("None of those work")
+      throw ServerError.methodNotAllowed("None of those work")
   }
 }
 
 function validateAndUnpackBatchOfNewIngredients(data: any, env: Env): Omit<Ingredient, 'id'>[] {
   console.error(data)
   if (data.length == 0) {
-    throw HttpError.badRequest("No ingredients found in request")
+    throw ServerError.badRequest("No ingredients found in request")
   }
 
   const ingredients: Omit<Ingredient, 'id'>[] = []
@@ -112,12 +112,12 @@ function validateAndUnpackNewIngredient(data: any, env: Env): Omit<Ingredient, '
 
   for (const field of requiredFields) {
     if (!(field in data)) {
-      throw HttpError.badRequest(`Missing required field: ${field}`);
+      throw ServerError.badRequest(`Missing required field: ${field}`);
     }
   }
 
   if (data.quantity <= 0) {
-    throw HttpError.badRequest("Ingredient must have quantity > 0")
+    throw ServerError.badRequest("Ingredient must have quantity > 0")
   }
 
   return {
@@ -138,14 +138,14 @@ async function validateFullIngredient(data: any, env: Env): Promise<Ingredient> 
 
   for (const field of requiredFields) {
     if (!(field in data)) {
-      throw HttpError.badRequest(`Missing required field: ${field}`);
+      throw ServerError.badRequest(`Missing required field: ${field}`);
     }
   }
 
   console.error(data)
-  const ingredientInQuestion: Ingredient = await env.dataAccessMachine.getIngredientsDA().getIngredientById(data.id)
+  const ingredientInQuestion: Ingredient = await env.dataAccess.getIngredientsDA().getIngredientById(data.id)
   if (ingredientInQuestion.user_id != env.user.id) {
-    throw HttpError.forbidden("This ingredient doesn't belong to you")
+    throw ServerError.forbidden("This ingredient doesn't belong to you")
   }
 
   data.user_id = env.user.id
