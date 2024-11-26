@@ -81,7 +81,7 @@ export const useDataStore = defineStore('data', () => {
   }
 
   const deleteIngredients = (ids: number[]) => {
-    ids.forEach(id => state.ingredientRecipes.delete(id));
+    ids.forEach(id => state.ingredients.delete(id));
   }
 
   const deleteRecipe = (id: number) => {

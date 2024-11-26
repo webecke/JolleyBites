@@ -6,7 +6,8 @@ import { ServerError } from '../network/ServerError'
 export const IngredientService = {
   createIngredient,
   getIngredientsForUser,
-  getIngredient
+  getIngredient,
+  deleteSetOfIngredients
 }
 
 async function createIngredient(dataAccess: DataAccessMachine, user: User, request: NewIngredientRequest): Promise<number> {
@@ -28,4 +29,8 @@ async function getIngredientsForUser(dataAccess: DataAccessMachine, user: User):
 
 async function getIngredient(dataAccess: DataAccessMachine, id: number): Promise<Ingredient> {
   return await dataAccess.getIngredientsDA().getIngredientById(id)
+}
+
+async function deleteSetOfIngredients(dataAccess: DataAccessMachine, ids: number[]) {
+  await dataAccess.getIngredientsDA().deleteIngredientsByIds(ids)
 }

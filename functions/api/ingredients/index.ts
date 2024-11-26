@@ -16,7 +16,6 @@ export const onRequest = async (context: EventContext<Env, any, ServerContext>) 
 
   else if (context.request.method === 'POST') {
     const request = await context.request.json()
-    console.log(request)
 
     if (!isValidNewIngredientRequest(request))
       throw ServerError.badRequest("Bad New Ingredient Request")
@@ -24,7 +23,17 @@ export const onRequest = async (context: EventContext<Env, any, ServerContext>) 
     return new Response(JSON.stringify({ingredientId: newId}), { status: 201 })
   }
 
+  else if (context.request.method === 'DELETE') {
+    const request: any = await context.request.json()
+    if (!('ids' in request)) {
+      throw ServerError.badRequest(`Missing ids of ingredients`);
+    } if (!Array.isArray(request.ids)) {
+      throw ServerError.badRequest('Bad list of ids')
+    }
 
+    await IngredientService.deleteSetOfIngredients(context.env.dataAccess ,request.ids)
+    return new Response(null, {status: 204})
+  }
 
   throw ServerError.methodNotAllowed("/api/ingredients expects GET or POST")
 }

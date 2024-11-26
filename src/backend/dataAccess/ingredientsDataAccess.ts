@@ -142,6 +142,13 @@ export class IngredientsDataAccess {
 
       return results;
     } catch (error) {
+      if (error instanceof Error &&
+        error.message.includes('FOREIGN KEY constraint failed')) {
+        throw ServerError.conflict(
+          "Cannot delete ingredients that are used in recipes. Remove them from recipes first."
+        );
+      }
+
       throw ServerError.internalServerError("Failed to delete ingredients", error);
     }
   }

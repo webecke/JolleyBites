@@ -78,6 +78,7 @@ const deleteSelected = async () => {
 
   await doErrorHandling(async () => {
     await deleteIngredients(selected.value)
+
     deleteWarning.value = false
     snackbarStore.showSuccessMessage(`Successfully deleted ${countDeleting} ingredients`)
     selected.value = []

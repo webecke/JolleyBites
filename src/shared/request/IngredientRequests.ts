@@ -7,6 +7,7 @@ export type NewIngredientRequest = {
 }
 
 export function isValidNewIngredientRequest(request: unknown): request is NewIngredientRequest {
+  console.log(request)
   if (typeof request !== 'object' || request === null) return false;
 
   // Type assert to access properties safely
@@ -19,5 +20,5 @@ export function isValidNewIngredientRequest(request: unknown): request is NewIng
   if (typeof r.purchase_price !== 'number' || isNaN(r.purchase_price)) return false;
 
   // Check numeric constraints
-  return r.quantity > 0 && r.purchase_price > 0;
+  return r.quantity > 0 && r.purchase_price >= 0;
 }
