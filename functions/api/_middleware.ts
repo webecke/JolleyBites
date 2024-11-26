@@ -25,6 +25,7 @@ const timeAndLogMiddleware = async (context: EventContext<Env, any, ServerContex
     const timeElapsed = endTime - startTime
     if (e instanceof ServerError) {
       console.error(`${context.request.method} request to ${context.request.url} failed in ${timeElapsed} milliseconds with code ${e.statusCode}. [${e.message}]`)
+      if (e.cause) console.error("Cause:", e.cause.stack)
       return new Response(JSON.stringify({ message: `Error: ${e.message}` }),
                           { status: e.statusCode, statusText: e.httpCodeMessage, headers: { 'Content-Type': 'application/json' } })
     }

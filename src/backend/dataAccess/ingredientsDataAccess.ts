@@ -16,8 +16,7 @@ export class IngredientsDataAccess {
 
       return results as Ingredient[];
     } catch (error) {
-      console.error("Database error:", error);
-      throw ServerError.internalServerError("Failed to fetch ingredients");
+      throw ServerError.internalServerError("Failed to fetch ingredients", error);
     }
   }
 
@@ -27,10 +26,16 @@ export class IngredientsDataAccess {
         "SELECT * FROM ingredients WHERE id = ?"
       ).bind(id).all();
 
+      if (!results[0]) {
+        throw ServerError.notFound(`Ingredient with id ${id} not found`);
+      }
+
       return results[0] as Ingredient;
     } catch (error) {
-      console.error("Database error:", error);
-      throw ServerError.internalServerError("Failed to fetch ingredient");
+      if (error instanceof ServerError) {
+        throw error;
+      }
+      throw ServerError.internalServerError("Failed to fetch ingredient", error);
     }
   }
 
@@ -57,8 +62,7 @@ export class IngredientsDataAccess {
         throw new Error('Failed to retrieve the inserted ID');
       }
     } catch (error) {
-      console.error("Database error:", error);
-      throw ServerError.internalServerError("Failed to insert ingredient");
+      throw ServerError.internalServerError("Failed to insert ingredient", error);
     }
   }
 
@@ -94,8 +98,7 @@ export class IngredientsDataAccess {
 
       return insertedIds;
     } catch (error) {
-      console.error("Database error:", error);
-      throw ServerError.internalServerError("Failed to insert ingredients");
+      throw ServerError.internalServerError("Failed to insert ingredients", error);
     }
   }
 
@@ -124,8 +127,7 @@ export class IngredientsDataAccess {
         return false;
       }
     } catch (error) {
-      console.error("Database error:", error);
-      throw ServerError.internalServerError("Failed to update ingredient");
+      throw ServerError.internalServerError("Failed to update ingredient", error);
     }
   }
 
@@ -140,8 +142,7 @@ export class IngredientsDataAccess {
 
       return results;
     } catch (error) {
-      console.error("Database error:", error);
-      throw ServerError.internalServerError("Failed to delete ingredients");
+      throw ServerError.internalServerError("Failed to delete ingredients", error);
     }
   }
 }

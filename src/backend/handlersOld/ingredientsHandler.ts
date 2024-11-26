@@ -4,7 +4,7 @@ import { parseNextApiToken } from '../../../functions/requestTools'
 import { IngredientsDataAccess } from '../dataAccess/ingredientsDataAccess'
 import type { Ingredient } from '../../shared/types'
 import { ServerError } from '../network/ServerError'
-import type { ClientGeneratedIngredient } from '../../shared/messages'
+import type { NewIngredientRequest } from '../../shared/request/IngredientRequests'
 
 
 export async function handleIngredientsRequest (path: String, request: CfRequest, env: Env): Promise<Response> {
@@ -38,7 +38,7 @@ export async function handleIngredientsRequest (path: String, request: CfRequest
         try {
           newIngredientId = await ingredientsDataAccess.insertIngredient(ingredient)
         } catch(error) {
-          throw ServerError.internalServerError("Something went wrong inserting ingredient into database")
+          throw ServerError.internalServerError("Something went wrong inserting ingredient into database", error)
         }
         return new Response(JSON.stringify({ingredientId: newIngredientId}), { status: 201 })
 
@@ -49,7 +49,7 @@ export async function handleIngredientsRequest (path: String, request: CfRequest
         try{
           newIngredientsIds = await ingredientsDataAccess.insertBatchIngredients(ingredients)
         } catch (error) {
-          throw ServerError.internalServerError("Something went wrong inserting ingredient batch into database")
+          throw ServerError.internalServerError("Something went wrong inserting ingredient batch into database", error)
         }
         return new Response(JSON.stringify({ingredientsIds: newIngredientsIds}), {status:201})
 
@@ -106,13 +106,13 @@ function validateAndUnpackBatchOfNewIngredients(data: any, env: Env): Omit<Ingre
 }
 
 function validateAndUnpackNewIngredient(data: any, env: Env): Omit<Ingredient, 'id'> {
-  const requiredFields: (keyof ClientGeneratedIngredient)[] = [
+  const requiredFields: (keyof NewIngredientRequest)[] = [
     'name', 'quantity', 'unit', 'purchase_price', 'notes'
   ];
 
   for (const field of requiredFields) {
     if (!(field in data)) {
-      throw ServerError.badRequest(`Missing required field: ${field}`);
+      throw ServerError.badRequest(`Missing required field: ${String(field)}`);
     }
   }
 

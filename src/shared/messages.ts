@@ -16,14 +16,6 @@ export type LoginRegisterResponse = {
   authToken: AuthToken
 }
 
-export type ClientGeneratedIngredient = {
-  name: string,
-  quantity: number,
-  unit: string,
-  purchase_price: number,
-  notes: string
-}
-
 export type RecipeMetaUpdate = {
   id: number,
   name: string,

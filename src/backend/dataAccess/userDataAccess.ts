@@ -30,8 +30,7 @@ export class UserDataAccess {
 
       return id
     } catch (error) {
-      console.error("Database error:", error);
-      throw ServerError.internalServerError("Failed to insert user");
+      throw ServerError.internalServerError("Failed to insert user", error);
     }
   }
 
@@ -43,8 +42,7 @@ export class UserDataAccess {
 
       return results[0] as User | null;
     } catch (error) {
-      console.error("Database error:", error);
-      throw ServerError.internalServerError("Failed to fetch user by id");
+      throw ServerError.internalServerError("Failed to fetch user by id", error);
     }
   }
 
@@ -60,8 +58,7 @@ export class UserDataAccess {
 
       return results[0] as User;
     } catch (error) {
-      console.error("Database error:", error);
-      throw ServerError.internalServerError("Failed to fetch user by email");
+      throw ServerError.internalServerError("Failed to fetch user by email", error);
     }
   }
 
@@ -78,7 +75,7 @@ export class UserDataAccess {
       return results[0].hashed_password as string;
     } catch (error) {
       console.error("Database error:", error);
-      throw ServerError.internalServerError("Failed to fetch user by email");
+      throw ServerError.internalServerError("Failed to fetch user by email", error);
     }
   }
 

@@ -27,8 +27,7 @@ export class AuthDataAccess {
 
       return expire.toISOString()
     } catch (error) {
-      console.error("Database error:", error);
-      throw ServerError.internalServerError("Failed to insert authToken");
+      throw ServerError.internalServerError("Failed to insert authToken", error);
     }
   }
 
@@ -44,8 +43,7 @@ export class AuthDataAccess {
 
       return
     } catch (error) {
-      console.error("Database error:", error);
-      throw ServerError.internalServerError("Failed to delete authToken");
+      throw ServerError.internalServerError("Failed to delete authToken", error);
     }
   }
 
@@ -62,8 +60,7 @@ export class AuthDataAccess {
       return
     }
     catch (error) {
-      console.error("Database error:", error);
-      throw ServerError.internalServerError("Failed to delete authToken");
+      throw ServerError.internalServerError("Failed to delete authToken", error);
     }
   }
 
@@ -85,8 +82,7 @@ export class AuthDataAccess {
       return true;
     }
     catch (error) {
-      console.error("Database error:", error);
-      throw ServerError.internalServerError("Failed to check token validity");
+      throw ServerError.internalServerError("Failed to check token validity", error);
     }
   }
 }

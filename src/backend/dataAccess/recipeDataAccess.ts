@@ -37,8 +37,7 @@ export class RecipeDataAccess {
         throw new Error('Failed to retrieve the inserted ID');
       }
     } catch (error) {
-      console.error("Database error:", error);
-      throw ServerError.internalServerError("Failed to insert new recipe");
+      throw ServerError.internalServerError("Failed to insert new recipe", error);
     }
   }
 
@@ -50,8 +49,7 @@ export class RecipeDataAccess {
 
       return results as Recipe[];
     } catch (error) {
-      console.error("Database error:", error);
-      throw ServerError.internalServerError("Failed to fetch recipes");
+      throw ServerError.internalServerError("Failed to fetch recipes", error);
     }
   }
 
@@ -63,8 +61,7 @@ export class RecipeDataAccess {
 
       return results[0] as Recipe;
     } catch (error) {
-      console.error("Database error:", error);
-      throw ServerError.internalServerError("Failed to fetch recipe");
+      throw ServerError.internalServerError("Failed to fetch recipe", error);
     }
   }
 
@@ -76,8 +73,7 @@ export class RecipeDataAccess {
 
       return;
     } catch (error) {
-      console.error("Database error:", error);
-      throw ServerError.internalServerError("Failed to delete recipe");
+      throw ServerError.internalServerError("Failed to delete recipe", error);
     }
   }
 
@@ -106,8 +102,7 @@ export class RecipeDataAccess {
         return false;
       }
     } catch (error) {
-      console.error("Database error:", error);
-      throw ServerError.internalServerError("Failed to update recipe");
+      throw ServerError.internalServerError("Failed to update recipe", error);
     }
   }
 }

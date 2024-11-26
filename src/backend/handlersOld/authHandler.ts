@@ -55,7 +55,7 @@ async function handleLoginRequest(request: LoginRequest, dataAccess: DataAccessM
 
   const hashed_password: string | null = await userDataAccess.getPasswordHashByEmail(request.email)
 
-  if (hashed_password == null) { throw ServerError.internalServerError("Error checking password from database")}
+  if (hashed_password == null) { throw ServerError.internalServerError("Error checking password from database", null)}
 
   if (!await bcrypt.compare(request.password, hashed_password)) { throw ServerError.forbidden("Incorrect password") }
 

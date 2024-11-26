@@ -5,7 +5,7 @@ import { useDataStore } from '@/stores/dataStore'
 import { addIngredient, deleteIngredients, updateIngredient } from '@/services/IngredientService'
 import { snackbarStore } from '@/stores/snackbarStore'
 import router from '@/router'
-import type { ClientGeneratedIngredient } from '../../shared/messages'
+import type { NewIngredientRequest } from '../../shared/request/IngredientRequests'
 import { doErrorHandling } from '@/utils/generalUtils'
 
 onMounted(async () => {
@@ -106,7 +106,7 @@ const search = ref<string>("")
 const selected = ref<number []>([])
 const deleteWarning = ref<boolean>(false)
 
-const ingredientToAdd = ref<ClientGeneratedIngredient | null>(null)
+const ingredientToAdd = ref<NewIngredientRequest | null>(null)
 </script>
 
 <template>
