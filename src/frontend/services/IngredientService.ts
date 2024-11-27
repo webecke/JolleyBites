@@ -11,19 +11,21 @@ export const getIngredient = async (id: number): Promise<Ingredient> => {
   return await ServerCommunicator.getRequest<Ingredient>("/api/ingredients/" + String(id))
 }
 
-const newIngredientPost = async (ingredient: IngredientRequest) => {
-  const ingredientRequest: IngredientRequest = {
+const addIngredientsPost = async (ingredients: IngredientRequest[]) => {
+  const ingredientRequests = ingredients.map((ingredient) => {
+    return formatIngredientRequest(ingredient)
+  })
+  return await ServerCommunicator.postRequest<{ingredientIds: number[]}>("/api/ingredients", ingredientRequests)
+}
+
+const formatIngredientRequest = (ingredient: IngredientRequest): IngredientRequest => {
+  return {
     name: ingredient.name,
     quantity: Number(ingredient.quantity),
     unit: ingredient.unit,
     purchase_price: Number(ingredient.purchase_price),
     notes: ingredient.notes
   }
-  return await ServerCommunicator.postRequest<{ingredientId: number}>("/api/ingredients", ingredientRequest)
-};
-
-const batchIngredientsPost = async (ingredients: IngredientRequest[]) => {
-  return await ServerCommunicator.postRequest<{ingredientsIds: []}>("/api/ingredients", {ingredients: ingredients})
 }
 
 export const addIngredient = async (ingredient: IngredientRequest | null)=> {
@@ -34,13 +36,14 @@ export const addIngredient = async (ingredient: IngredientRequest | null)=> {
     throw Error("Please enter an ingredient name, quantity, and unit")
   }
 
-  const response = await newIngredientPost(ingredient)
-  const newIngredient: Ingredient = await getIngredient(response.ingredientId)
+  const response = await addIngredientsPost([ingredient])
+  console.error(response)
+  const newIngredient: Ingredient = await getIngredient(response.ingredientIds.at(0))
   useDataStore().addIngredient(newIngredient)
 }
 
-export const addIngredientsBatch = async (ingredients: IngredientRequest[]): Promise<{ingredientsIds: []}> => {
-  return await batchIngredientsPost(ingredients)
+export const addIngredientsBatch = async (ingredients: IngredientRequest[]): Promise<{ingredientIds: []}> => {
+  return await addIngredientsPost(ingredients)
 }
 
 export const updateIngredient = async (ingredientRequest: IngredientRequest, id: number)=> {

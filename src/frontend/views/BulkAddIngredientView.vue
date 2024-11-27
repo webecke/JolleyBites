@@ -57,7 +57,7 @@ const handleSaveButtonClick = async () => {
 
   await doErrorHandling(async () => {
     const response = await addIngredientsBatch(ingredients.value)
-    ingredientsSaved = response.ingredientsIds.length
+    ingredientsSaved = response.ingredientIds.length
 
     await useDataStore().loadIngredients()
     await router.push("/ingredients")

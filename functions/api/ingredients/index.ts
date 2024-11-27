@@ -15,12 +15,23 @@ export const onRequest = async (context: EventContext<Env, any, ServerContext>) 
   }
 
   else if (context.request.method === 'POST') {
-    const request = await context.request.json()
+    const requests = await context.request.json()
+    console.log("HEY", requests)
 
-    if (!isValidIngredientRequest(request))
-      throw ServerError.badRequest("Bad Ingredient Request")
-    const newId = await IngredientService.createIngredient(context.env.dataAccess, context.data.user, request)
-    return new Response(JSON.stringify({ingredientId: newId}), { status: 201 })
+    if (!Array.isArray(requests)) {
+      throw ServerError.badRequest("Request body must be an array of ingredient requests")
+    }
+    if (!requests.every(isValidIngredientRequest)) {
+      throw ServerError.badRequest("One or more ingredient requests are invalid")
+    }
+
+    const newIds = await Promise.all(
+      requests.map(request =>
+        IngredientService.createIngredient(context.env.dataAccess, context.data.user, request)
+      )
+    )
+
+    return new Response(JSON.stringify({ ingredientIds: newIds }), { status: 201 })
   }
 
   else if (context.request.method === 'DELETE') {

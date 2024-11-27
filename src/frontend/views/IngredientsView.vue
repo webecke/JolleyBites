@@ -20,10 +20,10 @@ onUnmounted( () => {
 
 const headers = [
   { title: 'Ingredient', value: 'name', sortable: true, width: '20%', editable: true },
-  { title: 'Quantity', value: 'quantity', sortable: true, type: typeof Number, prefix: "$", editable: true},
+  { title: 'Quantity', value: 'quantity', sortable: true, type: "number", prefix: "$", editable: true},
   { title: 'Unit', value: 'unit', sortable: true, editable: true },
-  { title: 'Cost', value: 'purchase_price', sortable: true, type: typeof Number, prefix: "$", editable: true},
-  { title: 'Price/Unit', value: 'price_per_unit', sortable: true, type: typeof Number, editable: false },
+  { title: 'Cost', value: 'purchase_price', sortable: true, type: "number", prefix: "$", editable: true},
+  { title: 'Price/Unit', value: 'price_per_unit', sortable: true, type: "number", editable: false },
   { title: 'Notes', value: 'notes', width: '20% ', editable: true}
 ]
 
