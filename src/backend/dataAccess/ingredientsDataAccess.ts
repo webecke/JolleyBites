@@ -106,10 +106,9 @@ export class IngredientsDataAccess {
     try {
       const statement = await this.DB.prepare(`
       UPDATE ingredients
-      SET user_id = ?, name = ?, quantity = ?, unit = ?, purchase_price = ?, price_per_unit = ?, notes = ?
+      SET name = ?, quantity = ?, unit = ?, purchase_price = ?, price_per_unit = ?, notes = ?
       WHERE id = ?
     `).bind(
-        ingredient.user_id,
         ingredient.name,
         ingredient.quantity,
         ingredient.unit,

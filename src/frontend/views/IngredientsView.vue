@@ -5,7 +5,7 @@ import { useDataStore } from '@/stores/dataStore'
 import { addIngredient, deleteIngredients, updateIngredient } from '@/services/IngredientService'
 import { snackbarStore } from '@/stores/snackbarStore'
 import router from '@/router'
-import type { NewIngredientRequest } from '../../shared/request/IngredientRequests'
+import type { IngredientRequest } from '../../shared/request/IngredientRequests'
 import { doErrorHandling } from '@/utils/generalUtils'
 
 onMounted(async () => {
@@ -23,7 +23,7 @@ const headers = [
   { title: 'Quantity', value: 'quantity', sortable: true, type: typeof Number, prefix: "$", editable: true},
   { title: 'Unit', value: 'unit', sortable: true, editable: true },
   { title: 'Cost', value: 'purchase_price', sortable: true, type: typeof Number, prefix: "$", editable: true},
-  { title: 'Price/Unit', value: 'price_per_unit', sortable: true, editable: false },
+  { title: 'Price/Unit', value: 'price_per_unit', sortable: true, type: typeof Number, editable: false },
   { title: 'Notes', value: 'notes', width: '20% ', editable: true}
 ]
 
@@ -55,8 +55,9 @@ const finishEditing = async (item: Ingredient) => {
   editingValue.value = "";
 
   try {
-    await updateIngredient(item)
+    await updateIngredient(item, item.id)
   } catch (error) {
+    console.error(error)
     snackbarStore.showCriticalErrorMessage("Something went wrong saving your changes. Please refresh the page")
     return
   }
@@ -107,7 +108,7 @@ const search = ref<string>("")
 const selected = ref<number []>([])
 const deleteWarning = ref<boolean>(false)
 
-const ingredientToAdd = ref<NewIngredientRequest | null>(null)
+const ingredientToAdd = ref<IngredientRequest | null>(null)
 </script>
 
 <template>

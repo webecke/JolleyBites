@@ -5,7 +5,7 @@ import { ServerError } from '@backend/network/ServerError'
 import { IngredientService } from '@backend/service/ingredientService'
 import type { EventContext } from '@cloudflare/workers-types'
 import { ServerContext } from '@backend/network/handlerContexts'
-import { isValidNewIngredientRequest } from '@shared/request/IngredientRequests'
+import { isValidIngredientRequest } from '@shared/request/IngredientRequests'
 import { Ingredient } from '@shared/types'
 
 export const onRequest = async (context: EventContext<Env, any, ServerContext>) => {
@@ -17,8 +17,8 @@ export const onRequest = async (context: EventContext<Env, any, ServerContext>) 
   else if (context.request.method === 'POST') {
     const request = await context.request.json()
 
-    if (!isValidNewIngredientRequest(request))
-      throw ServerError.badRequest("Bad New Ingredient Request")
+    if (!isValidIngredientRequest(request))
+      throw ServerError.badRequest("Bad Ingredient Request")
     const newId = await IngredientService.createIngredient(context.env.dataAccess, context.data.user, request)
     return new Response(JSON.stringify({ingredientId: newId}), { status: 201 })
   }

@@ -38,8 +38,6 @@ const timeAndLogMiddleware = async (context: EventContext<Env, any, ServerContex
 
   console.log(`${context.request.method} request to ${context.request.url} completed in ${timeElapsed} milliseconds with code ${response.status}`)
 
-  console.log("DEBUGGING RESPONSE:", response)
-
   return response
 }
 

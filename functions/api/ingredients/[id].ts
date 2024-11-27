@@ -6,6 +6,7 @@ import { IngredientService } from '@backend/service/ingredientService'
 import type { EventContext } from '@cloudflare/workers-types'
 import { ServerContext } from '@backend/network/handlerContexts'
 import { Ingredient } from '@shared/types'
+import { isValidIngredientRequest } from '@shared/request/IngredientRequests'
 
 export const onRequest = async (context: EventContext<Env, any, ServerContext>) => {
   const id: number = Number(context.params.id)
@@ -18,5 +19,20 @@ export const onRequest = async (context: EventContext<Env, any, ServerContext>) 
     return Response.json(ingredient)
   }
 
-  throw ServerError.methodNotAllowed("/api/ingredients/[id] expects GET or POST")
+  else if (context.request.method === 'PUT') {
+    if (isNaN(id)) {
+      throw ServerError.badRequest("Invalid ingredient ID")
+    }
+
+    const request = await context.request.json()
+    console.log("POTATO", request)
+    if (!isValidIngredientRequest(request)) {
+      throw ServerError.badRequest("Bad Ingredient Request")
+    }
+
+    await IngredientService.updateIngredient(context.env.dataAccess, context.data.user, id, request)
+    return new Response(null, { status: 204 })
+  }
+
+  throw ServerError.methodNotAllowed("/api/ingredients/[id] expects GET or PUT")
 }

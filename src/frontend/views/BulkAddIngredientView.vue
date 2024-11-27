@@ -3,7 +3,7 @@
 import router from '@/router'
 import { onMounted, reactive, ref } from 'vue'
 import { snackbarStore } from '@/stores/snackbarStore'
-import type { NewIngredientRequest } from '../../shared/request/IngredientRequests'
+import type { IngredientRequest } from '../../shared/request/IngredientRequests'
 import { addIngredientsBatch } from '@/services/IngredientService'
 import { useDataStore } from '@/stores/dataStore'
 import { doErrorHandling } from '@/utils/generalUtils'
@@ -71,8 +71,8 @@ const handleCancelButtonClick = async () => {
   router.push("/ingredients")
 }
 
-const ingredients = ref<NewIngredientRequest[]>([])
-const ingredientsWithErrors = ref<NewIngredientRequest[]>([])
+const ingredients = ref<IngredientRequest[]>([])
+const ingredientsWithErrors = ref<IngredientRequest[]>([])
 
 const removeIngredient = (index: number) => {
   ingredients.value.splice(index, 1)

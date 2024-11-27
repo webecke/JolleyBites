@@ -3,7 +3,7 @@ import { useAuthStore } from '@/stores/authStore'
 export const ServerCommunicator = {
   getRequest: getRequest,
   postRequest: postRequest,
-  patchRequest: patchRequest,
+  putRequest: putRequest,
   deleteRequest: deleteRequest
 }
 
@@ -47,10 +47,10 @@ async function postRequest<T>(endpoint: string, bodyObject?: Object): Promise<T>
   return await (await doRequest<T>("POST", endpoint, bodyObject)).json() as T
 }
 
-async function patchRequest<T>(endpoint: string, bodyObject?: Object): Promise<T> {
-  return await (await doRequest<T>("PATCH", endpoint, bodyObject)).json() as T
+async function putRequest(endpoint: string, bodyObject?: Object): Promise<void> {
+  await doRequest("PUT", endpoint, bodyObject)
 }
 
-async function deleteRequest<T>(endpoint: string, bodyObject?: Object): Promise<void> {
-  await doRequest<T>("DELETE", endpoint, bodyObject)
+async function deleteRequest(endpoint: string, bodyObject?: Object): Promise<void> {
+  await doRequest("DELETE", endpoint, bodyObject)
 }

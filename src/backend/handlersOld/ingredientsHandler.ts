@@ -4,7 +4,7 @@ import { parseNextApiToken } from '../../../functions/requestTools'
 import { IngredientsDataAccess } from '../dataAccess/ingredientsDataAccess'
 import type { Ingredient } from '../../shared/types'
 import { ServerError } from '../network/ServerError'
-import type { NewIngredientRequest } from '../../shared/request/IngredientRequests'
+import type { IngredientRequest } from '../../shared/request/IngredientRequests'
 
 
 export async function handleIngredientsRequest (path: String, request: CfRequest, env: Env): Promise<Response> {
@@ -106,7 +106,7 @@ function validateAndUnpackBatchOfNewIngredients(data: any, env: Env): Omit<Ingre
 }
 
 function validateAndUnpackNewIngredient(data: any, env: Env): Omit<Ingredient, 'id'> {
-  const requiredFields: (keyof NewIngredientRequest)[] = [
+  const requiredFields: (keyof IngredientRequest)[] = [
     'name', 'quantity', 'unit', 'purchase_price', 'notes'
   ];
 

@@ -33,7 +33,7 @@ export const updateRecipe = async (recipe: Recipe) => {
     notes: recipe.notes
   }
 
-  await ServerCommunicator.patchRequest("/api/recipes", {recipeMetaUpdate: metaInfo} )
+  await ServerCommunicator.putRequest("/api/recipes", {recipeMetaUpdate: metaInfo} )
   const updatedRecipe: Recipe = await ServerCommunicator.getRequest<Recipe>("/api/recipes/" + String(recipe.id))
   useDataStore().updateRecipe(updatedRecipe)
 }

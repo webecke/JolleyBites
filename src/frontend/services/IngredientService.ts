@@ -1,7 +1,7 @@
 import { useDataStore } from '@/stores/dataStore'
 import type { Ingredient } from '../../shared/types'
 import { ServerCommunicator } from '@/services/ServerCommunicator'
-import type { NewIngredientRequest } from '../../shared/request/IngredientRequests'
+import type { IngredientRequest } from '../../shared/request/IngredientRequests'
 
 export const getAllIngredients = async (): Promise<Ingredient []> => {
   return await ServerCommunicator.getRequest<Ingredient[]>("/api/ingredients")
@@ -11,8 +11,8 @@ export const getIngredient = async (id: number): Promise<Ingredient> => {
   return await ServerCommunicator.getRequest<Ingredient>("/api/ingredients/" + String(id))
 }
 
-const newIngredientPost = async (ingredient: NewIngredientRequest) => {
-  const ingredientRequest: NewIngredientRequest = {
+const newIngredientPost = async (ingredient: IngredientRequest) => {
+  const ingredientRequest: IngredientRequest = {
     name: ingredient.name,
     quantity: Number(ingredient.quantity),
     unit: ingredient.unit,
@@ -22,11 +22,11 @@ const newIngredientPost = async (ingredient: NewIngredientRequest) => {
   return await ServerCommunicator.postRequest<{ingredientId: number}>("/api/ingredients", ingredientRequest)
 };
 
-const batchIngredientsPost = async (ingredients: NewIngredientRequest[]) => {
+const batchIngredientsPost = async (ingredients: IngredientRequest[]) => {
   return await ServerCommunicator.postRequest<{ingredientsIds: []}>("/api/ingredients", {ingredients: ingredients})
 }
 
-export const addIngredient = async (ingredient: NewIngredientRequest | null)=> {
+export const addIngredient = async (ingredient: IngredientRequest | null)=> {
   if (ingredient == null) {
     console.error("Tried to add null ingredient");
     throw Error("Tried to add null ingredient")
@@ -39,12 +39,14 @@ export const addIngredient = async (ingredient: NewIngredientRequest | null)=> {
   useDataStore().addIngredient(newIngredient)
 }
 
-export const addIngredientsBatch = async (ingredients: NewIngredientRequest[]): Promise<{ingredientsIds: []}> => {
+export const addIngredientsBatch = async (ingredients: IngredientRequest[]): Promise<{ingredientsIds: []}> => {
   return await batchIngredientsPost(ingredients)
 }
 
-export const updateIngredient = async (ingredient: Ingredient)=> {
-  await ServerCommunicator.patchRequest("/api/ingredients", {ingredient: ingredient})
+export const updateIngredient = async (ingredientRequest: IngredientRequest, id: number)=> {
+  ingredientRequest.quantity = Number(ingredientRequest.quantity)
+  ingredientRequest.purchase_price = Number(ingredientRequest.purchase_price)
+  await ServerCommunicator.putRequest("/api/ingredients/" + String(id), ingredientRequest)
   return true;
 }
 
