@@ -95,14 +95,18 @@ const ingredientsWithDetails = computed(() =>
 
 <template>
   <RecipeInfo
+    :showEditMode="showEditMode"
     :calculated_cost="recipe.calculated_cost"
     :name="recipe.name"
     :description="recipe.description"
-    :servings_per_recipe="recipe.servings_per_recipe"/>
+    :servings_per_recipe="recipe.servings_per_recipe"
+    @toggleEditMode="showEditMode = !showEditMode"
+  />
 
   <div class="flexableColumnContainer">
     <div class="flexableColumns" style="width: 60%">
       <RecipeIngredientsList
+        :showEditMode="showEditMode"
         :ingredientRecipes="ingredientList"
         :recipeId="recipe.id"/>
     </div>
@@ -110,8 +114,8 @@ const ingredientsWithDetails = computed(() =>
     <div class="flexableColumns" style="width: 40%">
       <RecipeDetails
         :recipeId="recipe.id"
-        :instructions="recipe.instructions"
-        :notes="recipe.notes"
+        v-model:instructions="recipe.instructions"
+        v-model:notes="recipe.notes"
         :created_at="recipe.created_at"
         :updated_at="recipe.updated_at"
         :showEditMode="showEditMode"/>

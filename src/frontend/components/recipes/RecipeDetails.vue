@@ -14,6 +14,7 @@ const { recipeId } = defineProps<{
   updated_at: Date;
   showEditMode: boolean;
 }>();
+const emit = defineEmits(['update:instructions', 'update:notes'])
 
 const showDeleteConfirmation = ref<boolean>(false)
 
@@ -29,14 +30,26 @@ const doDeleteRecipe = async () => {
 <template>
   <div>
     <h3>Instructions:</h3>
-    <p v-if="instructions == ''"><em>No instructions</em></p>
+    <v-textarea
+      v-if="showEditMode"
+      :value="instructions"
+      @input="emit('update:instructions', $event.target.value)"
+      placeholder="Add instructions..."
+    />
+    <p v-else-if="instructions == ''"><em>No instructions</em></p>
     <p v-else v-html="convertNewlinesToBr(instructions)"/>
   </div>
 
   <div>
     <hr style="width: 100%;"/>
     <h3>Notes:</h3>
-    <p v-if="notes == ''"><em>No notes</em></p>
+    <v-textarea
+      v-if="showEditMode"
+      :value="notes"
+      @input="emit('update:notes', $event.target.value)"
+      placeholder="Add notes..."
+    />
+    <p v-else-if="notes == ''"><em>No notes</em></p>
     <p v-else v-html="convertNewlinesToBr(notes)"/>
   </div>
 
@@ -44,7 +57,7 @@ const doDeleteRecipe = async () => {
 
   <p>Created {{formatDate(created_at)}}</p>
   <p>Last edited {{formatDate(updated_at)}}</p>
-  <v-btn v-if="showEditMode || true" color="red" @click="showDeleteConfirmation = true">Delete Recipe</v-btn>
+  <v-btn v-if="showEditMode" color="red" @click="showDeleteConfirmation = true">Delete Recipe</v-btn>
 
 
   <v-dialog

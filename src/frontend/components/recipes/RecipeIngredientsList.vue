@@ -6,8 +6,9 @@ import { roundToTwoDecimals } from '@/utils/formatUtils'
 
 const data = useDataStore()
 
-const {recipeId, ingredientRecipes} = defineProps<{
-  recipeId: number
+const {ingredientRecipes} = defineProps<{
+  showEditMode: boolean,
+  recipeId: number,
   ingredientRecipes: IngredientRecipe[]
 }>()
 
