@@ -4,6 +4,7 @@ import { ServerContext } from '@backend/network/handlerContexts'
 import { ServerError } from '@backend/network/ServerError'
 import { Recipe } from '@shared/types'
 import { RecipeService } from '@backend/service/RecipeService'
+import { isValidRecipeRequest } from '@shared/request/RecipeRequests'
 
 export const onRequest = async (context: EventContext<Env, any, ServerContext>) => {
   const id: number = Number(context.params.id)
@@ -19,5 +20,15 @@ export const onRequest = async (context: EventContext<Env, any, ServerContext>) 
     return new Response(null, { status: 204 })
   }
 
-  throw ServerError.methodNotAllowed("/api/recipes/[id] accepts GET only")
+  else if (context.request.method === 'PUT') {
+    const request = await context.request.json()
+
+    if (!isValidRecipeRequest(request)) throw ServerError.badRequest("Bad Recipe Request")
+
+    await RecipeService.updateRecipe(context.env.dataAccess, context.data.user, id, request)
+
+    return new Response(null, { status: 204 })
+  }
+
+  throw ServerError.methodNotAllowed("/api/recipes/[id] accepts GET and DELETE only")
 }

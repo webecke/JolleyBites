@@ -10,29 +10,60 @@ defineProps<{
   calculated_cost: number
 }>()
 
-const emit = defineEmits(['toggleEditMode'])
+const emit = defineEmits(['saveRecipe', 'cancelEdit', 'startEdit',
+  'update:name', 'update:description', 'update:servings_per_recipe'])
 
 </script>
 
 <template>
   <div id="recipeTopArea">
     <div style="width: 100%;">
-      <h1 style="display: flex; justify-content: space-between; align-items: center">
-        <span>{{name}}</span>
-        <font-awesome-icon :icon="['fas', 'pen-to-square']"
-                           v-if="!showEditMode"
-                           style="cursor: pointer;"
-                           @click="emit('toggleEditMode')"/>
-        <font-awesome-icon :icon="['fas', 'floppy-disk']"
-                           v-if="showEditMode"
-                           style="cursor: pointer; color: green"
-                           @click="emit('toggleEditMode')"/>
-      </h1>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <v-text-field
+            v-if="showEditMode"
+            :value="name"
+            @input="emit('update:name', $event.target.value)"
+            placeholder="Add recipe name..."
+            style="min-width: 60vw"
+          />
+          <h1 v-else>{{name}}</h1>
+        </div>
+        <h1>
+          <font-awesome-icon :icon="['fas', 'pen-to-square']"
+                             v-if="!showEditMode"
+                             style="cursor: pointer;"
+                             @click="emit('startEdit')"/>
+          <font-awesome-icon :icon="['fas', 'rotate-left']"
+                             v-if="showEditMode"
+                             style="cursor: pointer; color: white; margin-right: 10px"
+                             @click="emit('cancelEdit')"/>
+          <font-awesome-icon :icon="['fas', 'floppy-disk']"
+                             v-if="showEditMode"
+                             style="cursor: pointer; color: green"
+                             @click="emit('saveRecipe')"/>
+        </h1>
+      </div>
 
-      <p v-if="description == ''"><em>No description</em></p>
+      <v-text-field
+        v-if="showEditMode"
+        :value="description"
+        @input="emit('update:description', $event.target.value)"
+        placeholder="Add description..."
+      />
+      <p v-else-if="description == ''"><em>No description</em></p>
       <p v-else>{{description}}</p>
 
-      <p><em>This recipe makes {{servings_per_recipe}} servings</em></p>
+      <div v-if="showEditMode" style="display: flex; align-content: center;">
+        <span>This recipe makes </span>
+        <v-text-field
+          :value="servings_per_recipe"
+          type="Number"
+          @input="emit('update:servings_per_recipe', $event.target.value)"
+          style="max-width: 100px"
+        /> <span> servings per recipe</span>
+      </div>
+      <p v-else><em>This recipe makes {{servings_per_recipe}} servings</em></p>
     </div>
   </div>
 

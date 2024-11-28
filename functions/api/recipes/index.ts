@@ -22,4 +22,6 @@ export const onRequest = async (context: EventContext<Env, any, ServerContext>) 
     const response = await RecipeService.getRecipesForUser(context.env.dataAccess, context.data.user)
     return new Response(JSON.stringify(response))
   }
+
+  throw ServerError.methodNotAllowed("/api/recipes accepts GET and POST only")
 }

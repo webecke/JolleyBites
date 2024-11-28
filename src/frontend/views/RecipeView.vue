@@ -76,11 +76,6 @@ const startEdit = () => {
 }
 
 const cancelEdit = () => {
-  if (initialEdit.value) {
-    showDeleteConfirmation.value = true
-    return
-  }
-
   Object.assign(recipe, { ...preEditedRecipe.value })
   showEditMode.value = false
 }
@@ -97,10 +92,12 @@ const ingredientsWithDetails = computed(() =>
   <RecipeInfo
     :showEditMode="showEditMode"
     :calculated_cost="recipe.calculated_cost"
-    :name="recipe.name"
-    :description="recipe.description"
-    :servings_per_recipe="recipe.servings_per_recipe"
-    @toggleEditMode="showEditMode = !showEditMode"
+    v-model:name="recipe.name"
+    v-model:description="recipe.description"
+    v-model:servings_per_recipe="recipe.servings_per_recipe"
+    @saveRecipe="saveRecipe"
+    @cancelEdit="cancelEdit"
+    @startEdit="startEdit"
   />
 
   <div class="flexableColumnContainer">

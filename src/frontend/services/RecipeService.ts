@@ -25,15 +25,15 @@ export const deleteRecipe = async (id: number) => {
 
 export const updateRecipe = async (recipe: Recipe) => {
   const metaInfo: RecipeMetaUpdate = {
-    id: recipe.id,
+    id: Number(recipe.id),
     name: recipe.name,
     description: recipe.description,
-    servings_per_recipe: recipe.servings_per_recipe,
+    servings_per_recipe: Number(recipe.servings_per_recipe),
     instructions: recipe.instructions,
     notes: recipe.notes
   }
 
-  await ServerCommunicator.putRequest("/api/recipes", {recipeMetaUpdate: metaInfo} )
+  await ServerCommunicator.putRequest("/api/recipes/" + String(recipe.id), metaInfo)
   const updatedRecipe: Recipe = await ServerCommunicator.getRequest<Recipe>("/api/recipes/" + String(recipe.id))
   useDataStore().updateRecipe(updatedRecipe)
 }
