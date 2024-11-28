@@ -5,7 +5,8 @@ import { ServerError } from '../network/ServerError'
 export const RecipeService = {
   createRecipe,
   getRecipesForUser,
-  getRecipeById
+  getRecipeById,
+  deleteRecipe
 }
 
 async function createRecipe(dataAccess: DataAccessMachine, user: User, recipeName: string): Promise<number>{
@@ -24,4 +25,14 @@ async function getRecipeById(dataAccess: DataAccessMachine, user: User, id: numb
   if (recipe.user_id != user.id) throw ServerError.forbidden("Recipe #${id} does not belong to you")
 
   return recipe
+}
+
+async function deleteRecipe(dataAccess: DataAccessMachine, user: User, id: number): Promise<void> {
+  const recipeDA = dataAccess.getRecipeDA()
+  const recipe = await recipeDA.getRecipeById(id)
+
+  if (recipe == undefined) throw ServerError.notFound(`Recipe #${id} not found`)
+  if (recipe.user_id != user.id) throw ServerError.forbidden(`Recipe #${id} doesn't belong to you`)
+
+  await recipeDA.deleteRecipeById(id)
 }

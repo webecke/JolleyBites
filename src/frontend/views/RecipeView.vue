@@ -85,14 +85,6 @@ const cancelEdit = () => {
   showEditMode.value = false
 }
 
-const doDeleteRecipe = async () => {
-  await doErrorHandling(async () => {
-    await deleteRecipe(recipe.id)
-    snackbarStore.showSuccessMessage("Recipe deleted")
-    await router.push("/recipes")
-  }, "deleting recipe")
-}
-
 const ingredientsWithDetails = computed(() =>
   ingredientList.value.map(ingredient => ({
     ...ingredient,
@@ -110,18 +102,6 @@ const ingredientsWithDetails = computed(() =>
 
   <div class="flexableColumnContainer">
     <div class="flexableColumns" style="width: 60%">
-<!--      <div v-for="ingredient in ingredientsWithDetails" :key="ingredient.ingredient_id">-->
-<!--        <div v-if="!ingredient.details">-->
-<!--          <p>Error loading ingredient {{ingredient.ingredient_id}}</p>-->
-<!--        </div>-->
-<!--        <div v-else-if="showEditMode">-->
-<!--          <v-text-field label="Quantity"/>-->
-<!--          {{ingredient.details.unit}} of {{ingredient.details.name}}-->
-<!--        </div>-->
-<!--        <div v-else>-->
-<!--          {{ingredient.quantity_in_recipe}} {{ingredient.details.unit}} of {{ingredient.details.name}}-->
-<!--        </div>-->
-<!--      </div>-->
       <RecipeIngredientsList
         :ingredientRecipes="ingredientList"
         :recipeId="recipe.id"/>
@@ -137,33 +117,6 @@ const ingredientsWithDetails = computed(() =>
         :showEditMode="showEditMode"/>
     </div>
   </div>
-
-
-  <v-dialog
-    v-model="showDeleteConfirmation"
-    width="auto"
-    min-width="300px">
-    <v-card v-if="initialEdit" title="Are you sure?">
-      <template v-slot:text>
-        <p>Do you want to cancel creating this recipe?</p>
-        <p><em>You can not undo this</em></p>
-      </template>
-      <template v-slot:actions>
-        <v-btn @click="doDeleteRecipe" color="red">Cancel creating recipe</v-btn>
-        <v-btn @click="showDeleteConfirmation = false">Continue making recipe</v-btn>
-      </template>
-    </v-card>
-    <v-card v-else title="Are you sure?">
-      <template v-slot:text>
-        <p>Do you want to delete your {{recipe.name}} recipe?</p>
-        <p><em>You can not undo this</em></p>
-      </template>
-      <template v-slot:actions>
-        <v-btn @click="doDeleteRecipe" color="red">Delete</v-btn>
-        <v-btn @click="showDeleteConfirmation = false">Cancel</v-btn>
-      </template>
-    </v-card>
-  </v-dialog>
 </template>
 
 <style scoped>

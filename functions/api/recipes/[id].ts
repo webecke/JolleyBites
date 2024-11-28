@@ -13,4 +13,11 @@ export const onRequest = async (context: EventContext<Env, any, ServerContext>) 
     const recipe: Recipe = await RecipeService.getRecipeById(context.env.dataAccess, context.data.user, id)
     return Response.json(recipe)
   }
+
+  else if (context.request.method === 'DELETE') {
+    await RecipeService.deleteRecipe(context.env.dataAccess, context.data.user, id)
+    return new Response(null, { status: 204 })
+  }
+
+  throw ServerError.methodNotAllowed("/api/recipes/[id] accepts GET only")
 }
