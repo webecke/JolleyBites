@@ -20,15 +20,11 @@ export class IngredientsDataAccess {
     }
   }
 
-  public async getIngredientById(id: Number): Promise<Ingredient> {
+  public async getIngredientById(id: Number): Promise<Ingredient | undefined> {
     try {
       const { results } = await this.DB.prepare(
         "SELECT * FROM ingredients WHERE id = ?"
       ).bind(id).all();
-
-      if (!results[0]) {
-        throw ServerError.notFound(`Ingredient with id ${id} not found`);
-      }
 
       return results[0] as Ingredient;
     } catch (error) {

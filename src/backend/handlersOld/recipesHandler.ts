@@ -99,7 +99,9 @@ async function processPatchRecipeRequest(path: String, request: CfRequest, env: 
 
   if ('recipeMetaUpdate' in reqBody) {
     const metaUpdate: RecipeMetaUpdate = reqBody.recipeMetaUpdate
-    const currentRecipe: Recipe = await recipeDataAccess.getRecipeById(metaUpdate.id)
+    const currentRecipe: Recipe | undefined = await recipeDataAccess.getRecipeById(metaUpdate.id)
+
+    if (currentRecipe == undefined) throw ServerError.notImplemented("STOP USING THIS HANDLER")
 
     if (currentRecipe == null) {
       throw ServerError.notFound("That recipe was not found")

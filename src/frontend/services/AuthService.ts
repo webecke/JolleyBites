@@ -27,7 +27,7 @@ export const doLogin = async (email: string, password: string) => {
 }
 
 export const doLogout = async () => {
-  await ServerCommunicator.deleteRequest<{message: string}>("/auth/logout")
+  await ServerCommunicator.deleteRequest("/auth/logout")
 
   useAuthStore().logout()
 

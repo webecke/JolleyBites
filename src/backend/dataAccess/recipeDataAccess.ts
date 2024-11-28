@@ -53,7 +53,7 @@ export class RecipeDataAccess {
     }
   }
 
-  public async getRecipeById(id: number):Promise<Recipe> {
+  public async getRecipeById(id: number):Promise<Recipe | undefined> {
     try {
       const { results } = await this.DB.prepare(
         "SELECT * FROM recipes WHERE id = ?"

@@ -38,11 +38,11 @@ export const addIngredient = async (ingredient: IngredientRequest | null)=> {
 
   const response = await addIngredientsPost([ingredient])
   console.error(response)
-  const newIngredient: Ingredient = await getIngredient(response.ingredientIds.at(0))
+  const newIngredient: Ingredient = await getIngredient(response.ingredientIds[0])
   useDataStore().addIngredient(newIngredient)
 }
 
-export const addIngredientsBatch = async (ingredients: IngredientRequest[]): Promise<{ingredientIds: []}> => {
+export const addIngredientsBatch = async (ingredients: IngredientRequest[]): Promise<{ingredientIds: number[]}> => {
   return await addIngredientsPost(ingredients)
 }
 

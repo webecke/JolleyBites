@@ -28,8 +28,12 @@ async function getIngredientsForUser(dataAccess: DataAccessMachine, user: User):
   return await dataAccess.getIngredientsDA().getIngredientsForUser(user.id)
 }
 
-async function getIngredient(dataAccess: DataAccessMachine, id: number): Promise<Ingredient> {
-  return await dataAccess.getIngredientsDA().getIngredientById(id)
+async function getIngredient(dataAccess: DataAccessMachine, user: User, id: number): Promise<Ingredient> {
+  const ingredient = await dataAccess.getIngredientsDA().getIngredientById(id)
+
+  if (ingredient == undefined) throw ServerError.notFound(`Ingredient #${id} was not found`)
+  if (ingredient.user_id != user.id) throw ServerError.forbidden('Ingredient does not belong to you')
+  return ingredient
 }
 
 async function deleteSetOfIngredients(dataAccess: DataAccessMachine, ids: number[]) {

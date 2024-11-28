@@ -2,7 +2,7 @@
 
 import { Env } from '../_middleware'
 import { ServerError } from '@backend/network/ServerError'
-import { IngredientService } from '@backend/service/ingredientService'
+import { IngredientService } from '@backend/service/IngredientService'
 import type { EventContext } from '@cloudflare/workers-types'
 import { ServerContext } from '@backend/network/handlerContexts'
 import { isValidIngredientRequest } from '@shared/request/IngredientRequests'
@@ -16,7 +16,6 @@ export const onRequest = async (context: EventContext<Env, any, ServerContext>) 
 
   else if (context.request.method === 'POST') {
     const requests = await context.request.json()
-    console.log("HEY", requests)
 
     if (!Array.isArray(requests)) {
       throw ServerError.badRequest("Request body must be an array of ingredient requests")

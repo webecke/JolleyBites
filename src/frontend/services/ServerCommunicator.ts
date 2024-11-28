@@ -40,11 +40,11 @@ async function doRequest(method: string, endpoint: string, bodyObject?: Object):
 }
 
 async function getRequest<T>(endpoint: string): Promise<T> {
-  return await (await doRequest<T>("GET", endpoint)).json() as T
+  return await (await doRequest("GET", endpoint)).json() as T
 }
 
 async function postRequest<T>(endpoint: string, bodyObject?: Object): Promise<T> {
-  return await (await doRequest<T>("POST", endpoint, bodyObject)).json() as T
+  return await (await doRequest("POST", endpoint, bodyObject)).json() as T
 }
 
 async function putRequest(endpoint: string, bodyObject?: Object): Promise<void> {
