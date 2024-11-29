@@ -101,10 +101,10 @@ const ingredientsWithDetails = computed(() =>
   />
 
   <div class="flexableColumnContainer">
-    <div class="flexableColumns" style="width: 60%">
+    <div class="flexableColumns" style="width: 60%; padding-right: 20px;">
       <RecipeIngredientsList
         :showEditMode="showEditMode"
-        :ingredientRecipes="ingredientList"
+        v-model:ingredientRecipes="ingredientList"
         :recipeId="recipe.id"/>
     </div>
 

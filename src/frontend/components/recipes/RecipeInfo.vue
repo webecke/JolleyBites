@@ -26,6 +26,8 @@ const emit = defineEmits(['saveRecipe', 'cancelEdit', 'startEdit',
             @input="emit('update:name', $event.target.value)"
             placeholder="Add recipe name..."
             style="min-width: 60vw"
+            density="compact"
+            hide-details
           />
           <h1 v-else>{{name}}</h1>
         </div>
@@ -50,6 +52,8 @@ const emit = defineEmits(['saveRecipe', 'cancelEdit', 'startEdit',
         :value="description"
         @input="emit('update:description', $event.target.value)"
         placeholder="Add description..."
+        hide-details
+        density="compact"
       />
       <p v-else-if="description == ''"><em>No description</em></p>
       <p v-else>{{description}}</p>
@@ -61,6 +65,8 @@ const emit = defineEmits(['saveRecipe', 'cancelEdit', 'startEdit',
           type="Number"
           @input="emit('update:servings_per_recipe', $event.target.value)"
           style="max-width: 100px"
+          hide-details
+          density="compact"
         /> <span> servings per recipe</span>
       </div>
       <p v-else><em>This recipe makes {{servings_per_recipe}} servings</em></p>
