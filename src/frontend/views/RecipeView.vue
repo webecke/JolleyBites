@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { computed, onMounted, reactive, ref } from 'vue'
-import type { Recipe, IngredientRecipe } from '../../shared/types'
-import { roundToTwoDecimals, trimObjectStrings } from '@/utils/formatUtils'
+import type { Recipe, RecipeIngredient } from '../../shared/types'
+import { trimObjectStrings } from '@/utils/formatUtils'
 import { useDataStore } from '@/stores/dataStore'
 import router from '@/router'
-import { deleteRecipe, updateRecipe } from '@/services/RecipeService'
+import { updateRecipe } from '@/services/RecipeService'
 import { snackbarStore } from '@/stores/snackbarStore'
 import { doErrorHandling } from '@/utils/generalUtils'
 import RecipeDetails from '@/components/recipes/RecipeDetails.vue'
@@ -17,10 +17,9 @@ const route = useRoute()
 const data = useDataStore()
 const id = ref(route.params.id as string)
 const recipe = reactive<Recipe>({} as Recipe)
-const ingredientList = ref<IngredientRecipe[]>([])
+const ingredientList = ref<RecipeIngredient[]>([])
 const preEditedRecipe = ref<Recipe>({} as Recipe)
 const showEditMode = ref<boolean>(false)
-const showDeleteConfirmation = ref<boolean>(false)
 const initialEdit = computed(() => recipe.created_at == recipe.updated_at)
 
 onMounted(async () => {
@@ -59,9 +58,9 @@ const saveRecipe = async () => {
   }
 
   await doErrorHandling(async () => {
-    await updateRecipe(recipe)
+    await updateRecipe(recipe, ingredientList.value)
     const updatedRecipe = useDataStore().getRecipe(recipe.id)
-    if (updatedRecipe == null) {
+    if (updatedRecipe == undefined) {
       snackbarStore.showCriticalErrorMessage("Something went wrong saving the recipe, please reload the page")
       return
     }
@@ -79,13 +78,6 @@ const cancelEdit = () => {
   Object.assign(recipe, { ...preEditedRecipe.value })
   showEditMode.value = false
 }
-
-const ingredientsWithDetails = computed(() =>
-  ingredientList.value.map(ingredient => ({
-    ...ingredient,
-    details: data.getIngredient(ingredient.ingredient_id)
-  }))
-)
 </script>
 
 <template>

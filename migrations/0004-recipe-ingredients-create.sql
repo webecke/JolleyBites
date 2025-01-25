@@ -11,5 +11,4 @@ CREATE TABLE recipe_ingredients (
 );
 
 CREATE INDEX idx_recipe_ingredients_recipe ON recipe_ingredients(recipe_id);
-CREATE INDEX idx_recipe_ingredients_user ON recipe_ingredients(user_id);
 CREATE INDEX idx_recipe_ingredients_ingredient ON recipe_ingredients(ingredient_id);

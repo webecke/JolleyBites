@@ -1,5 +1,7 @@
+// /api/recipes/[id]
+
 import type { EventContext } from '@cloudflare/workers-types'
-import { Env } from '../_middleware'
+import { Env } from '../../_middleware'
 import { ServerContext } from '@backend/network/handlerContexts'
 import { ServerError } from '@backend/network/ServerError'
 import { Recipe } from '@shared/types'
@@ -22,6 +24,8 @@ export const onRequest = async (context: EventContext<Env, any, ServerContext>) 
 
   else if (context.request.method === 'PUT') {
     const request = await context.request.json()
+
+    console.error(request)
 
     if (!isValidRecipeRequest(request)) throw ServerError.badRequest("Bad Recipe Request")
 

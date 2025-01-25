@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Ingredient, IngredientRecipe } from '../../../shared/types'
+import type { Ingredient, RecipeIngredient } from '../../../shared/types'
 import { computed, ref } from 'vue'
 import { useDataStore } from '@/stores/dataStore'
 import { roundToTwoDecimals } from '@/utils/formatUtils'
@@ -9,11 +9,11 @@ const data = useDataStore()
 const {ingredientRecipes, recipeId} = defineProps<{
   showEditMode: boolean,
   recipeId: number,
-  ingredientRecipes: IngredientRecipe[]
+  ingredientRecipes: RecipeIngredient[]
 }>()
 
 const emit = defineEmits<{
-  'update:ingredientRecipes': [ingredients: IngredientRecipe[]]
+  'update:ingredientRecipes': [ingredients: RecipeIngredient[]]
 }>()
 
 const ingredientsWithDetails = computed(() =>
@@ -47,19 +47,19 @@ const possibleIngredientsToAdd = computed(() => {
 const addIngredient = () => {
   if (!ingredientToAdd.value) return
 
-  const newIngredient: IngredientRecipe[] = [...ingredientRecipes, {
+  const newIngredient: RecipeIngredient[] = [...ingredientRecipes, {
     recipe_id: recipeId,
     ingredient_id: ingredientToAdd.value.id,
-    quantity_in_recipe: 0,
-    notes: ''
+    quantity_in_recipe: Number(quantityForIngredientToAdd.value),
   }]
 
   // Emit the update
   emit('update:ingredientRecipes', newIngredient)
   ingredientToAdd.value = null
+  quantityForIngredientToAdd.value = 0
 }
 
-const updateQuantity = (ingredient: IngredientRecipe & { details?: Ingredient }, newValue: string) => {
+const updateQuantity = (ingredient: RecipeIngredient & { details?: Ingredient }, newValue: string) => {
   const newIngredients = ingredientRecipes.map(ir => {
     if (ir.ingredient_id === ingredient.ingredient_id) {
       return {
@@ -72,6 +72,8 @@ const updateQuantity = (ingredient: IngredientRecipe & { details?: Ingredient },
 
   emit('update:ingredientRecipes', newIngredients)
 }
+
+const quantityForIngredientToAdd = ref<number>(0);
 </script>
 
 <template>
@@ -105,6 +107,14 @@ const updateQuantity = (ingredient: IngredientRecipe & { details?: Ingredient },
   <div style="margin-top: 15px">
     <h3>Add ingredients</h3>
     <div v-if="showEditMode" style="display: flex; justify-content: center; align-items: center;">
+      <v-text-field
+        density="compact"
+        hide-details
+        style="max-width: 100px"
+        type="Number"
+        v-model="quantityForIngredientToAdd"
+      />
+      <p style="padding: 5px;">units of </p>
       <v-autocomplete
         v-model="ingredientToAdd"
         :items="possibleIngredientsToAdd"

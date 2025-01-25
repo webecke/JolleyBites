@@ -4,7 +4,7 @@ import { ServerError } from '../network/ServerError'
 import { RecipeDataAccess } from '../dataAccess/recipeDataAccess'
 import type { RecipeMetaUpdate } from '../../shared/messages'
 import type { Recipe } from '../../shared/types'
-import { IngredientRecipeDataAccess } from '../dataAccess/ingredientRecipeDataAccess'
+import { RecipeIngredientDataAccess } from '../dataAccess/recipeIngredientDataAccess'
 
 export async function handleRecipesRequest (path: String, request: CfRequest, env: Env): Promise<Response> {
   const requestType = request.method
@@ -73,7 +73,7 @@ async function processGetSpecificRecipeRequest(path: String, request: CfRequest,
 }
 
 async function processGetRecipeIngredientsRequest(recipeId: number, env: Env): Promise<Response> {
-  const dataAccess = new IngredientRecipeDataAccess(env.DB)
+  const dataAccess = new RecipeIngredientDataAccess(env.DB)
 
   const result = await dataAccess.getByRecipeId(recipeId, env.user.id)
 

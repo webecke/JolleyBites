@@ -1,15 +1,17 @@
-import type { Recipe, User } from '../../shared/types'
+import type { RecipeIngredient, Recipe, User } from '../../shared/types'
 import type { DataAccessMachine } from '../dataAccess/dataAccessMachine'
 import { ServerError } from '../network/ServerError'
 import type { RecipeDataAccess } from '../dataAccess/recipeDataAccess'
 import type { RecipeRequest } from '../../shared/request/RecipeRequests'
+import type { RecipeIngredientDataAccess } from '../dataAccess/recipeIngredientDataAccess'
 
 export const RecipeService = {
   createRecipe,
   getRecipesForUser,
   getRecipeById,
   deleteRecipe,
-  updateRecipe
+  updateRecipe,
+  getIngredientsForRecipe
 }
 
 async function createRecipe(dataAccess: DataAccessMachine, user: User, recipeName: string): Promise<number>{
@@ -22,12 +24,7 @@ async function getRecipesForUser(dataAccess: DataAccessMachine, user: User): Pro
 }
 
 async function getRecipeById(dataAccess: DataAccessMachine, user: User, id: number): Promise<Recipe> {
-  const recipe = await dataAccess.getRecipeDA().getRecipeById(id)
-
-  if (recipe == undefined) throw ServerError.notFound(`Recipe #${id} was not found`)
-  if (recipe.user_id != user.id) throw ServerError.forbidden("Recipe #${id} does not belong to you")
-
-  return recipe
+  return await throwIfNotFoundOrForbidden(dataAccess.getRecipeDA(), user, id)
 }
 
 async function deleteRecipe(dataAccess: DataAccessMachine, user: User, id: number): Promise<void> {
@@ -38,25 +35,46 @@ async function deleteRecipe(dataAccess: DataAccessMachine, user: User, id: numbe
   await recipeDA.deleteRecipeById(id)
 }
 
-async function updateRecipe(dataAccess: DataAccessMachine, user: User, id: number, metaUpdate: RecipeRequest) {
+async function updateRecipe(dataAccess: DataAccessMachine, user: User, id: number, request: RecipeRequest) {
   const recipeDA: RecipeDataAccess = dataAccess.getRecipeDA()
+  const recipeIngredientDA: RecipeIngredientDataAccess = dataAccess.getRecipeIngredientDA()
 
   const currentRecipe: Recipe = await throwIfNotFoundOrForbidden(recipeDA, user, id)
 
-  const updatedRecipe: Recipe = {
+  const updatedRecipeMeta: Recipe = {
     id: id,
     user_id: currentRecipe.user_id,
-    name: metaUpdate.name,
-    description: metaUpdate.description,
-    servings_per_recipe: metaUpdate.servings_per_recipe,
+    name: request.name,
+    description: request.description,
+    servings_per_recipe: request.servings_per_recipe,
     calculated_cost: currentRecipe.calculated_cost,
-    instructions: metaUpdate.instructions,
-    notes: metaUpdate.notes,
+    instructions: request.instructions,
+    notes: request.notes,
     created_at: currentRecipe.created_at,
     updated_at: new Date(Date.now())
   }
+  await recipeDA.updateRecipe(updatedRecipeMeta)
 
-  await recipeDA.updateRecipe(updatedRecipe)
+  const keepIngredientIds = request.ingredients
+    .filter(ingredient => ingredient.recipe_id === id)
+    .map(ingredient => ingredient.ingredient_id);
+
+  await recipeIngredientDA.deleteIngredientsNotInList(id, keepIngredientIds);
+
+  for (const ingredient of request.ingredients) {
+    if (ingredient.recipe_id === id) {
+      await recipeIngredientDA.updateOrInsert(ingredient)
+    } else {
+      console.error(`User ${user.id} tried updating the ingredients of a recipe that they don't own. Attempted to change in recipe ${ingredient.recipe_id} in a request for recipe ${id}. Not throwing an error though.`)
+    }
+  }
+}
+
+async function getIngredientsForRecipe(dataAccess: DataAccessMachine, user: User, id: number): Promise<RecipeIngredient[]> {
+  await throwIfNotFoundOrForbidden(dataAccess.getRecipeDA(), user, id)
+
+  const recipeIngredients: RecipeIngredient[] = await dataAccess.getRecipeIngredientDA().getByRecipeId(id, user.id);
+  return recipeIngredients;
 }
 
 async function throwIfNotFoundOrForbidden(recipeDA: RecipeDataAccess, user: User, id: number): Promise<Recipe> {

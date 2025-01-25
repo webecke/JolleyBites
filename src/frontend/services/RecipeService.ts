@@ -1,7 +1,7 @@
 import { ServerCommunicator } from '@/services/ServerCommunicator'
-import type { IngredientRecipe, Recipe } from '../../shared/types'
+import type { RecipeIngredient, Recipe } from '../../shared/types'
 import { useDataStore } from '@/stores/dataStore'
-import type { RecipeMetaUpdate } from '../../shared/messages'
+import type { RecipeRequest } from '../../shared/request/RecipeRequests'
 
 export const addNewRecipe = async (name: string): Promise<number> => {
   const response = await ServerCommunicator.postRequest<{recipeId: number}>("/api/recipes", {name: name})
@@ -14,8 +14,8 @@ export const getAllRecipes = async (): Promise<Recipe []> => {
   return await ServerCommunicator.getRequest<Recipe[]>("/api/recipes")
 }
 
-export const getIngredientRecipes = async (recipeId: number) :Promise<IngredientRecipe []> => {
-  return await ServerCommunicator.getRequest<IngredientRecipe[]>(`/api/recipes/${recipeId}/ingredients`)
+export const getIngredientRecipes = async (recipeId: number) :Promise<RecipeIngredient []> => {
+  return await ServerCommunicator.getRequest<RecipeIngredient[]>(`/api/recipes/${recipeId}/ingredients`)
 }
 
 export const deleteRecipe = async (id: number) => {
@@ -23,17 +23,18 @@ export const deleteRecipe = async (id: number) => {
   useDataStore().deleteRecipe(id)
 }
 
-export const updateRecipe = async (recipe: Recipe) => {
-  const metaInfo: RecipeMetaUpdate = {
+export const updateRecipe = async (recipe: Recipe, ingredients: RecipeIngredient[]) => {
+  const request: RecipeRequest = {
     id: Number(recipe.id),
     name: recipe.name,
     description: recipe.description,
     servings_per_recipe: Number(recipe.servings_per_recipe),
     instructions: recipe.instructions,
-    notes: recipe.notes
+    notes: recipe.notes,
+    ingredients: ingredients
   }
 
-  await ServerCommunicator.putRequest("/api/recipes/" + String(recipe.id), metaInfo)
+  await ServerCommunicator.putRequest("/api/recipes/" + String(recipe.id), request)
   const updatedRecipe: Recipe = await ServerCommunicator.getRequest<Recipe>("/api/recipes/" + String(recipe.id))
   useDataStore().updateRecipe(updatedRecipe)
 }

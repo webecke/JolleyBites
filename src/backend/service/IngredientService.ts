@@ -40,12 +40,7 @@ async function deleteSetOfIngredients(dataAccess: DataAccessMachine, ids: number
   await dataAccess.getIngredientsDA().deleteIngredientsByIds(ids)
 }
 
-async function updateIngredient(
-  dataAccess: DataAccessMachine,
-  user: User,
-  id: number,
-  request: IngredientRequest
-): Promise<void> {
+async function updateIngredient(dataAccess: DataAccessMachine, user: User, id: number, request: IngredientRequest): Promise<void> {
   try {
     const existing = await dataAccess.getIngredientsDA().getIngredientById(id)
     if (!existing) {
