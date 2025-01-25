@@ -19,8 +19,8 @@ const login = () => {
 }
 
 const logout = async () => {
-  doLogout()
-  router.push("/")
+  await doLogout()
+  await router.push("/")
 }
 
 const nameOfUser = () => {

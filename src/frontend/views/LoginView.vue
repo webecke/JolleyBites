@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { doLogin } from '@/services/AuthService'
+import { doLogin, initializeApp } from '@/services/AuthService'
 import router from '@/router'
 import { snackbarStore } from '@/stores/snackbarStore'
 import { useAuthStore } from '@/stores/authStore'

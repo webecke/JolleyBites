@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
+import { onBeforeRouteLeave, useRoute } from 'vue-router'
 import { computed, onMounted, reactive, ref } from 'vue'
 import type { Recipe, RecipeIngredient } from '../../shared/types'
 import { trimObjectStrings } from '@/utils/formatUtils'
@@ -80,6 +80,30 @@ const cancelEdit = () => {
   Object.assign(recipe, { ...preEditedRecipe.value })
   showEditMode.value = false
 }
+
+const showLeaveDialog = ref(false)
+const pendingNavigation = ref<any>(null)
+
+onBeforeRouteLeave((to, from, next) => {
+  if (showEditMode.value) {
+    showLeaveDialog.value = true
+    pendingNavigation.value = next
+  } else {
+    next()
+  }
+})
+
+const handleConfirmNavigation = () => {
+  showLeaveDialog.value = false
+  if (pendingNavigation.value) {
+    pendingNavigation.value()
+  }
+}
+
+const handleCancelNavigation = () => {
+  showLeaveDialog.value = false
+  pendingNavigation.value = null
+}
 </script>
 
 <template>
@@ -112,6 +136,19 @@ const cancelEdit = () => {
         :showEditMode="showEditMode"/>
     </div>
   </div>
+
+  <v-dialog v-model="showLeaveDialog" max-width="400">
+    <v-card>
+      <v-card-title>Unsaved Changes</v-card-title>
+      <v-card-text>
+        You have unsaved changes. Are you sure you want to leave?
+      </v-card-text>
+      <v-card-actions>
+        <v-btn @click="handleConfirmNavigation" color="primary">Leave</v-btn>
+        <v-btn @click="handleCancelNavigation">Stay</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <style scoped>

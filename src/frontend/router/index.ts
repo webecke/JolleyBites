@@ -74,14 +74,6 @@ const router = createRouter({
       component: RecipeView,
       beforeEnter: mustBeLoggedIn
     },
-    // {
-    //   path: '/about',
-    //   name: 'about',
-    //   // route level code-splitting
-    //   // this generates a separate chunk (About.[hash].js) for this route
-    //   // which is lazy-loaded when the route is visited.
-    //   component: () => import('@/views/AboutView.vue')
-    // },
     {
       path: '/:pathMatch(.*)*',
       name: '404',
@@ -90,25 +82,35 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach(async (to, from, next) => {
-  if (!useDataStore().dataIsLoaded) {
+async function mustBeLoggedIn(to: any, from: any, next: any) {
+  await useAuthStore().getCurrentUser()
+
+  if (!useAuthStore().isLoggedIn) {
+    next('/login')
+    return
+  }
+
+  const dataStore = useDataStore()
+  if (!dataStore.dataIsLoaded) {
     await initializeApp()
   }
-  next()
-})
 
-async function mustBeLoggedIn() {
-  await useAuthStore().getCurrentUser()
-  if (!useAuthStore().isLoggedIn) {
-    await router.push('/login')
-  }
+  next()
 }
 
-async function mustBeLoggedOut() {
+async function mustBeLoggedOut(to: any, from: any, next: any) {
   await useAuthStore().getCurrentUser()
+
   if (useAuthStore().isLoggedIn) {
-    await router.push('/dashboard')
+    const dataStore = useDataStore()
+    if (!dataStore.dataIsLoaded) {
+      await initializeApp()
+    }
+    next('/dashboard')
+    return
   }
+
+  next()
 }
 
 export default router
