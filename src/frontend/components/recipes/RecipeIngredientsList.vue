@@ -16,6 +16,13 @@ const emit = defineEmits<{
   'update:ingredientRecipes': [ingredients: RecipeIngredient[]]
 }>()
 
+const deleteIngredient = (ingredientToDelete: RecipeIngredient) => {
+  const newIngredients = ingredientRecipes.filter(ir =>
+    ir.ingredient_id !== ingredientToDelete.ingredient_id
+  )
+  emit('update:ingredientRecipes', newIngredients)
+}
+
 const ingredientsWithDetails = computed(() =>
   ingredientRecipes.map(ingredient => ({
     ...ingredient,
@@ -101,6 +108,16 @@ const quantityForIngredientToAdd = ref<number>(0);
         <p>{{ingredient.quantity_in_recipe}} {{ingredient.details?.unit}} of {{ingredient.details?.name}}</p>
       </div>
       <p class="cost">{{getCost(ingredient.details?.price_per_unit, ingredient.quantity_in_recipe)}}</p>
+      <div v-if="showEditMode" class="delete-button">
+        <v-btn
+          icon
+          color="error"
+          size="small"
+          @click="deleteIngredient(ingredient)"
+        >
+          <font-awesome-icon :icon="['fas', 'trash']"/>
+        </v-btn>
+      </div>
     </div>
   </div>
 
@@ -152,5 +169,8 @@ const quantityForIngredientToAdd = ref<number>(0);
 
 .cost {
   margin-left: auto; /* Pushes the cost to the right */
+}
+.delete-button {
+  margin-left: 10px;
 }
 </style>
