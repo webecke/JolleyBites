@@ -1,10 +1,9 @@
-import type { Ingredient } from '../../shared/types'
 import { useAuthStore } from '@/stores/authStore'
 
 export const ServerCommunicator = {
   getRequest: getRequest,
   postRequest: postRequest,
-  patchRequest: patchRequest,
+  putRequest: putRequest,
   deleteRequest: deleteRequest
 }
 
@@ -16,7 +15,7 @@ function generateBaseUrl() {
   return baseUrl
 }
 
-async function doRequest<T>(method: string, endpoint: string, bodyObject?: Object): Promise<T> {
+async function doRequest(method: string, endpoint: string, bodyObject?: Object): Promise<Response> {
   const authTokenObject = useAuthStore().getAuthToken()
   const authToken: string = authTokenObject != null ? authTokenObject : ""
 
@@ -37,21 +36,21 @@ async function doRequest<T>(method: string, endpoint: string, bodyObject?: Objec
     throw new Error(errorText);
   }
 
-  return await response.json() as T;
+  return response;
 }
 
 async function getRequest<T>(endpoint: string): Promise<T> {
-  return await doRequest<T>("GET", endpoint)
+  return await (await doRequest("GET", endpoint)).json() as T
 }
 
 async function postRequest<T>(endpoint: string, bodyObject?: Object): Promise<T> {
-  return await doRequest<T>("POST", endpoint, bodyObject)
+  return await (await doRequest("POST", endpoint, bodyObject)).json() as T
 }
 
-async function patchRequest<T>(endpoint: string, bodyObject?: Object): Promise<T> {
-  return await doRequest<T>("PATCH", endpoint, bodyObject)
+async function putRequest(endpoint: string, bodyObject?: Object): Promise<void> {
+  await doRequest("PUT", endpoint, bodyObject)
 }
 
-async function deleteRequest<T>(endpoint: string, bodyObject?: Object): Promise<T> {
-  return await doRequest<T>("DELETE", endpoint, bodyObject)
+async function deleteRequest(endpoint: string, bodyObject?: Object): Promise<void> {
+  await doRequest("DELETE", endpoint, bodyObject)
 }

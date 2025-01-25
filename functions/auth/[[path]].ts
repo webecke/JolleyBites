@@ -1,8 +1,8 @@
 import { EventContext } from '@cloudflare/workers-types';
 import { addCorsHeaders, Env, handleCors, parseNextApiToken } from '../requestTools'
 import { Request as CfRequest } from '@cloudflare/workers-types';
-import { HttpError } from '../../src/backend/errors/HttpError'
-import { handleAuthRequest } from '../../src/backend/handlers/authHandler'
+import { ServerError } from '../../src/backend/network/ServerError'
+import { handleAuthRequest } from '../../src/backend/handlersOld/authHandler'
 
 /*
   This is the function that Cloudflare passes the request to for /auth requests
@@ -24,7 +24,7 @@ export const onRequest = async (
 
   } catch (error) {
     let errorResponse: Response;
-    if (error instanceof HttpError) {
+    if (error instanceof ServerError) {
       errorResponse = new Response("Error: " + error.message, { status: error.statusCode });
     } else {
       errorResponse = new Response("Error, and we have no clue what happened", { status: 500 });
@@ -49,10 +49,10 @@ async function processAuthRequest(
       case "":
         return await handleAuthRequest(apiPath, request, env)
       default:
-        throw HttpError.notFound("Sorry, looks like that endpoint isn't here");
+        throw ServerError.notFound("Sorry, looks like that endpoint isn't here");
     }
   } catch (error) {
-    if (error instanceof HttpError) {
+    if (error instanceof ServerError) {
       return new Response("Error: " + error.message, { status: error.statusCode })
     } else {
       console.error("Unlabeled error: " + error)

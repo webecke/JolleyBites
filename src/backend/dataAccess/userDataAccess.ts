@@ -1,5 +1,5 @@
 import type { User } from '../../shared/types'
-import { HttpError } from '../errors/HttpError'
+import { ServerError } from '../network/ServerError'
 import { v4 as uuid } from 'uuid'
 import { D1Database } from '@cloudflare/workers-types';
 
@@ -30,21 +30,19 @@ export class UserDataAccess {
 
       return id
     } catch (error) {
-      console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to insert user");
+      throw ServerError.internalServerError("Failed to insert user", error);
     }
   }
 
-  public async getUserById(id: string) {
+  public async getUserById(id: string): Promise<User | null> {
     try {
       const { results } = await this.DB.prepare(
         "SELECT * FROM users WHERE id = ?"
       ).bind(id).all();
 
-      return results[0] as User;
+      return results[0] as User | null;
     } catch (error) {
-      console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to fetch user by id");
+      throw ServerError.internalServerError("Failed to fetch user by id", error);
     }
   }
 
@@ -60,8 +58,7 @@ export class UserDataAccess {
 
       return results[0] as User;
     } catch (error) {
-      console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to fetch user by email");
+      throw ServerError.internalServerError("Failed to fetch user by email", error);
     }
   }
 
@@ -78,7 +75,7 @@ export class UserDataAccess {
       return results[0].hashed_password as string;
     } catch (error) {
       console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to fetch user by email");
+      throw ServerError.internalServerError("Failed to fetch user by email", error);
     }
   }
 

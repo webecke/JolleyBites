@@ -1,5 +1,5 @@
 import type { Ingredient } from '../../shared/types'
-import { HttpError } from '../errors/HttpError'
+import { ServerError } from '../network/ServerError'
 import { D1Database } from '@cloudflare/workers-types';
 
 export class IngredientsDataAccess {
@@ -16,12 +16,11 @@ export class IngredientsDataAccess {
 
       return results as Ingredient[];
     } catch (error) {
-      console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to fetch ingredients");
+      throw ServerError.internalServerError("Failed to fetch ingredients", error);
     }
   }
 
-  public async getIngredientById(id: Number): Promise<Ingredient> {
+  public async getIngredientById(id: Number): Promise<Ingredient | undefined> {
     try {
       const { results } = await this.DB.prepare(
         "SELECT * FROM ingredients WHERE id = ?"
@@ -29,8 +28,10 @@ export class IngredientsDataAccess {
 
       return results[0] as Ingredient;
     } catch (error) {
-      console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to fetch ingredient");
+      if (error instanceof ServerError) {
+        throw error;
+      }
+      throw ServerError.internalServerError("Failed to fetch ingredient", error);
     }
   }
 
@@ -57,8 +58,7 @@ export class IngredientsDataAccess {
         throw new Error('Failed to retrieve the inserted ID');
       }
     } catch (error) {
-      console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to insert ingredient");
+      throw ServerError.internalServerError("Failed to insert ingredient", error);
     }
   }
 
@@ -94,8 +94,7 @@ export class IngredientsDataAccess {
 
       return insertedIds;
     } catch (error) {
-      console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to insert ingredients");
+      throw ServerError.internalServerError("Failed to insert ingredients", error);
     }
   }
 
@@ -103,10 +102,9 @@ export class IngredientsDataAccess {
     try {
       const statement = await this.DB.prepare(`
       UPDATE ingredients
-      SET user_id = ?, name = ?, quantity = ?, unit = ?, purchase_price = ?, price_per_unit = ?, notes = ?
+      SET name = ?, quantity = ?, unit = ?, purchase_price = ?, price_per_unit = ?, notes = ?
       WHERE id = ?
     `).bind(
-        ingredient.user_id,
         ingredient.name,
         ingredient.quantity,
         ingredient.unit,
@@ -124,8 +122,7 @@ export class IngredientsDataAccess {
         return false;
       }
     } catch (error) {
-      console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to update ingredient");
+      throw ServerError.internalServerError("Failed to update ingredient", error);
     }
   }
 
@@ -140,8 +137,14 @@ export class IngredientsDataAccess {
 
       return results;
     } catch (error) {
-      console.error("Database error:", error);
-      throw HttpError.internalServerError("Failed to delete ingredients");
+      if (error instanceof Error &&
+        error.message.includes('FOREIGN KEY constraint failed')) {
+        throw ServerError.conflict(
+          "Cannot delete ingredients that are used in recipes. Remove them from recipes first."
+        );
+      }
+
+      throw ServerError.internalServerError("Failed to delete ingredients", error);
     }
   }
 }
