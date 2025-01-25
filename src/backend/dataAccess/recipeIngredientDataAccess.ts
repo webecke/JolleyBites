@@ -37,29 +37,35 @@ export class RecipeIngredientDataAccess {
   async getByRecipeId(recipeId: number, userId: string): Promise<RecipeIngredient[]> {
     const ingredients = await this.db
       .prepare(
-        `SELECT 
-                  recipe_id,
-                  ingredient_id,
-                  quantity_in_recipe,
-               FROM recipe_ingredients
-               WHERE recipe_id = ?
-               AND user_id = ?`
+        `SELECT
+             recipe_id,
+             ingredient_id,
+             quantity_in_recipe
+         FROM recipe_ingredients
+         WHERE recipe_id = ?`
       )
-      .bind(recipeId, userId)
+      .bind(recipeId)
       .all<RecipeIngredient>();
 
-    if (!ingredients.results.length) {
+    // If results doesn't exist, this could indicate a more serious DB issue
+    if (!ingredients.results) {
+      throw new Error('Database query failed to return results property');
+    }
+
     const recipeExists = await this.db
       .prepare('SELECT 1 FROM recipes WHERE id = ? AND user_id = ?')
       .bind(recipeId, userId)
       .first();
 
     if (!recipeExists) {
-      throw new Error('Recipe not found');
+      throw new Error('Recipe not found or belongs to a different user');
     }
-  }
 
-  return ingredients.results;
+    if (ingredients.results.length > 0) {
+      return ingredients.results;
+    }
+
+    return [];
   }
 
   async deleteIngredientsNotInList(recipeId: number, keepIngredientIds: number[]): Promise<void> {

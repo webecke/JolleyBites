@@ -37,9 +37,11 @@ const loadRecipe = async () => {
 
   Object.assign(recipe, foundRecipe)
 
-  await data.loadIngredientRecipes(recipe.id)
-  const recipeIngredients = data.ingredientRecipes.get(recipe.id) || []
+  await data.loadRecipeIngredients(recipe.id)
+  const recipeIngredients = data.recipeIngredients.get(recipe.id) || []
   ingredientList.value = [...recipeIngredients]
+
+  console.log(recipeIngredients)
 
   if (initialEdit.value) {
     showEditMode.value = true

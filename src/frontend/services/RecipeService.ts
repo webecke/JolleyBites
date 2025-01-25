@@ -14,7 +14,7 @@ export const getAllRecipes = async (): Promise<Recipe []> => {
   return await ServerCommunicator.getRequest<Recipe[]>("/api/recipes")
 }
 
-export const getIngredientRecipes = async (recipeId: number) :Promise<RecipeIngredient []> => {
+export const getRecipeIngredients = async (recipeId: number) :Promise<RecipeIngredient []> => {
   return await ServerCommunicator.getRequest<RecipeIngredient[]>(`/api/recipes/${recipeId}/ingredients`)
 }
 
