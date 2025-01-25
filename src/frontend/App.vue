@@ -85,27 +85,42 @@ const clickBranding = () => {
 <style scoped>
 #branding {
   display: flex;
-}
-
-#branding {
-  display: flex;
   align-items: center;
 }
+
 #branding p {
   margin-left: 10px;
 }
+
 #login {
   height: 100%;
   margin: auto 0;
 }
+
 #footer-content {
   display: flex;
   flex-direction: row;
   width: 75%;
   justify-content: center;
+  align-items: center;
+  margin: 0 auto; /* Center the content horizontally */
 }
+
 footer {
   margin-bottom: 70px;
-  margin-top: 50px
+  margin-top: 50px;
+}
+
+/* Add media query for narrow screens */
+@media (max-width: 768px) {
+  #footer-content {
+    flex-direction: column-reverse; /* Stack items vertically, logo on bottom */
+    gap: 20px; /* Add space between items */
+  }
+
+  /* Reset the margin since items are now stacked */
+  #footer-content :deep(app-info) {
+    margin: 0;
+  }
 }
 </style>
