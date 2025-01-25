@@ -1,8 +1,12 @@
+![STATUS](https://img.shields.io/badge/STATUS-IN%20DEVELOPMENT-yellow?style=for-the-badge)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Vue.js](https://img.shields.io/badge/Vue.js-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white)
+![Cloudflare](https://img.shields.io/badge/Cloudflare%20Functions-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)
+
 # JolleyBites
 A simple web app to calculate the costs for baking or cooking businesses
 
 ## Technologies Used
-
 - Typescript
 - Cloudflare Pages & Functions
 - Cloudflare D1 Database
