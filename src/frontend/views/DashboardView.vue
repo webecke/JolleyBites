@@ -5,6 +5,7 @@ import router from '@/router'
 import { useAuthStore } from '@/stores/authStore'
 import { useDataStore } from '@/stores/dataStore'
 import { computed, onBeforeMount } from 'vue'
+import { snackbarStore } from '@/stores/snackbarStore'
 
 onBeforeMount(async () => {
   await initializeApp()
@@ -16,6 +17,10 @@ const recipeCount = computed(() => useDataStore().recipes.size)
 const logout = async () => {
   doLogout()
   router.push("/")
+}
+
+const notReady = () => {
+  snackbarStore.showMessage("Oops! Sorry, that's not ready yet! Try back later")
 }
 </script>
 
@@ -54,7 +59,7 @@ const logout = async () => {
         </div>
 
         <div class="gridItem">
-          <RouterLink to="/menus">
+          <RouterLink to="/dashboard" @click="notReady()">
             <div class="headerAndStat">
               <h3>Menus</h3>
               <h3>0</h3>
