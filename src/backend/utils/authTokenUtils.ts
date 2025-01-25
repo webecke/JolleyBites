@@ -2,7 +2,7 @@ import type { User } from '../../shared/types'
 // The import says its broken but it's not
 // @ts-ignore
 import { jwtVerify, SignJWT } from 'jose'
-import { HttpError } from '../errors/HttpError'
+import { ServerError } from '../network/ServerError'
 
 const JWT_SECRET = new TextEncoder().encode("THIS IS A TEMP SECRET UNTIL I HOOK UP CLOUDFLARE KV")
 export const MILLISECONDS_TO_LIVE: number = 480 * 60000 // 60000 milliseconds per minute
@@ -31,7 +31,7 @@ export async function verifyToken(token: string): Promise<AuthTokenPayload | nul
     const authPayload = payload as AuthTokenPayload;
 
     if (!authPayload.user_id || !authPayload.issued_at || !authPayload.last_used) {
-      throw HttpError.badRequest('Invalid token payload');
+      throw ServerError.badRequest('Invalid token payload');
     }
 
     return authPayload;

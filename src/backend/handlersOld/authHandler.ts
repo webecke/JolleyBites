@@ -1,7 +1,7 @@
 import { Request as CfRequest } from '@cloudflare/workers-types'
 import type { Env } from '../../../functions/requestTools'
 import { parseNextApiToken } from '../../../functions/requestTools'
-import { HttpError } from '../errors/HttpError'
+import { ServerError } from '../network/ServerError'
 import type { LoginRequest, RegisterRequest, LoginRegisterResponse } from '../../shared/messages'
 import type { User } from '../../shared/types'
 import { isAcceptablePassword } from '../../shared/acceptablePassword'
@@ -25,14 +25,14 @@ export async function handleAuthRequest (path: String, request: CfRequest, env: 
       case "register":
         return await handleRegisterRequest(await request.json<RegisterRequest>(), dataAccessMachine);
       default:
-        throw HttpError.notFound("That POST endpoint wasn't found")
+        throw ServerError.notFound("That POST endpoint wasn't found")
     }
   } else if (request.method ==="GET") {
     switch (apiToken) {
       case "me":
         return await handleMeRequest(request, dataAccessMachine);
       default:
-        throw HttpError.notFound("That GET endpoint wasn't found")
+        throw ServerError.notFound("That GET endpoint wasn't found")
     }
 
   } else if (request.method == 'DELETE') {
@@ -40,10 +40,10 @@ export async function handleAuthRequest (path: String, request: CfRequest, env: 
       case "logout":
         return await handleLogoutRequest(request, dataAccessMachine)
       default:
-        throw HttpError.notFound("That DELETE endpoint wasn't found")
+        throw ServerError.notFound("That DELETE endpoint wasn't found")
     }
   } else {
-    throw HttpError.methodNotAllowed("Only POST, GET, and DELETE calls are allowed on /auth")
+    throw ServerError.methodNotAllowed("Only POST, GET, and DELETE calls are allowed on /auth")
   }
 }
 
@@ -51,26 +51,26 @@ async function handleLoginRequest(request: LoginRequest, dataAccess: DataAccessM
   const userDataAccess = dataAccess.getUserDA();
   const user: User | null = await userDataAccess.getUserByEmail(request.email)
 
-  if (user == null) { throw HttpError.notFound("User not found with that email")}
+  if (user == null) { throw ServerError.notFound("User not found with that email")}
 
   const hashed_password: string | null = await userDataAccess.getPasswordHashByEmail(request.email)
 
-  if (hashed_password == null) { throw HttpError.internalServerError("Error checking password from database")}
+  if (hashed_password == null) { throw ServerError.internalServerError("Error checking password from database", null)}
 
-  if (!await bcrypt.compare(request.password, hashed_password)) { throw HttpError.forbidden("Incorrect password") }
+  if (!await bcrypt.compare(request.password, hashed_password)) { throw ServerError.forbidden("Incorrect password") }
 
   return finalizeLogin(user.id, dataAccess)
 }
 
 async function handleRegisterRequest(request: RegisterRequest, dataAccess: DataAccessMachine): Promise<Response> {
   if (!isAcceptablePassword(request.password)) {
-    throw HttpError.badRequest("Password doesn't meet requirements")
+    throw ServerError.badRequest("Password doesn't meet requirements")
   }
 
   const userDataAccess = dataAccess.getUserDA()
 
   if (await userDataAccess.getUserByEmail(request.email)) {
-    throw HttpError.conflict("Account already exists with that email")
+    throw ServerError.conflict("Account already exists with that email")
   }
 
   const now = new Date().toISOString();
@@ -116,14 +116,14 @@ async function finalizeLogin(userId: string, dataAccess: DataAccessMachine): Pro
 }
 
 async function handleMeRequest(request: CfRequest, dataAccessMachine: DataAccessMachine): Promise<Response> {
-  const user: User = await getUserFromRequest(request, dataAccessMachine)
+  const user: User | null = await getUserFromRequest(request, dataAccessMachine)
 
   return new Response(JSON.stringify(user), {status:200})
 }
 
 
 async function handleLogoutRequest(request: CfRequest, dataAccessMachine: DataAccessMachine): Promise<Response> {
-  const user: User = await getUserFromRequest(request, dataAccessMachine)
+  const user: User | null = await getUserFromRequest(request, dataAccessMachine)
   const authDataAccess: AuthDataAccess = dataAccessMachine.getAuthDA()
 
   await authDataAccess.deleteToken(request.headers.get("Authorization")!)
@@ -131,16 +131,16 @@ async function handleLogoutRequest(request: CfRequest, dataAccessMachine: DataAc
   return new Response(JSON.stringify({message: "Successfully logged out"}))
 }
 
-async function getUserFromRequest(request: CfRequest, dataAccessMachine: DataAccessMachine): Promise<User> {
+async function getUserFromRequest(request: CfRequest, dataAccessMachine: DataAccessMachine): Promise<User | null> {
   const authorization = request.headers.get("Authorization")
-  if (authorization == null) { throw HttpError.unauthorized("No auth token provided")}
+  if (authorization == null) { throw ServerError.unauthorized("No auth token provided")}
 
   const authPayload: AuthTokenPayload | null = await verifyToken(authorization)
-  if (authPayload == null) { throw HttpError.unauthorized("Invalid auth token provided") }
+  if (authPayload == null) { throw ServerError.unauthorized("Invalid auth token provided") }
 
   const authDataAccess: AuthDataAccess = dataAccessMachine.getAuthDA()
   if (!await authDataAccess.isTokenInTableAndNotExpired(authorization, new Date().toISOString())) {
-    throw HttpError.unauthorized("Auth token has been revoked"); //we know it was revoked because verifyToken would return null if the token is past expiration
+    throw ServerError.unauthorized("Auth token has been revoked"); //we know it was revoked because verifyToken would return null if the token is past expiration
   }
 
   if (Math.random() < 0.01) { // 1% chance to run cleanup
@@ -149,6 +149,6 @@ async function getUserFromRequest(request: CfRequest, dataAccessMachine: DataAcc
   }
 
   const userDataAccess = dataAccessMachine.getUserDA()
-  const user: User = await userDataAccess.getUserById(authPayload.user_id)
+  const user: User | null = await userDataAccess.getUserById(authPayload.user_id)
   return user
 }

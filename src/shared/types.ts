@@ -1,19 +1,7 @@
-export interface IngredientForRecipe {
-  id: number;
-  user_id: string;
+export type RecipeIngredient = {
   recipe_id: number;
   ingredient_id: number;
   quantity_in_recipe: number;
-  notes: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export type IngredientRecipe = {
-  recipe_id: number;
-  ingredient_id: number;
-  quantity_in_recipe: number;
-  notes: string;
 }
 
 export type Ingredient = {
@@ -33,7 +21,6 @@ export type Recipe = {
   name: string,
   description: string,
   servings_per_recipe: number,
-  //ingredients: { id: number, quantity: number }[],
   calculated_cost: number,
   instructions: string,
   notes: string,

@@ -1,7 +1,7 @@
 import { useDataStore } from '@/stores/dataStore'
 import type { Ingredient } from '../../shared/types'
 import { ServerCommunicator } from '@/services/ServerCommunicator'
-import type { ClientGeneratedIngredient } from '../../shared/messages'
+import type { IngredientRequest } from '../../shared/request/IngredientRequests'
 
 export const getAllIngredients = async (): Promise<Ingredient []> => {
   return await ServerCommunicator.getRequest<Ingredient[]>("/api/ingredients")
@@ -11,15 +11,24 @@ export const getIngredient = async (id: number): Promise<Ingredient> => {
   return await ServerCommunicator.getRequest<Ingredient>("/api/ingredients/" + String(id))
 }
 
-const newIngredientPost = async (ingredient: ClientGeneratedIngredient) => {
-  return await ServerCommunicator.postRequest<{ingredientId: number}>("/api/ingredients", {ingredient: ingredient})
-};
-
-const batchIngredientsPost = async (ingredients: ClientGeneratedIngredient[]) => {
-  return await ServerCommunicator.postRequest<{ingredientsIds: []}>("/api/ingredients", {ingredients: ingredients})
+const addIngredientsPost = async (ingredients: IngredientRequest[]) => {
+  const ingredientRequests = ingredients.map((ingredient) => {
+    return formatIngredientRequest(ingredient)
+  })
+  return await ServerCommunicator.postRequest<{ingredientIds: number[]}>("/api/ingredients", ingredientRequests)
 }
 
-export const addIngredient = async (ingredient: ClientGeneratedIngredient | null)=> {
+const formatIngredientRequest = (ingredient: IngredientRequest): IngredientRequest => {
+  return {
+    name: ingredient.name,
+    quantity: Number(ingredient.quantity),
+    unit: ingredient.unit,
+    purchase_price: Number(ingredient.purchase_price),
+    notes: ingredient.notes
+  }
+}
+
+export const addIngredient = async (ingredient: IngredientRequest | null)=> {
   if (ingredient == null) {
     console.error("Tried to add null ingredient");
     throw Error("Tried to add null ingredient")
@@ -27,17 +36,20 @@ export const addIngredient = async (ingredient: ClientGeneratedIngredient | null
     throw Error("Please enter an ingredient name, quantity, and unit")
   }
 
-  const response = await newIngredientPost(ingredient)
-  const newIngredient: Ingredient = await getIngredient(response.ingredientId)
+  const response = await addIngredientsPost([ingredient])
+  console.error(response)
+  const newIngredient: Ingredient = await getIngredient(response.ingredientIds[0])
   useDataStore().addIngredient(newIngredient)
 }
 
-export const addIngredientsBatch = async (ingredients: ClientGeneratedIngredient[]): Promise<{ingredientsIds: []}> => {
-  return await batchIngredientsPost(ingredients)
+export const addIngredientsBatch = async (ingredients: IngredientRequest[]): Promise<{ingredientIds: number[]}> => {
+  return await addIngredientsPost(ingredients)
 }
 
-export const updateIngredient = async (ingredient: Ingredient)=> {
-  await ServerCommunicator.patchRequest("/api/ingredients", {ingredient: ingredient})
+export const updateIngredient = async (ingredientRequest: IngredientRequest, id: number)=> {
+  ingredientRequest.quantity = Number(ingredientRequest.quantity)
+  ingredientRequest.purchase_price = Number(ingredientRequest.purchase_price)
+  await ServerCommunicator.putRequest("/api/ingredients/" + String(id), ingredientRequest)
   return true;
 }
 
@@ -54,4 +66,3 @@ function generateBaseUrl() {
   }
   return baseUrl
 }
-
