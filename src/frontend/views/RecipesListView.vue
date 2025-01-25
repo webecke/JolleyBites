@@ -7,7 +7,7 @@ import router from '@/router'
 import { useDataStore } from '@/stores/dataStore'
 import type { Recipe } from '../../shared/types'
 import { doErrorHandling } from '@/utils/generalUtils'
-import { roundToTwoDecimals } from '../utils/formatUtils'
+import { roundToTwoDecimals } from '@/utils/formatUtils'
 
 const newRecipeName = ref<string>("")
 const showNewRecipeMenu = ref<boolean>(false)
@@ -17,7 +17,8 @@ const visibleRecipes = computed(() => {
   const lowercaseSearchKey = searchKey.value.trim().toLowerCase()
   return Array.from(useDataStore().recipes.values()).filter(recipe =>
     recipe.name.toLowerCase().includes(lowercaseSearchKey) ||
-    recipe.description.toLowerCase().includes(lowercaseSearchKey)
+    (recipe.description?.toLowerCase() || '').includes(lowercaseSearchKey) ||
+    (recipe.notes?.toLowerCase() || '').includes(lowercaseSearchKey)
   ) as Recipe[]
 })
 
@@ -45,7 +46,19 @@ const submitNewRecipe = async () => {
   <h1>My Recipes</h1>
   <p>Here are all of your recipes. Click on one to view more detail or to edit.</p>
 
-  <v-btn @click="openNewRecipeMenu">Create New Recipe</v-btn>
+  <v-btn style="margin: 10px" @click="openNewRecipeMenu">Create New Recipe</v-btn>
+
+  <div class="search-container">
+    <v-text-field
+      style="margin: 10px"
+      v-model="searchKey"
+      label="Search recipes"
+      prepend-inner-icon="mdi-magnify"
+      clearable
+      placeholder="Search by name, description, or notes"
+      class="search-field"
+    />
+  </div>
 
   <div class="recipe-list">
     <div class="recipe"
