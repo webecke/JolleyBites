@@ -1,7 +1,6 @@
 import { D1Database } from '@cloudflare/workers-types'
 import type { Recipe } from '../../shared/types'
 import { ServerError } from '../network/ServerError'
-import type { RecipeMetaUpdate } from '../../shared/messages'
 
 export class RecipeDataAccess {
   private DB: D1Database

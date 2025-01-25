@@ -4,6 +4,7 @@ import { ServerError } from '../network/ServerError'
 import type { RecipeDataAccess } from '../dataAccess/recipeDataAccess'
 import type { RecipeRequest } from '../../shared/request/RecipeRequests'
 import type { RecipeIngredientDataAccess } from '../dataAccess/recipeIngredientDataAccess'
+import { IngredientsDataAccess } from '../dataAccess/ingredientsDataAccess'
 
 export const RecipeService = {
   createRecipe,
@@ -47,7 +48,7 @@ async function updateRecipe(dataAccess: DataAccessMachine, user: User, id: numbe
     name: request.name,
     description: request.description,
     servings_per_recipe: request.servings_per_recipe,
-    calculated_cost: currentRecipe.calculated_cost,
+    calculated_cost: await calculateCost(dataAccess, request.ingredients),
     instructions: request.instructions,
     notes: request.notes,
     created_at: currentRecipe.created_at,
@@ -84,4 +85,20 @@ async function throwIfNotFoundOrForbidden(recipeDA: RecipeDataAccess, user: User
   if (recipe.user_id != user.id) throw ServerError.forbidden(`Recipe #${id} doesn't belong to you`)
 
   return recipe
+}
+
+async function calculateCost(dataAccess: DataAccessMachine, recipeIngredients: RecipeIngredient[]): Promise<number> {
+  let total = 0;
+  const ingredientDA: IngredientsDataAccess = dataAccess.getIngredientsDA()
+
+  for (const recipeIngredient of recipeIngredients) {
+    const ingredient = await ingredientDA.getIngredientById(recipeIngredient.ingredient_id)
+    if (ingredient === undefined) {
+      throw ServerError.internalServerError("Error getting ingredients while calculating price", null)
+    }
+
+    total += ingredient.price_per_unit * recipeIngredient.quantity_in_recipe
+  }
+
+  return total
 }

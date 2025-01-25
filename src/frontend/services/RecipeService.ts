@@ -25,7 +25,6 @@ export const deleteRecipe = async (id: number) => {
 
 export const updateRecipe = async (recipe: Recipe, ingredients: RecipeIngredient[]) => {
   const request: RecipeRequest = {
-    id: Number(recipe.id),
     name: recipe.name,
     description: recipe.description,
     servings_per_recipe: Number(recipe.servings_per_recipe),

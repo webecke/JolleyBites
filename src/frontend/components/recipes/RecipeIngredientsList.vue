@@ -105,8 +105,8 @@ const quantityForIngredientToAdd = ref<number>(0);
   </div>
 
   <div style="margin-top: 15px">
-    <h3>Add ingredients</h3>
     <div v-if="showEditMode" style="display: flex; justify-content: center; align-items: center;">
+      <h3>Add ingredients</h3>
       <v-text-field
         density="compact"
         hide-details
