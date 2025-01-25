@@ -26,6 +26,17 @@ onMounted(async () => {
   await loadRecipe()
 })
 
+const calculateLiveCost = ():number => {
+  let total = 0;
+  ingredientList.value.forEach(ingredient => {
+    const realIngredient = data.getIngredient(ingredient.ingredient_id)
+    if (realIngredient === undefined) { snackbarStore.showCriticalErrorMessage('Something went wrong calculating the price. Save changes and reload the page.'); return; }
+    total += ingredient.quantity_in_recipe * realIngredient.price_per_unit;
+  })
+
+  return total
+}
+
 const loadRecipe = async () => {
   const foundRecipe = useDataStore().getRecipe(Number(id.value))
 
@@ -109,7 +120,7 @@ const handleCancelNavigation = () => {
 <template>
   <RecipeInfo
     :showEditMode="showEditMode"
-    :calculated_cost="recipe.calculated_cost"
+    :calculated_cost="showEditMode ? calculateLiveCost() : recipe.calculated_cost"
     v-model:name="recipe.name"
     v-model:description="recipe.description"
     v-model:servings_per_recipe="recipe.servings_per_recipe"

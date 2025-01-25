@@ -76,8 +76,14 @@ const emit = defineEmits(['saveRecipe', 'cancelEdit', 'startEdit',
   <hr style="width: 100%;"/>
 
   <div>
-    <h3>Recipe Cost: <b>${{roundToTwoDecimals(calculated_cost)}}</b></h3>
-    <h3>Cost Per Serving: <b>${{roundToTwoDecimals(calculated_cost / servings_per_recipe)}}</b></h3>
+    <h3>Recipe Cost:
+      <b v-if="showEditMode">${{roundToTwoDecimals(calculated_cost)}}</b>
+      <b v-else>${{roundToTwoDecimals(calculated_cost)}}</b>
+    </h3>
+    <h3>Cost Per Serving:
+      <b v-if="showEditMode">${{roundToTwoDecimals(calculated_cost / servings_per_recipe)}}</b>
+      <b v-else>${{roundToTwoDecimals(calculated_cost / servings_per_recipe)}}</b>
+    </h3>
   </div>
 </template>
 
