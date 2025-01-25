@@ -7,6 +7,7 @@ import router from '@/router'
 import { useDataStore } from '@/stores/dataStore'
 import type { Recipe } from '../../shared/types'
 import { doErrorHandling } from '@/utils/generalUtils'
+import { roundToTwoDecimals } from '../utils/formatUtils'
 
 const newRecipeName = ref<string>("")
 const showNewRecipeMenu = ref<boolean>(false)
@@ -46,15 +47,25 @@ const submitNewRecipe = async () => {
 
   <v-btn @click="openNewRecipeMenu">Create New Recipe</v-btn>
 
-  <div>
-    <div v-for="recipe in visibleRecipes" :key="recipe.id"
-         @click="router.push('/recipes/' + recipe.id)"
-         style="display: flex">
+  <div class="recipe-list">
+    <div class="recipe"
+         v-for="recipe in visibleRecipes"
+         :key="recipe.id"
+         @click="router.push('/recipes/' + recipe.id)">
 
-      <p>{{recipe.name}}</p>
+      <div class="recipe-info">
+        <h3 class="recipe-name">{{recipe.name}}</h3>
+        <p class="recipe-description">{{recipe.description}}</p>
+      </div>
+
+      <div class="recipe-pricing">
+        <p class="recipe-total-price">${{roundToTwoDecimals(recipe.calculated_cost)}}</p>
+        <p class="recipe-serving-price">
+          (${{roundToTwoDecimals(recipe.calculated_cost / recipe.servings_per_recipe)}}/serving)
+        </p>
+      </div>
     </div>
   </div>
-
 
 
   <v-dialog
@@ -77,5 +88,50 @@ const submitNewRecipe = async () => {
 </template>
 
 <style scoped>
+.recipe {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  cursor: pointer;
+  width: 100%;
+  background-color: var(--vt-c-divider-dark-2);
+  margin: 10px;
+  border-radius: 10px;
+}
 
+.recipe:hover {
+  background-color: #4e4e4e;
+}
+
+.recipe-info {
+  flex: 1;
+  min-width: 0; /* Allows text truncation to work */
+}
+
+.recipe-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.recipe-description {
+  color: #cdcccc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recipe-pricing {
+  text-align: right;
+  margin-left: 1rem;
+}
+
+.recipe-total-price {
+  font-weight: 600;
+}
+
+.recipe-serving-price {
+  font-size: 0.875rem;
+  color: #cdcccc;
+}
 </style>
